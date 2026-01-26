@@ -1,21 +1,15 @@
 using UnityEngine;
 using Unity.Netcode;
 
-public enum AttackType
-{
-    Stab,   
-    Slash,
-    Charge,
-    Throw,
-    normal_shot,
-    bow_uppercut
-}
+
+
+
 
 public enum EquipmentType
 {
     Sword,
     Bow,
-    Staff, 
+    Scythe, 
     Helmet,
     Chestplate,
     Leggings,

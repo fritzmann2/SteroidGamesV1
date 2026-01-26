@@ -11,7 +11,7 @@ abstract public class Weapon : InventoryItem
     public float attackmulti = 1f;
     public Animator anim;
     public Collider2D bx;
-    private AttackType attacktype;
+    private string attacktype;
     private Transform visualTarget;
     public Vector3 animOffset;
     private GameControls controls;
@@ -54,16 +54,16 @@ abstract public class Weapon : InventoryItem
         controls.Disable();
     }
 
-    public void performattack(AttackType attacktype)
+    public void performattack(string _attacktype)
     {        
         if(anim != null)
         {   
-            this.attacktype = attacktype;
+            attacktype = _attacktype;
             PlayAnimationClientsAndHostRpc(attacktype);
         }
     }
     [Rpc(SendTo.ClientsAndHost)]
-    public void PlayAnimationClientsAndHostRpc(AttackType attacktype)
+    public void PlayAnimationClientsAndHostRpc(string attacktype)
     {
         if (anim != null)
         {
@@ -134,55 +134,5 @@ abstract public class Weapon : InventoryItem
     }
 }
 
-public class Sword : Weapon
-{
-    override public void Attack1()
-    {
-        attackmulti = 1f;
-        performattack(AttackType.Slash);
-    }
-    override public void Attack2()
-    {
-        attackmulti = 0.9f;
-        performattack(AttackType.Stab);
-    }
-    override public void Attack3()
-    {
-        attackmulti = 1.5f;
-        performattack(AttackType.Charge);
-    }
-    override public void Attack4()
-    {
-        attackmulti = 0.7f;
-        performattack(AttackType.Throw);
-    }
 
-    protected override void Awake()
-    {
-        type = EquipmentType.Sword;
-        base.Awake();
-    }
-    
-}
 
-public class Bow : Weapon
-{
-    override public void Attack1()
-    {
-        performattack(AttackType.normal_shot);
-    }
-    override public void Attack2()
-    {
-        performattack(AttackType.bow_uppercut);
-    }
-    override public void Attack3()
-    {
-        performattack(AttackType.Charge);
-    }
-
-    protected override void Awake()
-    {
-        type = EquipmentType.Bow;
-        base.Awake();
-    }
-}

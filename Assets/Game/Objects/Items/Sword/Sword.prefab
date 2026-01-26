@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 6171067554017753862}
   - component: {fileID: 987913711327439683}
   - component: {fileID: 6620158605787397307}
-  - component: {fileID: 3461369133291615965}
   - component: {fileID: 202891770665367839}
   - component: {fileID: 6884070259243870095}
+  - component: {fileID: 8795011903182134524}
   m_Layer: 0
   m_Name: Sword
   m_TagString: Untagged
@@ -106,7 +106,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 184158563
+  GlobalObjectIdHash: 956635216
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -119,32 +119,6 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
---- !u!114 &3461369133291615965
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6313268473118203971}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d60e2e91545a60f45af761b34b9372a0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
-  ShowTopMostFoldoutHeaderGroup: 1
-  itemData: {fileID: 0}
-  ItemID: 
-  weaponstats:
-    weapondamage: 0
-    strength: 0
-    critChance: 0
-    critDamage: 0
-    attackSpeed: 0
-  playerStats: {fileID: 0}
-  attackmulti: 1
-  anim: {fileID: 0}
-  bx: {fileID: 0}
-  animOffset: {x: 0, y: 0, z: 0}
 --- !u!61 &202891770665367839
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -213,3 +187,29 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &8795011903182134524
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6313268473118203971}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5e994a82a644d543988fd12241418c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Sword
+  ShowTopMostFoldoutHeaderGroup: 1
+  itemData: {fileID: 0}
+  weaponstats:
+    weapondamage: 0
+    strength: 0
+    critChance: 0
+    critDamage: 0
+    attackSpeed: 0
+  playerStats: {fileID: 0}
+  attackmulti: 1
+  anim: {fileID: 0}
+  bx: {fileID: 0}
+  animOffset: {x: 0, y: 0, z: 0}
+  type: 0
