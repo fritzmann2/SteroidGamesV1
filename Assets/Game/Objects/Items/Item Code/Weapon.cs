@@ -1,0 +1,188 @@
+using UnityEngine;
+using Unity.Netcode;
+using System;
+
+
+abstract public class Weapon : InventoryItem
+{
+
+    [SerializeField] public WeaponStats weaponstats;
+    public PlayerStats playerStats;
+    public float attackmulti = 1f;
+    public Animator anim;
+    public Collider2D bx;
+    private AttackType attacktype;
+    private Transform visualTarget;
+    public Vector3 animOffset;
+    private GameControls controls;
+    private float moveInput;
+    private float LastmoveInput = 1;
+    public EquipmentType type;
+ 
+    virtual public void Attack1()
+    {}
+    virtual public void Attack2()
+    {}
+    virtual public void Attack3()
+    {}
+    virtual public void Attack4()
+    {}
+
+    protected virtual void Awake()
+    {
+        bx = GetComponent<Collider2D>();
+        anim = GetComponent<Animator>();
+        controls = new GameControls();
+        playerStats = GetComponentInParent<PlayerStats>();
+    }
+    
+    public void init(WeaponStats _weaponstats)
+    {
+        weaponstats = _weaponstats;
+        playerStats.UpdateStatsFromEquipment(4);
+
+    }
+
+    
+    void OnEnable()
+    {
+        controls.Enable();
+    }
+
+    void OnDisable()
+    {
+        controls.Disable();
+    }
+
+    public void performattack(AttackType attacktype)
+    {        
+        if(anim != null)
+        {   
+            this.attacktype = attacktype;
+            PlayAnimationClientsAndHostRpc(attacktype);
+        }
+    }
+    [Rpc(SendTo.ClientsAndHost)]
+    public void PlayAnimationClientsAndHostRpc(AttackType attacktype)
+    {
+        if (anim != null)
+        {
+            anim.SetTrigger(attacktype.ToString());
+        }
+    }
+    
+    public void EnableHitbox()
+    {
+        if (bx != null) bx.enabled = true;
+    }
+
+    public void DisableHitbox()
+    {
+        if (bx != null) bx.enabled = false;
+    }
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        BaseEntety mob = other.GetComponent<BaseEntety>();
+
+        if(other.CompareTag("Player"))
+        {
+            playerStats.DealotherDamage(mob, attackmulti);
+            Debug.Log("Hit Player");
+
+        }
+        if (other.CompareTag("mob"))
+        {
+            playerStats.DealotherDamage(mob, attackmulti);
+        }   
+    }
+
+    public float GetAnimationLength()
+    {
+        if (anim == null || anim.runtimeAnimatorController == null) return 0f;
+
+        foreach (AnimationClip clip in anim.runtimeAnimatorController.animationClips)
+        {
+            if (clip.name == attacktype.ToString())
+            {
+                return clip.length;
+            }
+        }
+        Debug.LogWarning("Animation nicht gefunden: " + attacktype.ToString());
+        return 0f;
+    }
+    public void SetFollowTarget(Transform target)
+    {
+        visualTarget = target;
+    }
+
+    protected virtual void LateUpdate()
+    {
+        Vector2 inputVector = controls.Gameplay.Move.ReadValue<Vector2>();
+        moveInput = inputVector.x;
+        if (moveInput != 0f)
+        {
+            LastmoveInput = moveInput;
+        }
+        if (visualTarget != null)
+        {
+            Vector3 handPos = visualTarget.position;
+        
+            Vector3 finalPos = handPos + (visualTarget.rotation * animOffset * LastmoveInput);
+
+            transform.position = finalPos;
+        }
+    }
+}
+
+public class Sword : Weapon
+{
+    override public void Attack1()
+    {
+        attackmulti = 1f;
+        performattack(AttackType.Slash);
+    }
+    override public void Attack2()
+    {
+        attackmulti = 0.9f;
+        performattack(AttackType.Stab);
+    }
+    override public void Attack3()
+    {
+        attackmulti = 1.5f;
+        performattack(AttackType.Charge);
+    }
+    override public void Attack4()
+    {
+        attackmulti = 0.7f;
+        performattack(AttackType.Throw);
+    }
+
+    protected override void Awake()
+    {
+        type = EquipmentType.Sword;
+        base.Awake();
+    }
+    
+}
+
+public class Bow : Weapon
+{
+    override public void Attack1()
+    {
+        performattack(AttackType.normal_shot);
+    }
+    override public void Attack2()
+    {
+        performattack(AttackType.bow_uppercut);
+    }
+    override public void Attack3()
+    {
+        performattack(AttackType.Charge);
+    }
+
+    protected override void Awake()
+    {
+        type = EquipmentType.Bow;
+        base.Awake();
+    }
+}
