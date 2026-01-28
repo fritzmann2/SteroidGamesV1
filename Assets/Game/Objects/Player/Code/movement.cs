@@ -51,7 +51,7 @@ public class movement : NetworkBehaviour
     public bool isTouchingWall = false;
     public bool isWallSliding = false;
     public bool isSliding = false;
-    private bool LooksRight = true;
+    public bool LooksRight = true;
     private bool didjump = false;
     private bool wasonground = false;
     private GameControls controls;

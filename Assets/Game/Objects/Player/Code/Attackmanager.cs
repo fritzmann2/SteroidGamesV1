@@ -76,8 +76,10 @@ public class Attackmanager : NetworkBehaviour
             if (controls.Gameplay.Attack4.triggered) currentWeaponScript.Attack4();
             if (controls.Gameplay.Attack1.triggered || controls.Gameplay.Attack2.triggered || controls.Gameplay.Attack3.triggered || controls.Gameplay.Attack4.triggered) 
             {
+               /*
                animtime = currentWeaponScript.GetAnimationLength();
                Debug.Log("Animation time: " + animtime);
+               */
             }
         }
     }

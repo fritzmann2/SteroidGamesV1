@@ -18,6 +18,7 @@ abstract public class Weapon : InventoryItem
     private float moveInput;
     private float LastmoveInput = 1;
     public EquipmentType type;
+    public bool isAttacking = false;
  
     virtual public void Attack1()
     {}
@@ -56,7 +57,7 @@ abstract public class Weapon : InventoryItem
 
     public void performattack(string _attacktype)
     {        
-        if(anim != null)
+        if(anim != null && !isAttacking)
         {   
             attacktype = _attacktype;
             PlayAnimationClientsAndHostRpc(attacktype);
@@ -71,12 +72,12 @@ abstract public class Weapon : InventoryItem
         }
     }
     
-    public void EnableHitbox()
+    public virtual void EnableHitbox()
     {
         if (bx != null) bx.enabled = true;
     }
 
-    public void DisableHitbox()
+    public virtual void DisableHitbox()
     {
         if (bx != null) bx.enabled = false;
     }
@@ -117,6 +118,7 @@ abstract public class Weapon : InventoryItem
 
     protected virtual void LateUpdate()
     {
+        if (transform.parent == null) return;
         Vector2 inputVector = controls.Gameplay.Move.ReadValue<Vector2>();
         moveInput = inputVector.x;
         if (moveInput != 0f)
@@ -133,6 +135,3 @@ abstract public class Weapon : InventoryItem
         }
     }
 }
-
-
-

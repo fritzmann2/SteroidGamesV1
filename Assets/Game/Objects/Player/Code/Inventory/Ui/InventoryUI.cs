@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-using System;
+using System.Collections;
 
 public class InventoryUI : MonoBehaviour
 {
@@ -8,15 +8,55 @@ public class InventoryUI : MonoBehaviour
     public List<InventorySlot_UI> inventorySlot_UI;
     public List<EquipmentSlot_UI> equipmentSlot_UI;
     private Dictionary<InventorySlot_UI, InventorySlot> slotDictionary; 
+    private bool hasInitializedOnce = false;
     
     
+    
+    private void OnEnable()
+    {
+        StartCoroutine(DelayedRefresh());
+    }
+
+    private IEnumerator DelayedRefresh()
+    {
+        yield return null; 
+
+        if (playerinventory != null && slotDictionary != null)
+        {
+   
+            if (!hasInitializedOnce)
+            {
+                RefreshAllSlots();
+                hasInitializedOnce = true;
+            }
+            RefreshAllSlots();
+        }
+    }
+
+    public void RefreshAllSlots()
+    {
+        if (playerinventory == null || playerinventory.itemInventory == null) return;
+
+        for (int i = 0; i < playerinventory.itemInventory.inventorySlots.Count; i++)
+        {
+            updateSlot(i, false);
+        }
+        
+        for (int i = 0; i < playerinventory.itemInventory.equipmentSlots.Count; i++)
+        {
+            updateSlot(i, true);
+        }
+        
+        Debug.Log("UI Refreshed via OnEnable");
+    }
+
     public void initplayer(Inventory _playerinventory)
     {
-//        Debug.Log("Initialize UI");
         playerinventory = _playerinventory;
         initUI();
         FindAnyObjectByType<MouseItemData>().initMouse(_playerinventory);
     }
+
     private void initUI()
     {
         slotDictionary = new Dictionary<InventorySlot_UI, InventorySlot>();
@@ -35,12 +75,15 @@ public class InventoryUI : MonoBehaviour
             slotDictionary.Add(inventorySlot_UI[i], playerinventory.itemInventory.getInventorySlot(i));
             playerinventory.itemInventory.getInventorySlot(i).initInventoryUI(this, i);
             inventorySlot_UI[i].setSlotNum(i);
+            updateSlot(i, false);
+
         }
         for (int i = 0; i < playerinventory.itemInventory.equipmentSlots.Count; i++)
         {
             slotDictionary.Add(equipmentSlot_UI[i], playerinventory.itemInventory.getEquipmentSlot(i));
             playerinventory.itemInventory.getEquipmentSlot(i).initInventoryUI(this, i);
             equipmentSlot_UI[i].setSlotNum(i);
+            updateSlot(i, true);
         }
     }
 

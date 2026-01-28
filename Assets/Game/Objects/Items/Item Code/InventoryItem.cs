@@ -38,14 +38,13 @@ public class EquipmentInstance : InventoryItemInstance
     public WeaponStats weaponStats;
     public ArmorStats armorStats;
     public AccessoryStats accessoryStats;
+    public EquipmentData equipmentData;
 
-    // Hilfsvariable für den genauen Equipment Typ
-    public EquipmentType equipmentType;
 
     public EquipmentInstance(EquipmentData _data) : base(_data)
     {
         itemtype = Itemtype.Equipment;
-        equipmentType = _data.equipmentType;
+        equipmentData.equipmentType = _data.equipmentType;
 
         if (_data is WeaponData wData) weaponStats = wData.weaponStats;
         else if (_data is ArmorData aData) armorStats = aData.armorStats;

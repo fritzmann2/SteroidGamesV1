@@ -1,40 +1,43 @@
-using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class EquipmentSlot_UI : InventorySlot_UI
 {
     public int slotIndex;
-    [SerializeField] public Itemtype equipmentType;
+    [SerializeField] public List<EquipmentType> allowedEqTypes;
+    private PlayerStats playerStats;
 
-    
-    public override bool Init(InventorySlot slot, int _slotnum)
+    public void initPlayerStats()
     {
-        if (slot.InventoryItemInstance == null || slot.InventoryItemInstance.itemData == null)
+    }
+    public bool Init(EquipmentSlot slot, int _slotnum)
+    {
+        foreach (var eqtype in allowedEqTypes)
         {
-            int index = slot.StackSize;
-//            Debug.Log("Slot ist leer");
-            base.Init(slot, _slotnum); 
-            return true;
-        }
-        if (equipmentType == slot.InventoryItemInstance.itemData.Type)
-        {
-            
+            if (eqtype == slot.EquipInstance.equipmentData.equipmentType)
+            {
+                int index = slot.StackSize;
+                base.Init(slot, _slotnum); 
+                trigerstatupdate();
+                return true;
+            }
         }
         
-        else
-        {
-            Debug.Log("Wrong item type for this equipment slot");
-            InventorySlot emptySlot = new InventorySlot(); 
-            base.Init(emptySlot, _slotnum);
-        }
+        Debug.Log("Wrong item type for this equipment slot");
+        InventorySlot emptySlot = new InventorySlot(); 
+        base.Init(emptySlot, _slotnum);
         return false;
     }
 
     private void trigerstatupdate()
     {
-        PlayerStats playerStats = FindFirstObjectByType<PlayerStats>();
         if (playerStats != null)
         {
+            playerStats.UpdateStatsFromEquipment(slotIndex);
+        }
+        else
+        {
+            playerStats = FindFirstObjectByType<PlayerStats>();
             playerStats.UpdateStatsFromEquipment(slotIndex);
         }
     }

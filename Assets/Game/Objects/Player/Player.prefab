@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1561542812
+  GlobalObjectIdHash: 951506825
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -238,7 +238,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 5
+  m_SortingOrder: 10
   m_Sprite: {fileID: -6496235881461291370, guid: 4f5293303c5dfcc4ebf767955c323369, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -353,6 +353,7 @@ MonoBehaviour:
   isTouchingWall: 0
   isWallSliding: 0
   isSliding: 0
+  LooksRight: 1
 --- !u!114 &5279757702115889303
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -417,6 +418,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Inventory
   ShowTopMostFoldoutHeaderGroup: 1
   itemDatabase:
+  - {fileID: 11400000, guid: 0775dcbaa473b1f45964429361d1667b, type: 2}
   - {fileID: 11400000, guid: a89848a23d71510499d8d12f3e960967, type: 2}
   - {fileID: 11400000, guid: ea5d6a9c2601eda45a5c5f2adb0d1067, type: 2}
   itemInventory:

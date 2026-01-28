@@ -40,7 +40,6 @@ public class PlayerStats : BaseMobClass
 
 
     }
-
     private void HandleEquipmentChanged(InventorySlot slot)
     {
     }

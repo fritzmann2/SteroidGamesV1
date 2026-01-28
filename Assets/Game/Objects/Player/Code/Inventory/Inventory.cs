@@ -88,7 +88,7 @@ public class Inventory : NetworkBehaviour
             InventoryItemInstance itemInstance = new InventoryItemInstance(itemDataToAdd);
 
             bool isAdded = itemInventory.addItem(itemInstance, amount);
-            Debug.Log("try to add clientRPC");
+//            Debug.Log("try to add clientRPC");
         
             if(isAdded)
             {

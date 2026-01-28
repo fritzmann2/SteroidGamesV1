@@ -158,7 +158,7 @@ AnimationClip:
     attribute: animOffset.x
     path: 
     classID: 114
-    script: {fileID: 11500000, guid: d60e2e91545a60f45af761b34b9372a0, type: 3}
+    script: {fileID: 11500000, guid: d5e994a82a644d543988fd12241418c0, type: 3}
     flags: 0
   - serializedVersion: 2
     curve:
@@ -188,7 +188,7 @@ AnimationClip:
     attribute: animOffset.y
     path: 
     classID: 114
-    script: {fileID: 11500000, guid: d60e2e91545a60f45af761b34b9372a0, type: 3}
+    script: {fileID: 11500000, guid: d5e994a82a644d543988fd12241418c0, type: 3}
     flags: 0
   - serializedVersion: 2
     curve:
@@ -218,7 +218,7 @@ AnimationClip:
     attribute: animOffset.z
     path: 
     classID: 114
-    script: {fileID: 11500000, guid: d60e2e91545a60f45af761b34b9372a0, type: 3}
+    script: {fileID: 11500000, guid: d5e994a82a644d543988fd12241418c0, type: 3}
     flags: 0
   m_PPtrCurves: []
   m_SampleRate: 60
@@ -249,7 +249,7 @@ AnimationClip:
     - serializedVersion: 2
       path: 0
       attribute: 948173350
-      script: {fileID: 11500000, guid: d60e2e91545a60f45af761b34b9372a0, type: 3}
+      script: {fileID: 11500000, guid: d5e994a82a644d543988fd12241418c0, type: 3}
       typeID: 114
       customType: 0
       isPPtrCurve: 0
@@ -258,7 +258,7 @@ AnimationClip:
     - serializedVersion: 2
       path: 0
       attribute: 1334102704
-      script: {fileID: 11500000, guid: d60e2e91545a60f45af761b34b9372a0, type: 3}
+      script: {fileID: 11500000, guid: d5e994a82a644d543988fd12241418c0, type: 3}
       typeID: 114
       customType: 0
       isPPtrCurve: 0
@@ -267,7 +267,7 @@ AnimationClip:
     - serializedVersion: 2
       path: 0
       attribute: 3599604490
-      script: {fileID: 11500000, guid: d60e2e91545a60f45af761b34b9372a0, type: 3}
+      script: {fileID: 11500000, guid: d5e994a82a644d543988fd12241418c0, type: 3}
       typeID: 114
       customType: 0
       isPPtrCurve: 0
@@ -584,7 +584,7 @@ AnimationClip:
     attribute: animOffset.x
     path: 
     classID: 114
-    script: {fileID: 11500000, guid: d60e2e91545a60f45af761b34b9372a0, type: 3}
+    script: {fileID: 11500000, guid: d5e994a82a644d543988fd12241418c0, type: 3}
     flags: 0
   - serializedVersion: 2
     curve:
@@ -614,7 +614,7 @@ AnimationClip:
     attribute: animOffset.y
     path: 
     classID: 114
-    script: {fileID: 11500000, guid: d60e2e91545a60f45af761b34b9372a0, type: 3}
+    script: {fileID: 11500000, guid: d5e994a82a644d543988fd12241418c0, type: 3}
     flags: 0
   - serializedVersion: 2
     curve:
@@ -644,7 +644,7 @@ AnimationClip:
     attribute: animOffset.z
     path: 
     classID: 114
-    script: {fileID: 11500000, guid: d60e2e91545a60f45af761b34b9372a0, type: 3}
+    script: {fileID: 11500000, guid: d5e994a82a644d543988fd12241418c0, type: 3}
     flags: 0
   m_EulerEditorCurves:
   - serializedVersion: 2
