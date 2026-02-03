@@ -6,15 +6,19 @@ abstract public class Weapon : InventoryItem
 {
 
     [SerializeField] public WeaponStats weaponstats;
+    protected PlayerMovement movement;
+
     public PlayerStats playerStats;
+    protected Transform player;
+
     public float attackmulti = 1f;
     public Animator anim;
     public Collider2D bx;
-    private Transform handPosition;
+    protected Transform handPosition;
     public Vector3 animOffset;
-    private GameControls controls;
-    private float moveInput;
-    private float LastmoveInput = 1;
+    protected GameControls controls;
+    protected float moveInput;
+    protected float LastmoveInput = 1;
     public EquipmentType type;
     public bool isAttacking = false; 
     virtual public void Attack1()
@@ -30,8 +34,13 @@ abstract public class Weapon : InventoryItem
     {
         bx = GetComponent<Collider2D>();
         anim = GetComponent<Animator>();
+        anim.enabled = false;
         controls = new GameControls();
         playerStats = GetComponentInParent<PlayerStats>();
+        movement = GetComponentInParent<PlayerMovement>();
+        handPosition = transform.parent.GetChild(0).transform;
+        player = transform.parent.parent;
+        transform.localPosition = handPosition.localPosition;
     }
     
     public void init(WeaponStats _weaponstats)
@@ -54,6 +63,7 @@ abstract public class Weapon : InventoryItem
 
     public void performattack(string _attacktype)
     {        
+        anim.enabled = true;
         if(anim != null && !isAttacking)
         {   
             PlayAnimationClientsAndHostRpc(_attacktype);
@@ -72,11 +82,14 @@ abstract public class Weapon : InventoryItem
     public virtual void EnableHitbox()
     {
         if (bx != null) bx.enabled = true;
+        Debug.Log("Enable Hitbox");
     }
 
     public virtual void DisableHitbox()
     {
         if (bx != null) bx.enabled = false;
+        anim.enabled = false;
+        transform.localPosition = handPosition.localPosition;
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -117,22 +130,15 @@ abstract public class Weapon : InventoryItem
         handPosition = target;
     }
 
-    protected virtual void LateUpdate()
+    protected virtual void addParent()
     {
-        if (transform.parent == null) return;
-        Vector2 inputVector = controls.Gameplay.Move.ReadValue<Vector2>();
-        moveInput = inputVector.x;
-        if (moveInput != 0f)
-        {
-            LastmoveInput = moveInput;
-        }
-        if (handPosition != null)
-        {
-            Vector3 handPos = handPosition.position;
-        
-            Vector3 finalPos = handPos + (handPosition.rotation * animOffset * LastmoveInput);
-
-            transform.position = finalPos;
-        }
+        isAttacking = false;
+        transform.parent = player;
+        DisableHitbox();
+        transform.localPosition = Vector3.zero;
+        transform.localRotation = Quaternion.identity; 
+        Debug.Log(handPosition.localPosition.ToString() + " my pos: " + transform.localPosition.ToString());
+        transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
     }
+    
 }

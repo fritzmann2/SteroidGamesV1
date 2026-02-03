@@ -1,32 +1,33 @@
 using UnityEngine;
 using Unity.Netcode;
-using UnityEditor.Tilemaps;
-using Unity.VisualScripting;
 
 public class PlayerMovement : NetworkBehaviour
 {
     [Header("Generel Settings")]
     private LayerMask groundLayer;
+    private LayerMask wall;
     private GameControls controls;
-    private Rigidbody2D rb;
+    public Rigidbody2D rb;
 
     [Header("Movement Settings")]
     [SerializeField] private const float movementSpeed = 8f;
+    [SerializeField] private const float wallSlideSpeed = 2f;
 
     [Header("Accelerating Settings")]
     [SerializeField] private const float groundAcceleration = 15f;
     [SerializeField] private const float groundDeceleration = 20f;
     [SerializeField] private const float airAcceleration = 10f;
     [SerializeField] private const float airDecelerationSpeed = 10f;
+    [SerializeField] private const float BaseGravityScale = 3f;
 
     [Header("Jump Settings")]
-    [SerializeField] private const float jumpForce = 7f;
-    [SerializeField] private const float wallJumpMultiplier = 0.7f;
+    [SerializeField] private const float jumpForce = 10f;
+    [SerializeField] private const float wallJumpMultiplier = 0.5f;
     private float coyoteTime = 0.2f;
     private float coyoteTimeCounter;
 
     [Header("Dash Settings")]
-    [SerializeField] private const float dashforce = 2f;
+    [SerializeField] private const float dashforce = 12f;
     [SerializeField] private const float dashCooldown = 0.4f;
     [SerializeField] private const float dashDuration = 0.2f;
     private float dashtimer = dashDuration;
@@ -39,15 +40,16 @@ public class PlayerMovement : NetworkBehaviour
     
         [Header("Wall Check Settings")]
         private const float wallCheckDistanceX = 0.5f;
-        private const float wallCheckHeighty = 0.9f;
+        private const float wallCheckHeighty = 0.7f;
 
         [Header("Boolean States")]
         private bool isGrounded;
-        private bool isWallJumpPossible;
+        [SerializeField] private bool isWallJumpPossible;
         private bool isJumping;
         private bool canDash;
         private bool canDashJump;
         private bool isDashing;
+        private bool didWallJump;
 
     public override void OnNetworkSpawn()
     {
@@ -59,6 +61,7 @@ public class PlayerMovement : NetworkBehaviour
     
         Camera.main.GetComponent<CameraFollow>().target = transform;
         groundLayer = LayerMask.GetMask("Ground");
+        wall = LayerMask.GetMask("Wall", "Ground");
         rb = GetComponent<Rigidbody2D>();
         controls = new GameControls();
         controls.Enable();
@@ -66,11 +69,13 @@ public class PlayerMovement : NetworkBehaviour
 
     public override void OnNetworkDespawn()
     {
+        if (!IsOwner) return;
         controls.Disable();
     }
 
     void FixedUpdate()
     {   
+        if (!IsOwner) return;
         checkColliders();
         move();
         checkJump();
@@ -108,13 +113,22 @@ public class PlayerMovement : NetworkBehaviour
         float movement = speedDif * accelRate;
 
         rb.AddForce(movement * Vector2.right, ForceMode2D.Force);
+
+        if (isWallJumpPossible)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, Mathf.Clamp(rb.linearVelocity.y, -wallSlideSpeed, float.MaxValue));
+
+        }
+        else if (!controls.Gameplay.jump.IsPressed() || rb.linearVelocity.y <= 0f)
+        {
+            rb.gravityScale = BaseGravityScale;
+        }
     }
 
     private void checkJump()
     {
         if (controls.Gameplay.jump.IsPressed())
         {
-            Debug.Log("Jump Pressed");
             if (NormalJump())
             {
                 isJumping = true;
@@ -123,8 +137,12 @@ public class PlayerMovement : NetworkBehaviour
             {
                 isJumping = true;
             }
-            
         }
+        else
+        {
+            didWallJump = false;
+        }
+
         if (!isGrounded)
         {
             coyoteTimeCounter += Time.fixedDeltaTime;
@@ -146,15 +164,21 @@ public class PlayerMovement : NetworkBehaviour
             if(canDashJump) canDashJump = false;
             return true;
         }
+        if (isJumping && rb.linearVelocity.y > 0f && controls.Gameplay.jump.IsPressed())
+        {
+            rb.gravityScale = BaseGravityScale * 0.5f;
+        }
+        
         return false;
     }
 
     private bool WallJump()
     {
-        if (isWallJumpPossible && !isJumping)
+        if (isWallJumpPossible && !didWallJump)
         {
-            rb.linearVelocity = new Vector2(-jumpForce, jumpForce* wallJumpMultiplier);
+            rb.linearVelocity = new Vector2(-transform.localScale.x * jumpForce * 3f, jumpForce * wallJumpMultiplier);
             Flip();
+            didWallJump = true;
             return true;
         }
         return false;
@@ -183,13 +207,22 @@ public class PlayerMovement : NetworkBehaviour
     {
         Vector2 inputVector = controls.Gameplay.Move.ReadValue<Vector2>();
         float dashside = 0;
-        float dashup = inputVector.y != 0?
-         -1 : 0;
+        float dashup = 0;
+        
+        if (inputVector.y > 0)
+        {
+            dashup = 1;
+        }
+        else if (inputVector.y < 0)
+        {
+            dashup = -1;
+        }
+    
         if (dashup == 0)
         {
-            dashside = 1;
+            dashside = transform.localScale.x;
         }
-        rb.linearVelocity = new Vector2(dashforce * 2f* dashside * movementSpeed,dashforce * dashup * jumpForce);
+        rb.linearVelocity = new Vector2(dashforce * 4f * dashside,dashforce * dashup);
         canDash = false;
         canDashJump = true;
         isDashing = true;
@@ -197,7 +230,7 @@ public class PlayerMovement : NetworkBehaviour
 
     private void checkSlide()
     {
-        
+        //if ()
     }
 
 
@@ -218,7 +251,7 @@ public class PlayerMovement : NetworkBehaviour
         }
         float facingDirection = transform.localScale.x;
         Vector2 wallOrigin = (Vector2)transform.position + new Vector2(wallCheckDistanceX * facingDirection, 0);
-        isWallJumpPossible = Physics2D.OverlapBox(wallOrigin, new Vector2(0.1f, wallCheckHeighty), 0, groundLayer);
+        isWallJumpPossible = Physics2D.OverlapBox(wallOrigin, new Vector2(0.1f, wallCheckHeighty), 0, wall);
     }
 
     private void Flip()
@@ -229,14 +262,19 @@ public class PlayerMovement : NetworkBehaviour
     }
 
     private void OnDrawGizmos()
-    {
-        // GroundCheck (Red)
-        Gizmos.color = Color.red;
-        Vector2 boxCenter = (Vector2)transform.position + new Vector2(0, groundCheckPosy);
-        Gizmos.DrawWireCube(boxCenter, new Vector2(groundCheckLengthx, 0.1f));
-        // WallCheck (Green)
-        Gizmos.color = Color.green;
-        Vector2 wallCheckPos = (Vector2)transform.position + new Vector2(wallCheckDistanceX, 0);
-        Gizmos.DrawWireCube(wallCheckPos, new Vector2(0.1f, wallCheckHeighty));
-    }
+{
+    // GroundCheck (Red)
+    Gizmos.color = Color.red;
+    Vector2 boxCenter = (Vector2)transform.position + new Vector2(0, groundCheckPosy);
+    Gizmos.DrawWireCube(boxCenter, new Vector2(groundCheckLengthx, 0.1f));
+
+    // WallCheck (Green)
+    Gizmos.color = Color.green;
+
+    float facingDirection = transform.localScale.x; 
+    
+    Vector2 wallCheckPos = (Vector2)transform.position + new Vector2(wallCheckDistanceX * facingDirection, 0);
+    
+    Gizmos.DrawWireCube(wallCheckPos, new Vector2(0.1f, wallCheckHeighty));
+}
 }

@@ -28,7 +28,25 @@ public class Sword : Weapon
         type = EquipmentType.Sword;
         base.Awake();
     }
-    
+
+    protected virtual void LateUpdate()
+    {
+        if (transform.parent == null) return;
+        Vector2 inputVector = controls.Gameplay.Move.ReadValue<Vector2>();
+        moveInput = inputVector.x;
+        if (moveInput != 0f)
+        {
+            LastmoveInput = moveInput;
+        }
+        if (handPosition != null)
+        {
+            Vector3 handPos = handPosition.position;
+        
+            Vector3 finalPos = handPos + (handPosition.rotation * animOffset * LastmoveInput);
+
+            transform.position = finalPos;
+        }
+    }
 }
 
 

@@ -1,11 +1,7 @@
-using System.Runtime.InteropServices.ComTypes;
-using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 
 public class Scythe : Weapon
 {
-    private Transform player;
-    private movement movement;
     public LayerMask groundLayer;
     private float throwSpeed = 10f;
     private float returnSpeed = 14f;
@@ -43,10 +39,8 @@ public class Scythe : Weapon
 
     protected override void Awake()
     {
-        movement = GetComponentInParent<movement>();
         type = EquipmentType.Scythe;
         base.Awake();
-        player = transform.parent.parent;
         isThrown = false;
         
     }
@@ -62,11 +56,11 @@ public class Scythe : Weapon
     {
         anim.enabled = false;
         EnableHitbox();
-        viewdir = movement.LooksRight ? 1 : -1;
+        viewdir = movement.transform.localScale.x > 0 ? 1 : -1;
         isAttacking = true;
         isThrown = true;
         isReturning = false;
-        throwDirection = new Vector2(viewdir*1f, -0.1f).normalized;
+        throwDirection = new Vector2(viewdir, -0.1f).normalized;
         throwTime = 0f;
 
         transform.parent = null;
@@ -113,13 +107,8 @@ public class Scythe : Weapon
     {
         isThrown = false;
         isReturning = false;
-        isAttacking = false;
-        transform.parent = player;
-        anim.enabled = true;
-        DisableHitbox();
-        transform.localPosition = Vector3.zero;
-        transform.localRotation = Quaternion.identity; 
         throwTime = 0f;   
+        addParent();
     }
 
     public override void EnableHitbox()

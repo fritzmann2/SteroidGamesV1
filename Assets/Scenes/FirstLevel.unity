@@ -2354,6 +2354,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02f97e8d0b9bbf44fa4b46a6b3b4d7b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  ShowTopMostFoldoutHeaderGroup: 1
   target: {fileID: 5384933900342603, guid: e5dcf494629bcac4a80ac7b0306da440, type: 3}
   offset: {x: 0, y: 0, z: -10}
   smoothTime: 0.1
