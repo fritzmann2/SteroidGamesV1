@@ -51,12 +51,12 @@ GameObject:
   - component: {fileID: 3391998883803777491}
   - component: {fileID: 2196424085680107788}
   - component: {fileID: -5597445049921152597}
-  - component: {fileID: 7668092172069583432}
   - component: {fileID: 5279757702115889303}
   - component: {fileID: 3318859025786867303}
   - component: {fileID: 131929589387796209}
   - component: {fileID: 7091019695798207329}
-  m_Layer: 0
+  - component: {fileID: 4258902509258678177}
+  m_Layer: 3
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 951506825
+  GlobalObjectIdHash: 1561542812
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -238,7 +238,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingOrder: 5
   m_Sprite: {fileID: -6496235881461291370, guid: 4f5293303c5dfcc4ebf767955c323369, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -313,47 +313,6 @@ MonoBehaviour:
   UseRigidBodyForMotion: 0
   AutoUpdateKinematicState: 1
   AutoSetKinematicOnDespawn: 1
---- !u!114 &7668092172069583432
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2567050193010641777}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: df6f6cfef659ecd4398d4dbd846b31a0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
-  ShowTopMostFoldoutHeaderGroup: 1
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 1024
-  groundCheckPos: {fileID: 2291839588112868561}
-  slideLayer:
-    serializedVersion: 2
-    m_Bits: 512
-  wallSlideSpeed: 1
-  wallCheckPos: {fileID: 5029878927201705976}
-  wallLayer:
-    serializedVersion: 2
-    m_Bits: 256
-  jumpForce: 1
-  jumpcount: 1
-  groundAcceleration: 15
-  basedeceleration: 15
-  airAcceleration: 4
-  dashtimer: 0
-  dashcooldown: 1
-  dashforce: 2
-  dashjumpcount: 0
-  basemoveSpeed: 8
-  GravityScale: 3
-  isGrounded: 1
-  isTouchingWall: 0
-  isWallSliding: 0
-  isSliding: 0
-  LooksRight: 1
 --- !u!114 &5279757702115889303
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -372,7 +331,7 @@ MonoBehaviour:
     inventorySlots: []
     equipmentSlots: []
   weaponPrefab: {fileID: 6313268473118203971, guid: b7f137d7b0debec45836e9850ade4838, type: 3}
-  basicWeapon: {fileID: 6313268473118203971, guid: b7f137d7b0debec45836e9850ade4838, type: 3}
+  basicWeapon: {fileID: 8583526698003398638, guid: 6f2aaea7328f83344bea37c85d62d537, type: 3}
 --- !u!114 &3318859025786867303
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -389,7 +348,6 @@ MonoBehaviour:
   health:
     m_InternalValue: 100
   maxHealth: 0
-  equipmentStats: []
 --- !u!114 &131929589387796209
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -884,6 +842,19 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   mouseItemData: {fileID: 0}
+--- !u!114 &4258902509258678177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2567050193010641777}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14b079230d2c3dd42810209740b40b33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1 &4283935385468404535
 GameObject:
   m_ObjectHideFlags: 0

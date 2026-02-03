@@ -5,6 +5,7 @@ using UnityEngine;
 public class ChunkData : MonoBehaviour
 {
     private List<NetworkObject> myMobs = new List<NetworkObject>();
+    public List<GameObject> posibleMobs;
 
     public void RegisterMob(NetworkObject mob)
     {
@@ -21,5 +22,16 @@ public class ChunkData : MonoBehaviour
             }
         }
         myMobs.Clear();
+    }
+    public void DespawnMob(NetworkObject mob)
+    {
+        if (myMobs.Contains(mob))
+        {
+            if (mob != null && mob.IsSpawned)
+            {
+                mob.Despawn();
+            }
+            myMobs.Remove(mob);
+        }
     }
 }

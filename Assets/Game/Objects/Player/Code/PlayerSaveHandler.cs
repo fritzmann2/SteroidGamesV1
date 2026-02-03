@@ -123,7 +123,7 @@ public class PlayerSaveHandler : NetworkBehaviour
         {
             InventoryItemInstance instance = null;
 
-            if (data.savedData.itemtype == Itemtype.Equipment)
+            if (data.savedData.itemtype == Itemtype.Armor || data.savedData.itemtype == Itemtype.Weapon || data.savedData.itemtype == Itemtype.Accessory)
             {
                 if (baseData is EquipmentData equipData)
                 {

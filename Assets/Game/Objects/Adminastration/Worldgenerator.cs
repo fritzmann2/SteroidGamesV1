@@ -17,7 +17,7 @@ public class WorldGenerator : NetworkBehaviour
     private Dictionary<Vector2Int, GameObject> mapLookup = new Dictionary<Vector2Int, GameObject>();
     private Dictionary<Vector2Int, GameObject> activeChunks = new Dictionary<Vector2Int, GameObject>();
 
-    private Vector2Int[] offsets = new Vector2Int[]
+    private Vector2Int[] ChunkOffsets = new Vector2Int[]
     {
         new Vector2Int(0, 0), new Vector2Int(0, 1), new Vector2Int(0, -1), 
         new Vector2Int(-1, 0), new Vector2Int(1, 0)
@@ -80,7 +80,7 @@ public class WorldGenerator : NetworkBehaviour
 
             Vector2Int playerGridPos = new Vector2Int(pX, pY);
 
-            foreach (Vector2Int offset in offsets)
+            foreach (Vector2Int offset in ChunkOffsets)
             {
                 chunksToKeep.Add(playerGridPos + offset);
             }
@@ -166,14 +166,22 @@ public class WorldGenerator : NetworkBehaviour
         foreach (MobSpawnPoint spawnPoint in spawnPoints)
         {
             Transform position = spawnPoint.transform;
-            GameObject dummyobj = Instantiate(dummy, position);
-            dummyobj.GetComponent<dummyscript>().Setparrent(this);
-            var netObj = dummyobj.GetComponent<NetworkObject>();
+            GameObject MobToSpawn;
+            if (chunkData.posibleMobs.Count == 0)
+            {
+                MobToSpawn = Instantiate(dummy, position);
+            }
+            else
+            {
+                MobToSpawn = Instantiate(chunkData.posibleMobs[Random.Range(0, chunkData.posibleMobs.Count)], position);
+                
+            }
+            var netObj = MobToSpawn.GetComponent<NetworkObject>();
             if (netObj != null)
             {
                 chunkData.RegisterMob(netObj);
-                netObj.Spawn();
-                
+                netObj.Spawn(); 
+                netObj.GetComponent<BaseEnemy>().SetParentChunk(chunkData);               
             }
         }
     }

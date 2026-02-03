@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices.ComTypes;
+using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 
 public class Scythe : Weapon
@@ -35,6 +36,7 @@ public class Scythe : Weapon
     }
     override public void Attack4()
     {
+        if (isThrown) return;
         attackmulti = 0.7f;
         Throw();
     }
@@ -101,12 +103,10 @@ public class Scythe : Weapon
         if (!isReturning)
         {
             transform.Rotate(0, 0, -rotationSpeed * Time.deltaTime * viewdir);
-            Debug.Log("rotating forward");
         }
         else
         {
             transform.Rotate(0, 0, rotationSpeed * Time.deltaTime * viewdir);
-            Debug.Log("rotating backward");
         }
     }
     void Catch()

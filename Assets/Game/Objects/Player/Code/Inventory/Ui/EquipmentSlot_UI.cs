@@ -7,14 +7,11 @@ public class EquipmentSlot_UI : InventorySlot_UI
     [SerializeField] public List<EquipmentType> allowedEqTypes;
     private PlayerStats playerStats;
 
-    public void initPlayerStats()
-    {
-    }
     public bool Init(EquipmentSlot slot, int _slotnum)
     {
         foreach (var eqtype in allowedEqTypes)
         {
-            if (eqtype == slot.EquipInstance.equipmentData.equipmentType)
+            if (eqtype == slot.EquipInstance.itemData.equipmentType)
             {
                 int index = slot.StackSize;
                 base.Init(slot, _slotnum); 

@@ -1,12 +1,18 @@
 using UnityEngine;
 using Unity.Netcode;
 using System.Collections;
+using System.Collections.Generic;
+using System;
+
 
 public class LevelManager : NetworkBehaviour
 {
     [Header("Settings")]
     public GameObject playerPrefab;
     public float clientSpawnDelay = 0.5f;
+    private List<Transform> activePlayers = new List<Transform>();
+    public event Action onPlayerRegistered;
+
 
     public override void OnNetworkSpawn()
     {
@@ -61,6 +67,25 @@ public class LevelManager : NetworkBehaviour
         GameObject playerInstance = Instantiate(playerPrefab, spawnPos, Quaternion.identity);
 
         playerInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true);
+        RegisterPlayer(playerInstance.transform);
     }
-    
+    public void RegisterPlayer(Transform playerTransform)
+    {
+        if (!activePlayers.Contains(playerTransform))
+        {
+            activePlayers.Add(playerTransform);
+            onPlayerRegistered?.Invoke();
+        }
+    }
+    public void UnregisterPlayer(Transform playerTransform)
+    {
+        if (activePlayers.Contains(playerTransform))
+        {
+            activePlayers.Remove(playerTransform);
+        }
+    }
+    public List<Transform> GetActivePlayers()
+    {
+        return activePlayers;
+    }
 }

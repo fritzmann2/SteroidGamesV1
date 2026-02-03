@@ -4,21 +4,23 @@
 TagManager:
   serializedVersion: 3
   tags:
-  - mob
   - Inventory
   - WhilePlaying
   - ItemPickUp
+  - Mob
+  - Obstacle
+  - Ground
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Player
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
+  - Mob
+  - Ground
+  - Wall
+  - Roof
   - 
   - 
   - 

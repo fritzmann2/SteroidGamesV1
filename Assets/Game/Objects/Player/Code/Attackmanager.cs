@@ -1,7 +1,5 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 using Unity.Netcode;
-using UnityEngine.Events;
 
 
 public class Attackmanager : NetworkBehaviour
@@ -17,7 +15,6 @@ public class Attackmanager : NetworkBehaviour
 
     private GameObject currentWeaponObject;
     private Weapon currentWeaponScript;
-    private float animtime;
 
     void Awake()
     {

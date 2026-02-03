@@ -1,6 +1,5 @@
 using UnityEngine;
 using Unity.Netcode;
-using System.Collections.Generic;
 
 
 public class InventoryItem : NetworkBehaviour
@@ -38,17 +37,45 @@ public class EquipmentInstance : InventoryItemInstance
     public WeaponStats weaponStats;
     public ArmorStats armorStats;
     public AccessoryStats accessoryStats;
-    public EquipmentData equipmentData;
+    public new EquipmentData itemData;
 
 
     public EquipmentInstance(EquipmentData _data) : base(_data)
     {
-        itemtype = Itemtype.Equipment;
-        equipmentData.equipmentType = _data.equipmentType;
+        itemData.equipmentType = _data.equipmentType;
+        if (itemData.equipmentType == EquipmentType.Bow || itemData.equipmentType == EquipmentType.Scythe || itemData.equipmentType == EquipmentType.Sword)
+        {
+            itemData.Type = Itemtype.Weapon;
+        }
+        else if (itemData.equipmentType == EquipmentType.Helmet || itemData.equipmentType == EquipmentType.Chestplate || itemData.equipmentType == EquipmentType.Leggings || itemData.equipmentType == EquipmentType.Boots)
+        {
+            itemData.Type = Itemtype.Armor;
+        }
+        else if (itemData.equipmentType == EquipmentType.Ring || itemData.equipmentType == EquipmentType.Necklace)
+        {
+            itemData.Type = Itemtype.Accessory;
+        }
 
         if (_data is WeaponData wData) weaponStats = wData.weaponStats;
         else if (_data is ArmorData aData) armorStats = aData.armorStats;
         else if (_data is AccessoryData accData) accessoryStats = accData.accessoryStats;
     }
+    public EquipmentStats GetEquipmentStats()
+    {   
+        if (itemData.Type == Itemtype.Weapon)
+        {
+            return weaponStats;
+        }
+        else if (itemData.Type == Itemtype.Armor)
+        {
+            return armorStats;
+        }
+        else if (itemData.Type == Itemtype.Accessory)
+        {
+            return accessoryStats;
+        }
+        else return null;
+    }
+
 }
 

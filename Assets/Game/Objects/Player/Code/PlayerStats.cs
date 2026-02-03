@@ -8,11 +8,11 @@ public class PlayerStats : BaseMobClass
     private PlayerSaveHandler playerSaveHandler;
 
     [Header("Debugging")]
-    [SerializeField] private List<equipmentStatsSlot> equipmentStats = new List<equipmentStatsSlot>();
+    [SerializeField] private List<EquipmentInstance> equipmentDatas;
     [SerializeField] private playerstats totalStats = new playerstats();
     
-    // Basis-Stats (Stats ohne Ausrüstung)
     [SerializeField] private playerstats baseStats = new playerstats(); 
+    private ItemInventory itemInventory;
     private bool isCrit;
 
 
@@ -21,8 +21,9 @@ public class PlayerStats : BaseMobClass
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
-       
-        playerSaveHandler = GetComponent<PlayerSaveHandler>();        
+        playerSaveHandler = GetComponent<PlayerSaveHandler>(); 
+        itemInventory = GetComponentInParent<Inventory>().itemInventory;
+        equipmentDatas = new List<EquipmentInstance>(itemInventory.equipmentSlots.Count);
         playerSaveHandler.dataLoaded += Init;
     }
     public override void OnNetworkDespawn()
@@ -33,32 +34,15 @@ public class PlayerStats : BaseMobClass
 
     private void Init()
     {
-        {
-            Debug.LogWarning("PlayerStats: Init fehlgeschlagen - Kein InventoryHolder oder EquipedSlots gefunden.");
-            return;
-        }
+        
+    }
 
 
-    }
-    private void HandleEquipmentChanged(InventorySlot slot)
-    {
-    }
+
 
     public void UpdateStatsFromEquipment(int slotIndex)
     {
-        // 1. Hole das echte Item aus dem InventoryHolder
-        
-        // 2. Finde oder erstelle den lokalen Cache-Eintrag
-        equipmentStatsSlot localSlot = equipmentStats.FirstOrDefault(x => x.slotIndex == slotIndex);
-        
-        if (localSlot == null)
-        {
-            localSlot = new equipmentStatsSlot { slotIndex = slotIndex };
-            equipmentStats.Add(localSlot);
-        }
-
-
-        // 4. Alles neu berechnen
+        equipmentDatas[slotIndex] = itemInventory.equipmentSlots[slotIndex].EquipInstance;
         RecalculateTotalStats();
     }
 
@@ -71,12 +55,53 @@ public class PlayerStats : BaseMobClass
             critDamage = baseStats.critDamage,
             attackSpeed = baseStats.attackSpeed,
             weapondamage = baseStats.weapondamage,
+            defense = baseStats.defense,
+            spellresistance = baseStats.spellresistance,
+            movementSpeed = baseStats.movementSpeed,
+            mana = baseStats.mana,
+            manaRegen = baseStats.manaRegen,
+            health = baseStats.health,
         };
+        foreach (var data in equipmentDatas)
+        {
+            if (data == null) continue;
 
+            EquipmentStats stats = data.GetEquipmentStats();
+
+            if (stats == null) continue;
+
+            if (stats is WeaponStats w)
+            {
+                totalStats.weapondamage += w.weapondamage;
+                totalStats.strength += w.strength;
+                totalStats.critChance += w.critChance;
+                totalStats.critDamage += w.critDamage;
+                totalStats.attackSpeed += w.attackSpeed;
+            }
+            else if (stats is ArmorStats a)
+            {
+                totalStats.defense += a.defense;
+                totalStats.spellresistance += a.spellresistance;
+            }
+            else if (stats is AccessoryStats acc)
+            {
+                totalStats.health += acc.health;
+                totalStats.mana += acc.mana;
+                totalStats.manaRegen += acc.manaRegen;
+                totalStats.movementSpeed += acc.movementSpeed;
+                totalStats.attackSpeed += acc.attackSpeed;
+                totalStats.critChance += acc.critChance;
+                totalStats.critDamage += acc.critDamage;
+                totalStats.strength += acc.strength;
+                totalStats.defense += acc.defense;
+                totalStats.spellresistance += acc.spellresistance;
+                
+            }
+        }
         
+        Debug.Log($"Neue Stats berechnet. Total Strength: {totalStats.strength}");
     }
 
-    // --- Kampf-Methoden ---
 
     public void DealotherDamage(BaseEntety mob, float attackmulti)
     {
@@ -91,14 +116,14 @@ public class PlayerStats : BaseMobClass
         float multiplier = 1f;
         if (getcrit() == 1)
         {
-            multiplier += (totalStats.critDamage / 100f);
+            multiplier += totalStats.critDamage / 100f;
             isCrit = true;
         }
         else
         {
             isCrit = false;
         }
-        multiplier *= (1+ totalStats.strength / 100f);
+        multiplier *= 1+ totalStats.strength / 100f;
 
         float damage = totalStats.weapondamage * multiplier * attackmulti;
         

@@ -63,7 +63,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 3517550710
+  GlobalObjectIdHash: 3746011934
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -744,6 +744,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2608538464276462696}
     m_Modifications:
+    - target: {fileID: -3988953835600753196, guid: 14878c7827e1d9748a2076b3770a138d, type: 3}
+      propertyPath: posibleMobs.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -3988953835600753196, guid: 14878c7827e1d9748a2076b3770a138d, type: 3}
+      propertyPath: 'posibleMobs.Array.data[0]'
+      value: 
+      objectReference: {fileID: 410988861812181967, guid: a00d3834792150446b1ec1667c21aaf0, type: 3}
+    - target: {fileID: -3988953835600753196, guid: 14878c7827e1d9748a2076b3770a138d, type: 3}
+      propertyPath: 'posibleMobs.Array.data[1]'
+      value: 
+      objectReference: {fileID: 4964076883635186287, guid: b19c29f1fc9aa7040b895bb90835eca9, type: 3}
     - target: {fileID: 40447949449046127, guid: 14878c7827e1d9748a2076b3770a138d, type: 3}
       propertyPath: m_LocalScale.x
       value: 5

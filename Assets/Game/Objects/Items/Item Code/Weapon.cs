@@ -1,6 +1,5 @@
 using UnityEngine;
 using Unity.Netcode;
-using System;
 
 
 abstract public class Weapon : InventoryItem
@@ -11,15 +10,13 @@ abstract public class Weapon : InventoryItem
     public float attackmulti = 1f;
     public Animator anim;
     public Collider2D bx;
-    private string attacktype;
-    private Transform visualTarget;
+    private Transform handPosition;
     public Vector3 animOffset;
     private GameControls controls;
     private float moveInput;
     private float LastmoveInput = 1;
     public EquipmentType type;
-    public bool isAttacking = false;
- 
+    public bool isAttacking = false; 
     virtual public void Attack1()
     {}
     virtual public void Attack2()
@@ -59,8 +56,7 @@ abstract public class Weapon : InventoryItem
     {        
         if(anim != null && !isAttacking)
         {   
-            attacktype = _attacktype;
-            PlayAnimationClientsAndHostRpc(attacktype);
+            PlayAnimationClientsAndHostRpc(_attacktype);
         }
     }
     [Rpc(SendTo.ClientsAndHost)]
@@ -69,6 +65,7 @@ abstract public class Weapon : InventoryItem
         if (anim != null)
         {
             anim.SetTrigger(attacktype.ToString());
+            GetAnimationLength(attacktype);
         }
     }
     
@@ -83,21 +80,25 @@ abstract public class Weapon : InventoryItem
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (other.gameObject == playerStats.gameObject) 
+        {
+            return; 
+        }
         BaseEntety mob = other.GetComponent<BaseEntety>();
-
+        Debug.Log(other.tag);
+        if (other.CompareTag("Mob"))
+        {
+            Debug.Log("Hit Mob");
+            playerStats.DealotherDamage(mob, attackmulti);
+        } 
         if(other.CompareTag("Player"))
         {
             playerStats.DealotherDamage(mob, attackmulti);
             Debug.Log("Hit Player");
-
         }
-        if (other.CompareTag("mob"))
-        {
-            playerStats.DealotherDamage(mob, attackmulti);
-        }   
     }
 
-    public float GetAnimationLength()
+    public float GetAnimationLength(string attacktype)
     {
         if (anim == null || anim.runtimeAnimatorController == null) return 0f;
 
@@ -113,7 +114,7 @@ abstract public class Weapon : InventoryItem
     }
     public void SetFollowTarget(Transform target)
     {
-        visualTarget = target;
+        handPosition = target;
     }
 
     protected virtual void LateUpdate()
@@ -125,11 +126,11 @@ abstract public class Weapon : InventoryItem
         {
             LastmoveInput = moveInput;
         }
-        if (visualTarget != null)
+        if (handPosition != null)
         {
-            Vector3 handPos = visualTarget.position;
+            Vector3 handPos = handPosition.position;
         
-            Vector3 finalPos = handPos + (visualTarget.rotation * animOffset * LastmoveInput);
+            Vector3 finalPos = handPos + (handPosition.rotation * animOffset * LastmoveInput);
 
             transform.position = finalPos;
         }

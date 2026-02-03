@@ -23,27 +23,26 @@ public class ItemSaveData
         equipmentType = EquipmentType.None;
     }
 
-    // Konstruktor für Waffen
     public ItemSaveData(string _id, EquipmentType _type, WeaponStats _wStats)
     {
         itemID = _id;
         equipmentType = _type;
         weaponStats = _wStats;
-        itemtype = Itemtype.Equipment;
+        itemtype = Itemtype.Weapon;
     }
     public ItemSaveData(string _id, EquipmentType _type, ArmorStats _aStats)
     {
         itemID = _id;
         equipmentType = _type;
         armorStats = _aStats;
-        itemtype = Itemtype.Equipment;
+        itemtype = Itemtype.Armor;
     }
     public ItemSaveData(string _id, EquipmentType _type, AccessoryStats _aStats)
     {
         itemID = _id;
         equipmentType = _type;
         accessoryStats = _aStats;
-        itemtype = Itemtype.Equipment;
+        itemtype = Itemtype.Accessory;
     }
     public ItemSaveData(string _id, Itemtype _type)
     {
