@@ -26,7 +26,7 @@ public class PlayerMovement : NetworkBehaviour
     private float coyoteTimeCounter;
 
     [Header("Dash Settings")]
-    [SerializeField] private const float dashforce = 0.1f;
+    [SerializeField] private const float dashforce = 2f;
     [SerializeField] private const float dashCooldown = 0.4f;
     [SerializeField] private const float dashDuration = 0.2f;
     private float dashtimer = dashDuration;
@@ -183,12 +183,13 @@ public class PlayerMovement : NetworkBehaviour
     {
         Vector2 inputVector = controls.Gameplay.Move.ReadValue<Vector2>();
         float dashside = 0;
-        float dashup = inputVector.y != 0? 1 : 0;
+        float dashup = inputVector.y != 0?
+         -1 : 0;
         if (dashup == 0)
         {
             dashside = 1;
         }
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x * dashforce * 2f* dashside * movementSpeed, rb.linearVelocity.y * dashforce * dashup * movementSpeed);
+        rb.linearVelocity = new Vector2(dashforce * 2f* dashside * movementSpeed,dashforce * dashup * jumpForce);
         canDash = false;
         canDashJump = true;
         isDashing = true;
