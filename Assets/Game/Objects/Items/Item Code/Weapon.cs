@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.Netcode;
+using System.Collections;
 
 
 abstract public class Weapon : InventoryItem
@@ -33,8 +34,8 @@ abstract public class Weapon : InventoryItem
     protected virtual void Awake()
     {
         bx = GetComponent<Collider2D>();
+        bx.enabled = false;
         anim = GetComponent<Animator>();
-        anim.enabled = false;
         controls = new GameControls();
         playerStats = GetComponentInParent<PlayerStats>();
         movement = GetComponentInParent<PlayerMovement>();
@@ -72,10 +73,10 @@ abstract public class Weapon : InventoryItem
     [Rpc(SendTo.ClientsAndHost)]
     public void PlayAnimationClientsAndHostRpc(string attacktype)
     {
+        
         if (anim != null)
         {
             anim.SetTrigger(attacktype.ToString());
-            GetAnimationLength(attacktype);
         }
     }
     
@@ -88,9 +89,8 @@ abstract public class Weapon : InventoryItem
     public virtual void DisableHitbox()
     {
         if (bx != null) bx.enabled = false;
-        anim.enabled = false;
-        transform.localPosition = handPosition.localPosition;
     }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject == playerStats.gameObject) 
@@ -98,7 +98,6 @@ abstract public class Weapon : InventoryItem
             return; 
         }
         BaseEntety mob = other.GetComponent<BaseEntety>();
-        Debug.Log(other.tag);
         if (other.CompareTag("Mob"))
         {
             Debug.Log("Hit Mob");
@@ -135,10 +134,15 @@ abstract public class Weapon : InventoryItem
         isAttacking = false;
         transform.parent = player;
         DisableHitbox();
-        transform.localPosition = Vector3.zero;
         transform.localRotation = Quaternion.identity; 
-        Debug.Log(handPosition.localPosition.ToString() + " my pos: " + transform.localPosition.ToString());
-        transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
     }
-    
+
+    void FixedUpdate()
+    {
+        if (!IsOwner) return;
+        if (transform.parent != null)
+        {
+            transform.localPosition = handPosition.localPosition + animOffset;
+        }
+    }
 }

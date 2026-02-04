@@ -27,10 +27,10 @@ public class PlayerMovement : NetworkBehaviour
     private float coyoteTimeCounter;
 
     [Header("Dash Settings")]
-    [SerializeField] private const float dashforce = 12f;
+    [SerializeField] private const float dashforce = 10f;
     [SerializeField] private const float dashCooldown = 0.4f;
     [SerializeField] private const float dashDuration = 0.2f;
-    private float dashtimer = dashDuration;
+    public float dashtimer = dashDuration;
 
     [Header("Collider Settings")]
 
@@ -48,7 +48,7 @@ public class PlayerMovement : NetworkBehaviour
         private bool isJumping;
         private bool canDash;
         private bool canDashJump;
-        private bool isDashing;
+        public bool isDashing;
         private bool didWallJump;
 
     public override void OnNetworkSpawn()
@@ -157,7 +157,7 @@ public class PlayerMovement : NetworkBehaviour
 
     private bool NormalJump()
     {
-        if (coyoteTimeCounter < coyoteTime && !isWallJumpPossible && !isJumping || canDashJump)
+        if (coyoteTimeCounter < coyoteTime && !isJumping || canDashJump)
         {
             Debug.Log("Normal Jump");
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
@@ -174,7 +174,7 @@ public class PlayerMovement : NetworkBehaviour
 
     private bool WallJump()
     {
-        if (isWallJumpPossible && !didWallJump)
+        if (isWallJumpPossible && !didWallJump && !isGrounded && coyoteTimeCounter > coyoteTime)
         {
             rb.linearVelocity = new Vector2(-transform.localScale.x * jumpForce * 3f, jumpForce * wallJumpMultiplier);
             Flip();
@@ -208,6 +208,7 @@ public class PlayerMovement : NetworkBehaviour
         Vector2 inputVector = controls.Gameplay.Move.ReadValue<Vector2>();
         float dashside = 0;
         float dashup = 0;
+        isDashing = true;
         
         if (inputVector.y > 0)
         {
@@ -225,7 +226,6 @@ public class PlayerMovement : NetworkBehaviour
         rb.linearVelocity = new Vector2(dashforce * 4f * dashside,dashforce * dashup);
         canDash = false;
         canDashJump = true;
-        isDashing = true;
     }
 
     private void checkSlide()

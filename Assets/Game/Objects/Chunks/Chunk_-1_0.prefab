@@ -110,6 +110,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Chunk_1_0
       objectReference: {fileID: 0}
+    - target: {fileID: 7790454516953480851, guid: ee4cfb81cc0f9a24e9f303f899e91e0f, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 827939931
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

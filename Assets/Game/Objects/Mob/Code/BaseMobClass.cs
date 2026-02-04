@@ -10,13 +10,11 @@ abstract public class BaseEntety : NetworkBehaviour
     );
 
     public int maxHealth;
-    private BoxCollider2D bx;
     private DamageTextManager damageTextManager;
 
 
     virtual public void Awake()
     {
-        bx = GetComponent<BoxCollider2D>();
         health.OnValueChanged += OnHealthChanged;
         damageTextManager = FindAnyObjectByType<DamageTextManager>();
         if (IsServer)

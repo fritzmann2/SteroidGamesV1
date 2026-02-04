@@ -30,6 +30,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 8203442338733786075}
   - {fileID: 133804187232299653}
   - {fileID: 5524914291294434247}
   - {fileID: 943338629404954386}
@@ -47,7 +48,6 @@ Transform:
   - {fileID: 5852479959128472238}
   - {fileID: 8085205037064751330}
   - {fileID: 8541339552490741417}
-  - {fileID: 8203442338733786075}
   - {fileID: 8074725091484699889}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -746,7 +746,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -3988953835600753196, guid: 14878c7827e1d9748a2076b3770a138d, type: 3}
       propertyPath: posibleMobs.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -3988953835600753196, guid: 14878c7827e1d9748a2076b3770a138d, type: 3}
       propertyPath: 'posibleMobs.Array.data[0]'

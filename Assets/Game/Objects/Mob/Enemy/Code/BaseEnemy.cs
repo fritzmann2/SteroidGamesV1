@@ -14,16 +14,21 @@ abstract public class BaseEnemy : BaseEntety
     public ChunkData parentChunk;
     private List<Transform> activePlayers = new List<Transform>();
     public string id = "Testsubject";
+    public virtual void Reset()    
+    {
+        health.Value = maxHealth;
+        hpbarfiller = transform.GetChild(0).GetChild(0).gameObject;
+    }
 
 
     [Header("Collider Settings")]
-    [SerializeField] private const float groundCheckPos = -0.5f; 
-    [SerializeField] private  Vector2 groundCheckSize = new Vector2(0.5f, 0.1f);
-    [SerializeField] private const float wallCheckDistance = 0.6f;
-    [SerializeField] private const float wallCheckHeight = -0.4f;
-    [SerializeField] private const float voidCheckOffsetx = 0.6f;
-    [SerializeField] private const float voidCheckStartY = -0.4f;
-    [SerializeField] private const float voidCheckDistance = 1.5f;
+    [SerializeField] protected float groundCheckPos = -0.5f; 
+    [SerializeField] protected Vector2 groundCheckSize = new Vector2(0.5f, 0.1f);
+    [SerializeField] protected float wallCheckDistance = 0.6f;
+    [SerializeField] protected float wallCheckHeight = -0.4f;
+    [SerializeField] protected float voidCheckOffsetx = 0.6f;
+    [SerializeField] protected float voidCheckStartY = -0.4f;
+    [SerializeField] protected float voidCheckDistance = 1.5f;
 
     [Header("LayerMask")]
     private LayerMask groundLayer;
@@ -33,13 +38,13 @@ abstract public class BaseEnemy : BaseEntety
     private float movementSpeed = 6f;
     public float jumpforce = 5f;
     private bool canJump = true;
-    private float mindistance = 2;
-    private float maxdistance = 10f;
+    [SerializeField] protected float mindistance = 1f;
+    [SerializeField] protected float maxdistance = 10f;
     
     [Header("Attack Settings")]
     public float attackCooldown = 2f;
     private float attackCooldownTimer = 0f;
-    private float damage = 5f;
+    protected float damage = 5f;
 
     
 
@@ -56,6 +61,7 @@ abstract public class BaseEnemy : BaseEntety
         wallLayer = LayerMask.GetMask("Wall", "Ground");
         groundLayer = LayerMask.GetMask("Ground");
     }
+    virtual public void Attack() {}
 
     public override void OnNetworkDespawn()
     {
@@ -79,11 +85,8 @@ abstract public class BaseEnemy : BaseEntety
 
     private void checkForJump()
     {
-        bool isGrounded = Physics2D.BoxCast(transform.position, groundCheckSize, 0, Vector2.down, Mathf.Abs(groundCheckPos), groundLayer);
-        
         Vector2 boxCenter = (Vector2)transform.position + new Vector2(0, groundCheckPos);
-        isGrounded = Physics2D.OverlapBox(boxCenter, groundCheckSize, 0, groundLayer);
-
+        bool isGrounded = Physics2D.OverlapBox(boxCenter, groundCheckSize, 0, groundLayer);
 
         float direction = transform.localScale.x > 0 ? 1 : -1;
         
@@ -149,10 +152,6 @@ abstract public class BaseEnemy : BaseEntety
             }
         }
         
-    }
-    virtual public void Attack()
-    {
-        targetPlayer.GetComponent<BaseEntety>().TakeDamage(damage, false);
     }
     public override void OnHealthChanged(float previousValue, float newValue)
     {

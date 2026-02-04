@@ -160,21 +160,36 @@ public class WorldGenerator : NetworkBehaviour
 // Neue Hilfsfunktion
     void SpawnMobsInChunk(GameObject chunk)
     {
-        // Sucht alle MobSpawnPoint-Skripte, die Kinder von diesem Chunk sind
         ChunkData chunkData = chunk.GetComponentInChildren<ChunkData>();
         MobSpawnPoint[] spawnPoints = chunk.GetComponentsInChildren<MobSpawnPoint>();
         foreach (MobSpawnPoint spawnPoint in spawnPoints)
         {
             Transform position = spawnPoint.transform;
-            GameObject MobToSpawn;
-            if (chunkData.posibleMobs.Count == 0)
+            GameObject MobToSpawn = null;
+            if (spawnPoint.possibleMobsNames.Count != 0)
             {
-                MobToSpawn = Instantiate(dummy, position);
+                string mobName = spawnPoint.getRandomMobName();
+                foreach (GameObject mobPrefab in chunkData.posibleMobs)
+                {
+                    if (mobPrefab.GetComponent<BaseEnemy>().id == mobName)
+                    {
+                        MobToSpawn = Instantiate(mobPrefab, spawnPoint.transform);
+                        break;
+                    }
+                }
+                
+                
             }
             else
             {
-                MobToSpawn = Instantiate(chunkData.posibleMobs[Random.Range(0, chunkData.posibleMobs.Count)], position);
-                
+                if (chunkData.posibleMobs.Count != 0)
+                {
+                    MobToSpawn = Instantiate(chunkData.posibleMobs[Random.Range(0, chunkData.posibleMobs.Count)], position);
+                }
+            }
+            if (MobToSpawn == null)
+            {
+                MobToSpawn = Instantiate(dummy, position);   
             }
             var netObj = MobToSpawn.GetComponent<NetworkObject>();
             if (netObj != null)

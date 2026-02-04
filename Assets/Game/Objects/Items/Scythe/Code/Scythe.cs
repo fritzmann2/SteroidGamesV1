@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Scythe : Weapon
 {
@@ -42,7 +43,7 @@ public class Scythe : Weapon
         type = EquipmentType.Scythe;
         base.Awake();
         isThrown = false;
-        
+        groundLayer = LayerMask.GetMask("Ground");        
     }
     void Update()
     {
@@ -55,14 +56,19 @@ public class Scythe : Weapon
     private void Throw()
     {
         anim.enabled = false;
+        Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
+        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
+        mouseWorldPos.z = 0f;
         EnableHitbox();
         viewdir = movement.transform.localScale.x > 0 ? 1 : -1;
+        
+        throwDirection = mouseWorldPos - transform.position;
+        throwDirection.z = 0f;
+        throwDirection.Normalize();
+        throwTime = 0f;
         isAttacking = true;
         isThrown = true;
         isReturning = false;
-        throwDirection = new Vector2(viewdir, -0.1f).normalized;
-        throwTime = 0f;
-
         transform.parent = null;
         Debug.Log("Thrown");
     }
