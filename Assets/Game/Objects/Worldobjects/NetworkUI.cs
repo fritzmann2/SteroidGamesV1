@@ -126,7 +126,7 @@ public class NetworkUI : MonoBehaviour
         startGameBtn.onClick.AddListener(() => {
             if (playernameInput != null)
             {
-                GameData.PlayerName = playernameInput.text;
+                //GaemData.PlayerName = playernameInput.text;
             }
             NetworkManager.Singleton.SceneManager.LoadScene(firstlevel, UnityEngine.SceneManagement.LoadSceneMode.Single);
         });

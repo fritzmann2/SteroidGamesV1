@@ -262,19 +262,24 @@ public class PlayerMovement : NetworkBehaviour
     }
 
     private void OnDrawGizmos()
-{
-    // GroundCheck (Red)
-    Gizmos.color = Color.red;
-    Vector2 boxCenter = (Vector2)transform.position + new Vector2(0, groundCheckPosy);
-    Gizmos.DrawWireCube(boxCenter, new Vector2(groundCheckLengthx, 0.1f));
+    {
+        // GroundCheck (Red)
+        Gizmos.color = Color.red;
+        Vector2 boxCenter = (Vector2)transform.position + new Vector2(0, groundCheckPosy);
+        Gizmos.DrawWireCube(boxCenter, new Vector2(groundCheckLengthx, 0.1f));
 
-    // WallCheck (Green)
-    Gizmos.color = Color.green;
+        // WallCheck (Green)
+        Gizmos.color = Color.green;
 
-    float facingDirection = transform.localScale.x; 
-    
-    Vector2 wallCheckPos = (Vector2)transform.position + new Vector2(wallCheckDistanceX * facingDirection, 0);
-    
-    Gizmos.DrawWireCube(wallCheckPos, new Vector2(0.1f, wallCheckHeighty));
+        float facingDirection = transform.localScale.x; 
+        
+        Vector2 wallCheckPos = (Vector2)transform.position + new Vector2(wallCheckDistanceX * facingDirection, 0);
+        
+        Gizmos.DrawWireCube(wallCheckPos, new Vector2(0.1f, wallCheckHeighty));
+    }
 }
+
+public class GaemData
+{
+    public string PlayerName;
 }
