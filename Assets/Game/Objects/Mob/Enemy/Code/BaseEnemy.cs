@@ -105,7 +105,7 @@ abstract public class BaseEnemy : BaseEntety
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpforce);
     }
 
-    public void move()
+    private void move()
     {
         if (activePlayers.Count > 0 && targetPlayer != null)
         {

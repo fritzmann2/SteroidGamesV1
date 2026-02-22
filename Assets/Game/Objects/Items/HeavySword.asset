@@ -9,12 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02b420f61f598c444897c2f19d3480cf, type: 3}
-  m_Name: Sword
-  m_EditorClassIdentifier: Assembly-CSharp::InventoryItemData
-  ID: item_Sword
-  ItemName: Sword
+  m_Script: {fileID: 11500000, guid: 42df35897175da24bbe2f60ac87485c8, type: 3}
+  m_Name: HeavySword
+  m_EditorClassIdentifier: Assembly-CSharp::EquipmentData
+  ID: item_sword_heavy
+  ItemName: Heavysword
   Icon: {fileID: 831581725337992457, guid: 7fc20efcdc3250d4c82b133ba092596f, type: 3}
-  Type: 0
+  Type: 1
   itemObject: {fileID: 6313268473118203971, guid: a7f482c264bff334d9b8b99f6962690e, type: 3}
   _maxStackSize: 1
+  equipmentType: 0

@@ -9,12 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02b420f61f598c444897c2f19d3480cf, type: 3}
-  m_Name: Scythe
-  m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  ID: Scythe
-  ItemName: Scyhte
+  m_Script: {fileID: 11500000, guid: 42df35897175da24bbe2f60ac87485c8, type: 3}
+  m_Name: BaseScythe
+  m_EditorClassIdentifier: Assembly-CSharp::EquipmentData
+  ID: item_scythe_base
+  ItemName: BaseScythe
   Icon: {fileID: -6295239610977573415, guid: 048b5c8cbfcbd1843aba9c1e3344897a, type: 3}
-  Type: 0
+  Type: 1
   itemObject: {fileID: 8583526698003398638, guid: 6f2aaea7328f83344bea37c85d62d537, type: 3}
   _maxStackSize: 1
+  equipmentType: 2

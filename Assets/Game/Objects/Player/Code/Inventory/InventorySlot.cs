@@ -7,8 +7,9 @@ using UnityEngine;
 [System.Serializable]
 public class InventorySlot
 {
-    [SerializeField] protected InventoryItemInstance inventoryItemInstance;
+    [SerializeField] public InventoryItemInstance inventoryItemInstance;
     [SerializeField] protected int stacksize;
+    [SerializeReference] protected EquipmentStats equipmentStats;
     public InventoryUI inventoryUI;
     public bool IsEmpty = true;
     public InventoryItemInstance InventoryItemInstance => inventoryItemInstance;
@@ -47,6 +48,10 @@ public class InventorySlot
     public virtual void UpdateInventorySlot(InventoryItemInstance data, int amount)
     {
         inventoryItemInstance = data;
+        if (data is EquipmentInstance equipmentInstance)
+        {
+            equipmentStats =  equipmentInstance.GetEquipmentStats();
+        }
         
         if (inventoryItemInstance == null || inventoryItemInstance.itemData == null)
         {

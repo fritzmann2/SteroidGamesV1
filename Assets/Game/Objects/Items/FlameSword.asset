@@ -9,12 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02b420f61f598c444897c2f19d3480cf, type: 3}
-  m_Name: Sword 2
-  m_EditorClassIdentifier: Assembly-CSharp::InventoryItemData
-  ID: item_Sword2
-  ItemName: Sword
+  m_Script: {fileID: 11500000, guid: 42df35897175da24bbe2f60ac87485c8, type: 3}
+  m_Name: FlameSword
+  m_EditorClassIdentifier: Assembly-CSharp::EquipmentData
+  ID: item_sword_flame
+  ItemName: Flamesword
   Icon: {fileID: -5099292496197868168, guid: 048e22df25ab3e245980f5e6bc69d231, type: 3}
-  Type: 0
+  Type: 1
   itemObject: {fileID: 4761535234948668391, guid: 507de6b8f0b1ff74da6d42509231763f, type: 3}
   _maxStackSize: 1
+  equipmentType: 0

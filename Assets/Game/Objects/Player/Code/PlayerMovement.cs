@@ -159,7 +159,7 @@ public class PlayerMovement : NetworkBehaviour
     {
         if (coyoteTimeCounter < coyoteTime && !isJumping || canDashJump)
         {
-            Debug.Log("Normal Jump");
+//            Debug.Log("Normal Jump");
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
             if(canDashJump) canDashJump = false;
             return true;

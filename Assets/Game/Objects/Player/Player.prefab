@@ -332,6 +332,9 @@ MonoBehaviour:
     equipmentSlots: []
   weaponPrefab: {fileID: 6313268473118203971, guid: b7f137d7b0debec45836e9850ade4838, type: 3}
   basicWeapon: {fileID: 8583526698003398638, guid: 6f2aaea7328f83344bea37c85d62d537, type: 3}
+  references:
+    version: 2
+    RefIds: []
 --- !u!114 &3318859025786867303
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -376,15 +379,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Inventory
   ShowTopMostFoldoutHeaderGroup: 1
   itemDatabase:
-  - {fileID: 11400000, guid: 0775dcbaa473b1f45964429361d1667b, type: 2}
-  - {fileID: 11400000, guid: a89848a23d71510499d8d12f3e960967, type: 2}
-  - {fileID: 11400000, guid: ea5d6a9c2601eda45a5c5f2adb0d1067, type: 2}
+  - {fileID: 11400000, guid: f347961940402734db8da73e55f84d6e, type: 2}
+  - {fileID: 11400000, guid: febc673f71f3ea249bd0bcef34d78966, type: 2}
+  - {fileID: 11400000, guid: 79b4644908c1e4348ab57519d810b4a0, type: 2}
   itemInventory:
     inventorySlots:
     - inventoryItemInstance:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -392,6 +397,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -399,6 +406,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -406,6 +415,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -413,6 +424,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -420,6 +433,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -427,6 +442,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -434,6 +451,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -441,6 +460,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -448,6 +469,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -455,6 +478,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -462,6 +487,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -469,6 +496,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -476,6 +505,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -483,6 +514,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -490,6 +523,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -497,6 +532,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -504,6 +541,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -511,6 +550,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -518,6 +559,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -525,6 +568,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -532,6 +577,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -539,6 +586,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -546,6 +595,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -553,6 +604,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -560,6 +613,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -567,6 +622,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -574,6 +631,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -581,6 +640,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -588,6 +649,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -595,6 +658,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -602,6 +667,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -609,6 +676,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -616,6 +685,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -623,6 +694,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -630,6 +703,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -637,6 +712,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -644,6 +721,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -651,6 +730,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -658,6 +739,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -665,6 +748,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -672,6 +757,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -679,6 +766,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -686,6 +775,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -693,6 +784,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -700,6 +793,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -707,6 +802,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -714,6 +811,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -721,6 +820,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -728,6 +829,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -735,6 +838,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -742,6 +847,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -749,6 +856,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -756,6 +865,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -763,6 +874,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -770,6 +883,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -778,6 +893,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -786,6 +903,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -794,6 +913,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -802,6 +923,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -810,6 +933,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -818,6 +943,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -826,6 +953,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -834,6 +963,8 @@ MonoBehaviour:
         itemData: {fileID: 0}
         itemtype: 0
       stacksize: 0
+      equipmentStats:
+        rid: -2
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
@@ -842,6 +973,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   mouseItemData: {fileID: 0}
+  worldGenerator: {fileID: 0}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
 --- !u!114 &4258902509258678177
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -856,7 +993,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   ShowTopMostFoldoutHeaderGroup: 1
   rb: {fileID: 0}
+  dashtimer: 0.2
   isWallJumpPossible: 0
+  isDashing: 0
 --- !u!1 &4283935385468404535
 GameObject:
   m_ObjectHideFlags: 0

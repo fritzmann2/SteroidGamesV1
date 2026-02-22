@@ -70,7 +70,7 @@ public class Scythe : Weapon
         isThrown = true;
         isReturning = false;
         transform.parent = null;
-        Debug.Log("Thrown");
+//        Debug.Log("Thrown");
     }
     private void HandleMovement()
     {

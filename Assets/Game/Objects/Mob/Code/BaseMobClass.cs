@@ -68,7 +68,7 @@ abstract public class BaseMobClass : BaseEntety
     public float critChance { get; set; }
     public float critDamage { get; set; }
     public float strength { get; set; }
-    public float defense { get; set; }
+    public float defence { get; set; }
     public float spellresistance { get; set; }    
 }
 

@@ -1,0 +1,520 @@
+classDiagram
+    class Player
+
+    %% Administration
+    class BootSceneLoader
+    class DamageTextManager
+    class EventManager
+    class LevelManager
+    class MainMenu
+    class NetworkPrefabLoader
+    class NetworkPrefabsList
+    class PauseManager
+    class RelayManager
+    class SaveManager
+    class SaveManager
+    class SettingsMenu
+    class Worldgenerator
+    class GameSaveData
+
+    %% Camera
+    class CameraFollow
+
+    %% Items
+    class InventoryItem
+    class ItemPickUp
+
+        %% Weapons
+        class Weapon
+        class Bow
+        class Sword
+        class Scythe
+        class WeaponStats
+        
+        %% Armor
+        class ArmorStats
+
+        %% Accessory
+        class AccessoryStats
+    
+    %% Mob
+    class BaseMobClass
+    class DamageText
+    class MobSpawnPoint
+       
+        %% Enemy
+        class BaseEnemy
+        class WizardScript
+        class ZombyScript
+
+        %% Player
+        class ClientNetworkTransform
+        class Attackmanager
+        class GameControls
+        class PlayerMovement
+        class PlayerSaveHandler
+        class PlayerStats
+
+            %% UI
+            class InventoryUI
+            class InventorySlot_UI
+            class EquipmentSlot_UI
+            class MouseItemData
+
+            %% Inventory
+            class Inventory
+            class ItemInventory
+            class InventorySaveData
+            class Purs
+            class InventorySlot
+            class EquipmentSlot
+            class InventorySlotSaveData
+            class EquipmentSlotSaveData
+
+
+            %% Subclasses
+            class PlayerStats
+            class PlayerStatsSaveData
+            class StatExtensions
+
+    %% Porjectile
+    class BaseSpell
+    class FireSpell
+    class Arrow
+
+    %% Chunk
+    class ChunkData
+
+        %% WorldObjects
+        class Destroyobj
+        class NetworkUI
+        class Dummyscript
+
+
+    Player o-- PlayerMovement
+    Player o-- Inventory
+    %% Beziehungen definieren (Vererbung)
+    Entety <|-- BaseEnemy
+    Entety <|-- Player
+    BaseEnemy <|-- WizardScript
+    BaseEnemy <|-- ZombyScript
+    
+    InventoryItem <|-- Weapon
+    Weapon <|-- Scythe
+    Weapon <|-- Sword
+    Weapon <|-- Bow
+
+    slot <|-- EquipmentSlot
+    
+    %% Zusammensetzung (BaseEnemy HAT einen ChunkData)
+    BaseEnemy --> ChunkData
+    BaseEnemy --> WorldGenerator
+    
+    %% Klassen Details
+    class BootSceneLoader {
+        +string START_SCENE_PATH
+        +string MENU_NAME
+        -bool isEnabled
+        +BootSceneLoader()
+        -ToggleAction()
+        -ToggleActionValidate()
+        -SetPlayModeStartScene(bool)
+    }
+
+    class DamageTextManager {
+        -Gameobject damageTextPrefab
+        +DamageTextManager()
+        -Awake()
+        +ShowDamageText(int, Vector3, bool)
+        -SpawnDamageTextClientRpc(int, Vector3, bool)
+    }
+
+    class EventManager {
+        +UnityEvent<int> OnAddItem;
+        +AddItem(int id)
+    }
+
+    class LevelManager {
+        +GameObject playerPrefab
+        +float clientSpawnDelay
+        -List<Transform> activePlayers
+        +event Action onPlayerRegistered
+        
+        +OnNetworkSpawn()
+        +OnNetworkDespawn()
+        -OnClientConnected(ulong)
+        -SpawnPlayerWithDelay(ulong)
+        -SpawnPlayer(ulong)
+        +RegisterPlayer(Transform)
+        +UnregisterPlayer(Transform)
+        +GetActivePlayers()
+    }
+
+    class Mainmenu {
+        +GameObject MainMenuUI
+        +GameObject HelpMenuUI
+        +GameObject NetworkUIGO
+
+        +Start()
+        +OpenHelpMenu()
+        +CloseHelpMenu()
+        +QuitGame()
+        +OpenNetworkMenu()
+    }
+
+    class NetworkPrefabLoader {
+        +string chunksFolderPath
+        +NetworkPrefabList targetList
+        +LoadPrefabsFromFolder()
+    }
+
+    class PauseManager {
+        +GameObject settingsUI
+        +GameObject pauseMenuUI
+        -GameControls controls
+        -GameObject WhilePlayingObj
+        -GameObject InventoryObj
+        -bool escapepressed
+        -bool isMenuOpen
+
+        +Awake()
+        +Update()
+        +OnEnable()
+        +OnDisable()
+        -ToggleMenu()
+        +OpenMenu()
+        +CloseMenu()
+        +OpenSettings()
+        +QuitGame()
+    }
+
+    class RelayManager {
+        +RelayManager Instance
+
+        -Awake()
+        -Start()
+        +CreateRelay()
+        +JoinRelay(string)
+    }
+
+    class SaveManager {
+        -Awake()
+        +LoadPlayerData(string)
+        +SaveGameData(GameSaveData)
+    }
+
+    class GameSaveData {
+        +string playerName
+        +InventorySaveData inventorySaveData
+        +PlayerStatsSaveData statsData
+        +Vector3SaveData position
+    }
+
+    class SettingsMenu {
+        +TMP_InputField GravityScale
+        -PlayerMovement localMovement
+        
+        +OnEnable()
+        +Getplayersettings()
+        +ApplySettings()
+        +Backtomenu()
+    }
+
+    class WorldGenerator {
+        +GameObject[] allMapChunks
+        +GameObject dummy
+        +GameObject PickUpItem
+        +int chunkSize
+        +GameObject defaultChunkPrefab
+        -Dictionary<Vector2Int, GameObject> mapLookup
+        -Dictionary<Vector2Int, GameObject> activeChunks
+        -Vector2Int[] ChunkOffsets
+        
+        +OnNetworkSpawn()
+        +Update()
+        +SpawnChunkByCoord(Vector2Int)
+        +RemoveChunk(Vector2Int)
+        +SpawnMobsInChunk(GameObject)
+        +SpawnPickUpItem(string, Transform)
+    }
+
+    class CameraFollow {
+        +Transform target
+        +Vector3 offset
+        +float smoothTime
+        -Vector3 velocity
+
+        +LateUpdate()
+    }
+
+    class InventoryItem {
+        +ItemData itemData
+
+        +Initialize(string)
+    }
+
+    class InventoryItemInstance {
+        +ItemData itemData
+        +Itemtype itemtype
+
+        +InventoryItemInstance(ItemData)
+    }
+
+    class EquipmentInstance {
+        +WeaponStats weaponStats
+        +ArmorStats armorStats
+        +AccessoryStats accessoryStats
+        +EquipmentData itemData
+
+        +EquipmentInstance(EquipmentData)
+        +GetEquipmentStats()
+    }
+
+    class ItemData {
+        +string ID
+        +string ItemName
+        +Sprite Icon
+        +Itemtype Type
+        +GameObject itemObject
+        -int _maxStackSize
+        +int MaxStackSize
+    }
+
+    class EquipmentData {
+        +EquipmentType equipmentType
+        +int MaxStackSize
+    }
+
+    class WeaponData {
+        +WeaponStats weaponStats
+    }
+
+    class ArmorData {
+        +ArmorStats armorStats
+    }
+
+    class AccessoryData {
+        +AccessoryStats accessoryStats
+    }
+
+    class ItemPickUp {
+        +int itemRarity
+        +int amount
+        +string id
+        -BoxCollider2D bx
+
+        +Awake()
+        +setitem(int, int, string)
+        +getItemData()
+    }
+
+    class ItemPickUpData {
+        +int itemRarity
+        +int amount
+        +string id
+    }
+
+    class AcceossryStats {
+        +float health
+        +float mana
+        +float healthRegen
+        +float manaRegen
+        +float movementSpeed
+        +float attackSpeed
+        +float critChance
+        +float critDamage
+        +float strength
+        +float defence
+        +float spellresistance
+    }
+
+    class Weapon {
+        +WeaponStats weaponstats
+        -PlayerMovement movement
+        +PlayerStats playerStats
+        -Transform player
+        +float attackmulti
+        +Animator anim
+        +Collider2D bx
+        -Transform handPosition
+        +Vector3 animOffset
+        -GameControls controls
+        -float moveInput
+        -float LastmoveInput
+        +EquipmentType type
+        +bool isAttacking
+
+        +Attack1()
+        +Attack2()
+        +Attack3()
+        +Attack4()
+        -Awake()
+        +init(WeaponStats)
+        +OnEnable()
+        +OnDisable()
+        +performattack(string)
+        +PlayAnimationClientsAndHostRpc(string)
+        +EnableHitbox()
+        +DisableHitbox()
+        -OnTriggerEnter2D(Collider2D)
+        +GetAnimationLength(string)
+        +SetFollowTarget(Transform)
+        -addParent()
+        +FixedUpdate()
+    }
+
+    class Sword {
+        +Attack1()
+        +Attack2()
+        +Attack3()
+        +Attack4()
+        -Awake()
+        -LateUpdate()
+    }
+
+    class Scythe {
+        +LayerMask groundLayer
+        -float throwSpeed
+        -float returnSpeed
+        -float maxDistance
+        -float rotationSpeed
+        -float throwTime
+        -int viewdir
+        -bool isThrown
+        -bool isReturning
+        -Vector3 throwDirection
+        -BoxCollider2D groundcheck
+
+        +Attack1()
+        +Attack2()
+        +Attack3()
+        +Attack4()
+        -Awake()
+        +Update()
+        -Throw()
+        -HandleMovement()
+        +HandleRotation()
+        +Catch()
+        +EnableHitbox()
+        +DisableHitbox()
+    }
+
+    class Bow {
+        +Attack1()
+        +Attack2()
+        +Attack3()
+        +Attack4()
+        -Awake()
+    }
+
+    class BaseEntety {
+        +NetworkVariable<float> health
+        +int maxHealth
+        -DamageTextManager damageTextManager
+
+        +Awake()
+        +TakeDamage(float, bool)
+        +TakeDamageServerRpc(int, bool)
+        +OnHealthChanged(float, float)
+    }
+
+    class BaseMobClass {
+        +float movementSpeed
+        +float attackSpeed
+        +float critChance
+        +float critDamage
+        +float strength
+        +float defence
+        +float spellresistance
+    }
+
+    class DamagePopup {
+        -TextMeshPro textMesh
+        -float disapperTimer
+        -Color textColor
+        -Vector3 moveVector
+        -float DISAPPEAR_TIMER_MAX
+
+        -Awake()
+        +Setup(int, bool)
+        -Update()
+    }
+
+    class MobSpawnPoint {
+        +Color gizmoColor
+        +List<string> possibleMobNames
+
+        -OnDrawGizmos()
+        +getRandomMobName()
+    }
+
+    class BaseEnemy {
+        +Rigitbody2D rb
+        +LevelManager levelManager
+        +GameObject hpbarfiller
+        +Transform targetPlayer
+        +WorldGenerator worldgen
+        +ChunkData parentChunk
+        -List<Transform> activePlayers
+        +string id
+        -float grundCheckPos
+        -Vector2 grundCheckSize
+        -float wallCheckDistance
+        -float wallCheckHeight
+        -float voidCheckOffsetx
+        -float voidCheckStartY
+        -float voidCheckDistance
+        -LayerMask groundLayer
+        -LayerMask wallLayer
+        -float movementSpeed
+        +float jumpforce
+        -bool canJump
+        -float mindistance
+        -float maxdistance
+        +float attackCooldownTimer
+        -float damage
+
+        +Reset()
+        +Awake()
+        +Attack()
+        +OnNetworkDespawn()
+        +FixedUpdate()
+        -checkForJump()
+        -jump()
+        -move()
+        -stop()
+        +checkAttack()
+        +OnHealthChanged(float, float)
+        +Setparrent(WorldGenerator)
+        +getNerestPlayer()
+        +updatePlayerList()
+        +setParentChunk(ChunkData)
+        -OnDrawGizmos()
+    }
+
+    class WizardScript {
+        +GameObject projectilePrefab
+
+        +Reset()
+        +Awake()
+        +Attack()
+        -spawnAttackProjectile()
+    }
+
+    class ZombyScript {
+        +Reset()
+        +Awake()
+        +Attack()
+    }
+
+    class BaseSpell {
+        -float speed
+        -float damage
+        -float despawnTime
+        -Vector2 direction
+        -Rigidbody2D rb
+
+        +Init(Vector2, float)
+        +FixedUpdate()
+        +OnTriggerEnter2D(Collider2D)
+    }

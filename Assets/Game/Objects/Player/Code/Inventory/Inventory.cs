@@ -2,9 +2,6 @@ using Unity.Netcode;
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Events;
-using UnityEngine.InputSystem;
-
-
 
 
 
@@ -26,10 +23,12 @@ public class Inventory : NetworkBehaviour
     private BoxCollider2D bx;
     private Collider2D othercollider;
     public MouseItemData mouseItemData;
+    public WorldGenerator worldGenerator;
     
     private void Awake()
     {
         Transform childTransform = transform.Find("ItemPickupRange");
+        worldGenerator = FindAnyObjectByType<WorldGenerator>();
         bx = childTransform.GetComponent<BoxCollider2D>();
         bx.isTrigger = true;
         InventoryUI inventoryUI = FindAnyObjectByType<InventoryUI>(FindObjectsInactive.Include);
@@ -73,7 +72,7 @@ public class Inventory : NetworkBehaviour
         if (IsOwner)
         {
             ItemData itemDataToAdd;
-            if (ID == null)
+            if (string.IsNullOrEmpty(ID))
             {
                 itemDataToAdd = getRandomID();
             }
@@ -81,18 +80,58 @@ public class Inventory : NetworkBehaviour
             {
                 itemDataToAdd = getItemByID(ID);
             }
+            if (itemDataToAdd is EquipmentData)
+            {
+                Debug.Log("Equipment ID: " + itemDataToAdd.ID);
+            }
+            else
+            {
+                Debug.Log("Item ID: " + itemDataToAdd.ID);
+            }
             if (itemDataToAdd == null)
             {
                 return;
             }
-            InventoryItemInstance itemInstance = new InventoryItemInstance(itemDataToAdd);
 
-            bool isAdded = itemInventory.addItem(itemInstance, amount);
-//            Debug.Log("try to add clientRPC");
+            bool isAdded = false;
+
+            if (itemDataToAdd is EquipmentData eqData)
+            {
+                EquipmentInstance itemInstance = new EquipmentInstance(eqData);
+                Itemtype itemtype = itemInstance.itemtype;
+                EquipmentStats equipmentStats = new EquipmentStats();
+                if (itemtype == Itemtype.Weapon)
+                {
+                    equipmentStats = new WeaponStats();
+                }
+                else if (itemtype == Itemtype.Armor)
+                {
+                    equipmentStats = new ArmorStats();
+                }
+                else if (itemtype == Itemtype.Accessory)
+                {
+                    equipmentStats = new AccessoryStats();
+                }
+                itemInstance.SetEquipmentStats(additemstats(equipmentStats, rarity));
+                isAdded = itemInventory.addItem(itemInstance, amount);
+            }
+            else
+            {
+                InventoryItemInstance itemInstance = new InventoryItemInstance(itemDataToAdd); 
+                isAdded = itemInventory.addItem(itemInstance, amount);
+            }
         
             if(isAdded)
             {
-                othercollider.GetComponent<NetworkObject>().Despawn();
+                if (worldGenerator != null)
+                {
+                    worldGenerator.DespawnItem(othercollider.gameObject);
+                }
+                else
+                {
+                    worldGenerator = FindAnyObjectByType<WorldGenerator>();
+                    worldGenerator.DespawnItem(othercollider.gameObject);
+                }
             }
         }
     }
@@ -109,7 +148,8 @@ public class Inventory : NetworkBehaviour
     }
     private ItemData getRandomID()
     {
-        return itemDatabase[(int)Random.Range(0, itemDatabase.Count)];
+        ItemData itemDataToReturn = itemDatabase[(int)Random.Range(0, itemDatabase.Count)];
+        return itemDataToReturn;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -135,6 +175,14 @@ public class Inventory : NetworkBehaviour
         }
     }
     
+    private EquipmentStats additemstats(EquipmentStats _equipmentStats, int rarity)
+    {
+        PlayerStats playerStats = GetComponent<PlayerStats>();
+        float adjustedRarity = rarity + playerStats.getLevel() * 0.1f;
+        Debug.Log("Adjusted Rarity is: " + adjustedRarity);
+        _equipmentStats.generateStats(adjustedRarity);        
+        return _equipmentStats;
+    }
         
     
 
@@ -142,22 +190,33 @@ public class Inventory : NetworkBehaviour
 
 
 
-#if UNITY_EDITOR
-    [ContextMenu("Auto Fill Database")]
-    public void AutoFillDatabase()
-    {
-        int i = 0;
-        itemDatabase = new List<ItemData>();
-        string[] guids = AssetDatabase.FindAssets("t:ItemData");
-        foreach (string guid in guids)
+    #if UNITY_EDITOR
+        [ContextMenu("Auto Fill Database")]
+        public void AutoFillDatabase()
         {
-            string path = AssetDatabase.GUIDToAssetPath(guid);
-            ItemData item = AssetDatabase.LoadAssetAtPath<ItemData>(path);
-            if(item != null) itemDatabase.Add(item);
-            i++;
+            int i = 0;
+            itemDatabase = new List<ItemData>();
+            
+            string[] guids = AssetDatabase.FindAssets("t:ScriptableObject");
+            
+            foreach (string guid in guids)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                
+                ScriptableObject obj = AssetDatabase.LoadAssetAtPath<ScriptableObject>(path);
+                
+                if (obj is ItemData item)
+                {
+                    if (!itemDatabase.Contains(item))
+                    {
+                        itemDatabase.Add(item);
+                        i++;
+                    }
+                }
+            }
+            
+            Debug.Log("Added " + i + " items to database.");
+            EditorUtility.SetDirty(this);
         }
-        Debug.Log("Added " + i + " items to database.");
-        EditorUtility.SetDirty(this);
-    }
     #endif
 }

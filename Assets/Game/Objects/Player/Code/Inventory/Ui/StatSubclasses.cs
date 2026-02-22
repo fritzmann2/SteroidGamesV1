@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Reflection; 
-public class playerstats
+public class Playerstats
 {
     public int totalexperience;
     public float movementSpeed;
@@ -18,7 +18,7 @@ public class playerstats
 
 public class PlayerStatsSaveData
 {
-    public playerstats baseStats;
+    public Playerstats baseStats;
 }
 
 public static class StatExtensions

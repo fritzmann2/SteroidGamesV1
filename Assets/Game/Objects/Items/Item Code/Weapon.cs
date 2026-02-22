@@ -100,7 +100,7 @@ abstract public class Weapon : InventoryItem
         BaseEntety mob = other.GetComponent<BaseEntety>();
         if (other.CompareTag("Mob"))
         {
-            Debug.Log("Hit Mob");
+//            Debug.Log("Hit Mob");
             playerStats.DealotherDamage(mob, attackmulti);
         } 
         if(other.CompareTag("Player"))

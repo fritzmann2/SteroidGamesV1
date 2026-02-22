@@ -38,6 +38,31 @@ public class ItemInventory
     }
     public bool addItem(InventoryItemInstance _itemInstance, int amount)
     {
+        if (_itemInstance is EquipmentInstance equipmentInstance)
+            {
+                EquipmentStats stats = equipmentInstance.GetEquipmentStats();
+                if (stats != null)
+                {
+                    if (stats is WeaponStats weaponStats)
+                    {
+                        Debug.Log("Damage added: " + weaponStats.weapondamage);
+                    }
+                    else if (stats is ArmorStats armorStats)
+                    {
+                        Debug.Log("Defense added: " + armorStats.defense);
+                    }
+                    else if (stats is AccessoryStats accessoryStats)
+                    {
+                        Debug.Log("Crit Chance added: " + accessoryStats.critChance);
+                    }
+                }
+                else
+                {
+                    Debug.Log("Stats are null");
+                }
+            }
+
+
         for (int i = 0; i < inventorySlots.Count; i++)
         {
             if (inventorySlots[i].IsEmpty) continue;
@@ -51,7 +76,7 @@ public class ItemInventory
                 if (amountToAdd > 0)
                 {
                     inventorySlots[i].addToStack(amountToAdd);
-                    amount -= amountToAdd;
+                    amount -= amountToAdd;                    
                 }
 
                 if (amount <= 0)

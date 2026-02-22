@@ -17,7 +17,7 @@ public class DamagePopup : MonoBehaviour
 
     public void Setup(int damageAmount, bool isCriticalHit)
     {
-        Debug.Log("Text set to " + damageAmount.ToString());
+//        Debug.Log("Text set to " + damageAmount.ToString());
         textMesh.SetText(damageAmount.ToString());
         transform.position = new Vector3(transform.position.x, transform.position.y+ 1f, transform.position.z);
         if (isCriticalHit)

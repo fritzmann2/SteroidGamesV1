@@ -29,6 +29,7 @@ public class InventoryItemInstance
     public InventoryItemInstance(ItemData _data)
     {
         itemData = _data;
+        itemtype = _data.Type;
     }
 }
 
@@ -37,8 +38,11 @@ public class EquipmentInstance : InventoryItemInstance
     public WeaponStats weaponStats;
     public ArmorStats armorStats;
     public AccessoryStats accessoryStats;
-    public new EquipmentData itemData;
-
+    public new EquipmentData itemData
+    {
+        get { return (EquipmentData)base.itemData; }
+        set { base.itemData = value; }
+    }
 
     public EquipmentInstance(EquipmentData _data) : base(_data)
     {
@@ -75,6 +79,21 @@ public class EquipmentInstance : InventoryItemInstance
             return accessoryStats;
         }
         else return null;
+    }
+    public void SetEquipmentStats(EquipmentStats _stats)
+    {
+        if (_stats is WeaponStats wStats)
+        {
+            weaponStats = wStats;
+        }
+        else if (_stats is ArmorStats aStats)
+        {
+            armorStats = aStats;
+        }
+        else if (_stats is AccessoryStats accStats)
+        {
+            accessoryStats = accStats;
+        }
     }
 
 }

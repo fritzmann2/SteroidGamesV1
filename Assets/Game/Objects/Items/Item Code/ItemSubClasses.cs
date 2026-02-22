@@ -28,6 +28,8 @@ public enum Itemtype
 public class EquipmentStats
 {
     public int count = 1;
+    public virtual void generateStats(float rarity){}
+    
 }
 
 
@@ -39,6 +41,7 @@ public class WeaponStats : EquipmentStats, INetworkSerializable
     public float critChance;
     public float critDamage;
     public float attackSpeed;
+    private int multiplier = 5;
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {
         serializer.SerializeValue(ref weapondamage);
@@ -46,6 +49,14 @@ public class WeaponStats : EquipmentStats, INetworkSerializable
         serializer.SerializeValue(ref critChance);
         serializer.SerializeValue(ref critDamage);
         serializer.SerializeValue(ref attackSpeed);
+    }
+    public override void generateStats(float rarity)
+    {
+        weapondamage = (UnityEngine.Random.Range(1, 5) + 5) * rarity * multiplier;
+        strength = (UnityEngine.Random.Range(1, 5) + 5) * rarity;
+        critChance = UnityEngine.Random.Range(0.5f, 5f) * rarity;
+        critDamage = UnityEngine.Random.Range(1f, 10f) * rarity;
+        attackSpeed = UnityEngine.Random.Range(0.1f, 0.5f) * rarity;
     }
 }
 
@@ -60,6 +71,12 @@ public class ArmorStats : EquipmentStats, INetworkSerializable
         serializer.SerializeValue(ref defense);
         serializer.SerializeValue(ref spellresistance);
     }
+
+    public override void generateStats(float rarity)
+    {
+        defense = (UnityEngine.Random.Range(1, 5) + 5) * rarity;
+        spellresistance = (UnityEngine.Random.Range(1, 5) + 5) * rarity;
+    }
 }
 [System.Serializable]
 public class AccessoryStats : EquipmentStats, INetworkSerializable
@@ -73,7 +90,7 @@ public class AccessoryStats : EquipmentStats, INetworkSerializable
     public float critChance;
     public float critDamage;
     public float strength;
-    public float defense;
+    public float defence;
     public float spellresistance;
 
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
@@ -87,7 +104,22 @@ public class AccessoryStats : EquipmentStats, INetworkSerializable
         serializer.SerializeValue(ref critChance);
         serializer.SerializeValue(ref critDamage);
         serializer.SerializeValue(ref strength);
-        serializer.SerializeValue(ref defense);
+        serializer.SerializeValue(ref defence);
         serializer.SerializeValue(ref spellresistance);
+    }
+
+    public override void generateStats(float rarity)
+    {
+        health = (UnityEngine.Random.Range(1, 5) + 5) * rarity;
+        mana = (UnityEngine.Random.Range(1, 5) + 5) * rarity;
+        healthRegen = (UnityEngine.Random.Range(0.1f, 0.5f) + 0.5f) * rarity;
+        manaRegen = (UnityEngine.Random.Range(0.1f, 0.5f) + 0.5f) * rarity;
+        movementSpeed = (UnityEngine.Random.Range(0.1f, 0.5f) + 0.5f) * rarity;
+        attackSpeed = (UnityEngine.Random.Range(0.1f, 0.5f) + 0.5f) * rarity;
+        critChance = UnityEngine.Random.Range(0.5f, 5f) * rarity;
+        critDamage = UnityEngine.Random.Range(1f, 10f) * rarity;
+        strength = (UnityEngine.Random.Range(1, 5) + 5) * rarity;
+        defence = (UnityEngine.Random.Range(1, 5) + 5) * rarity;
+        spellresistance = (UnityEngine.Random.Range(1, 5) + 5) * rarity;
     }
 }

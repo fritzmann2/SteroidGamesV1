@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 
+
+[System.Serializable]
 public class PlayerStats : BaseMobClass
 {
     [Header("Verbindungen")]
@@ -9,12 +10,13 @@ public class PlayerStats : BaseMobClass
 
     [Header("Debugging")]
     [SerializeField] private List<EquipmentInstance> equipmentDatas;
-    [SerializeField] private playerstats totalStats = new playerstats();
+    [SerializeField] protected Playerstats totalStats = new Playerstats();
     
-    [SerializeField] private playerstats baseStats = new playerstats(); 
+    [SerializeField] protected Playerstats baseStats = new Playerstats(); 
     private ItemInventory itemInventory;
     private bool isCrit;
-
+    private int playerLevel = 1;
+    private int playerXP = 0;
 
 
 
@@ -34,7 +36,15 @@ public class PlayerStats : BaseMobClass
 
     private void Init()
     {
-        
+        int i = 0;
+        foreach (var equipment in itemInventory.equipmentSlots)
+        {
+            EquipmentSlot slot = itemInventory.getEquipmentSlot(i);
+            equipmentDatas[i] = slot.EquipInstance;
+            i++;
+        }
+        calculateLevel(baseStats);
+        RecalculateTotalStats();
     }
 
 
@@ -48,7 +58,7 @@ public class PlayerStats : BaseMobClass
 
     private void RecalculateTotalStats()
     {
-        totalStats = new playerstats
+        totalStats = new Playerstats
         {
             strength = baseStats.strength,
             critChance = baseStats.critChance,
@@ -93,7 +103,7 @@ public class PlayerStats : BaseMobClass
                 totalStats.critChance += acc.critChance;
                 totalStats.critDamage += acc.critDamage;
                 totalStats.strength += acc.strength;
-                totalStats.defense += acc.defense;
+                totalStats.defense += acc.defence;
                 totalStats.spellresistance += acc.spellresistance;
                 
             }
@@ -135,6 +145,30 @@ public class PlayerStats : BaseMobClass
     {
         float critRoll = Random.Range(0f, 100f);
         return (critRoll <= totalStats.critChance) ? 1 : 0;
+    }
+
+    public int getLevel()
+    {
+        return playerLevel;
+    }
+
+    private void calculateLevel(Playerstats stats)
+    {
+        while (playerXP >= playerLevel * playerLevel *0.3f + 100 * playerLevel)
+        {
+            playerLevel++;
+            playerXP -= (int)(playerLevel * playerLevel *0.3f + 100 * playerLevel);
+        }
+    }
+    private void gainXP(int amount)
+    {
+        playerXP += amount;
+        if (playerXP >= playerLevel * playerLevel *0.3f + 100 * playerLevel)
+        {
+            playerLevel++;
+            playerXP -= (int)(playerLevel * playerLevel *0.3f + 100 * playerLevel);
+        }
+        baseStats.totalexperience += amount;
     }
 
     public PlayerStatsSaveData GetSaveData()
