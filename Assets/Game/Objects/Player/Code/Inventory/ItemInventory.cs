@@ -41,25 +41,6 @@ public class ItemInventory
         if (_itemInstance is EquipmentInstance equipmentInstance)
             {
                 EquipmentStats stats = equipmentInstance.GetEquipmentStats();
-                if (stats != null)
-                {
-                    if (stats is WeaponStats weaponStats)
-                    {
-                        Debug.Log("Damage added: " + weaponStats.weapondamage);
-                    }
-                    else if (stats is ArmorStats armorStats)
-                    {
-                        Debug.Log("Defense added: " + armorStats.defense);
-                    }
-                    else if (stats is AccessoryStats accessoryStats)
-                    {
-                        Debug.Log("Crit Chance added: " + accessoryStats.critChance);
-                    }
-                }
-                else
-                {
-                    Debug.Log("Stats are null");
-                }
             }
 
 
@@ -122,7 +103,6 @@ public class ItemInventory
 
     public bool switchItem(int index1,int index2, bool eqfirst, bool eqsecond)
     {
-//        Debug.Log("try switch item " + eqfirst + " " + eqsecond);
         InventorySlot slot1;
         if (eqfirst) slot1 = equipmentSlots[index1];
         else         slot1 = inventorySlots[index1];

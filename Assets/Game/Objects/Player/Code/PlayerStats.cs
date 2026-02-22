@@ -2,17 +2,16 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-[System.Serializable]
 public class PlayerStats : BaseMobClass
 {
     [Header("Verbindungen")]
     private PlayerSaveHandler playerSaveHandler;
 
     [Header("Debugging")]
-    [SerializeField] private List<EquipmentInstance> equipmentDatas;
-    [SerializeField] protected Playerstats totalStats = new Playerstats();
+    [SerializeField] private List<EquipmentInstance> equipmentDatas = new List<EquipmentInstance>();
+    [SerializeField] protected Playerstats totalStats;
     
-    [SerializeField] protected Playerstats baseStats = new Playerstats(); 
+    [SerializeField] protected Playerstats baseStats; 
     private ItemInventory itemInventory;
     private bool isCrit;
     private int playerLevel = 1;
@@ -25,7 +24,6 @@ public class PlayerStats : BaseMobClass
         base.OnNetworkSpawn();
         playerSaveHandler = GetComponent<PlayerSaveHandler>(); 
         itemInventory = GetComponentInParent<Inventory>().itemInventory;
-        equipmentDatas = new List<EquipmentInstance>(itemInventory.equipmentSlots.Count);
         playerSaveHandler.dataLoaded += Init;
     }
     public override void OnNetworkDespawn()
@@ -36,14 +34,19 @@ public class PlayerStats : BaseMobClass
 
     private void Init()
     {
-        int i = 0;
-        foreach (var equipment in itemInventory.equipmentSlots)
+        for (int i = 0; i < itemInventory.equipmentSlots.Count; i++)
         {
             EquipmentSlot slot = itemInventory.getEquipmentSlot(i);
-            equipmentDatas[i] = slot.EquipInstance;
-            i++;
+            
+            equipmentDatas.Add(slot.EquipInstance);
+            
+            slot.OnEquipmentChanged -= UpdateStatsFromEquipment;
+            slot.OnEquipmentChanged += UpdateStatsFromEquipment;
         }
+
+        // 3. Werte berechnen
         calculateLevel(baseStats);
+        calculateBaseStats();
         RecalculateTotalStats();
     }
 
@@ -160,7 +163,7 @@ public class PlayerStats : BaseMobClass
             playerXP -= (int)(playerLevel * playerLevel *0.3f + 100 * playerLevel);
         }
     }
-    private void gainXP(int amount)
+    public void gainXP(int amount)
     {
         playerXP += amount;
         if (playerXP >= playerLevel * playerLevel *0.3f + 100 * playerLevel)
@@ -178,6 +181,13 @@ public class PlayerStats : BaseMobClass
             baseStats = this.baseStats
         };
         return playerStatsSaveData;
+    }
+
+    private void calculateBaseStats()
+    {
+        baseStats.health = health.Value;
+        baseStats.calculateBaseStats(playerLevel);
+        Debug.Log("stats calculated");
     }
 }
 

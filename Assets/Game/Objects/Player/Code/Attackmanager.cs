@@ -149,7 +149,10 @@ public class Attackmanager : NetworkBehaviour
         {
             weaponPrefab = basicWeapon;
         }
-        
+        if (currentWeaponObject != null)
+        {
+            EquipRequestServerRpc(0);
+        }
     }
 
 }

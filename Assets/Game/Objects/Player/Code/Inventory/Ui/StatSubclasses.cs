@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Reflection; 
+
+[System.Serializable]
 public class Playerstats
 {
     public int totalexperience;
@@ -14,6 +16,18 @@ public class Playerstats
     public float mana;
     public float manaRegen;
     public float health;
+
+    public void calculateBaseStats(int level)
+    {
+        attackSpeed = attackSpeed + level/100;
+        critChance = critChance + level/100;
+        critDamage = critDamage + level * 2;
+        strength = strength + level;
+        defense = defense + level;
+        spellresistance = spellresistance + level/100; 
+        mana = mana + level;
+        manaRegen = manaRegen + level/100;    
+    }
 }
 
 public class PlayerStatsSaveData

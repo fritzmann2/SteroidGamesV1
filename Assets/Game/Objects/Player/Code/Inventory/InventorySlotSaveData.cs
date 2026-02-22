@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using UnityEngine;
-using Unity.Netcode;
 
 
 
@@ -17,42 +15,28 @@ public class ItemSaveData
 
     public ItemSaveData() { }
 
-    public ItemSaveData(string _id)
+    public ItemSaveData(InventoryItemInstance instance)
     {
-        itemID = _id;
-        equipmentType = EquipmentType.None;
-    }
+        if (instance == null || instance.itemData == null) return;
 
-    public ItemSaveData(string _id, EquipmentType _type, WeaponStats _wStats)
-    {
-        itemID = _id;
-        equipmentType = _type;
-        weaponStats = _wStats;
-        itemtype = Itemtype.Weapon;
-    }
-    public ItemSaveData(string _id, EquipmentType _type, ArmorStats _aStats)
-    {
-        itemID = _id;
-        equipmentType = _type;
-        armorStats = _aStats;
-        itemtype = Itemtype.Armor;
-    }
-    public ItemSaveData(string _id, EquipmentType _type, AccessoryStats _aStats)
-    {
-        itemID = _id;
-        equipmentType = _type;
-        accessoryStats = _aStats;
-        itemtype = Itemtype.Accessory;
-    }
-    public ItemSaveData(string _id, Itemtype _type)
-    {
-        itemID = _id;
-        itemtype = _type;
+        itemID = instance.itemData.ID;
+        itemtype = instance.itemtype;
+        equipmentType = EquipmentType.None;
+
+        if (instance is EquipmentInstance eqInstance)
+        {
+            equipmentType = eqInstance.itemData.equipmentType;
+            EquipmentStats stats = eqInstance.GetEquipmentStats();
+
+            if (stats is WeaponStats w) weaponStats = w;
+            else if (stats is ArmorStats a) armorStats = a;
+            else if (stats is AccessoryStats acc) accessoryStats = acc;
+        }
     }
 }
 
 [System.Serializable]
-public struct InventorySlotSaveData
+public class InventorySlotSaveData
 {
     public int slotIndex;
     public int amount;

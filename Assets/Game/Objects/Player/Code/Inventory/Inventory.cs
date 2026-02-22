@@ -80,14 +80,6 @@ public class Inventory : NetworkBehaviour
             {
                 itemDataToAdd = getItemByID(ID);
             }
-            if (itemDataToAdd is EquipmentData)
-            {
-                Debug.Log("Equipment ID: " + itemDataToAdd.ID);
-            }
-            else
-            {
-                Debug.Log("Item ID: " + itemDataToAdd.ID);
-            }
             if (itemDataToAdd == null)
             {
                 return;

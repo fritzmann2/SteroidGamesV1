@@ -46,23 +46,26 @@ public class EquipmentInstance : InventoryItemInstance
 
     public EquipmentInstance(EquipmentData _data) : base(_data)
     {
-        itemData.equipmentType = _data.equipmentType;
-        if (itemData.equipmentType == EquipmentType.Bow || itemData.equipmentType == EquipmentType.Scythe || itemData.equipmentType == EquipmentType.Sword)
+        if (_data.equipmentType == EquipmentType.Bow || _data.equipmentType == EquipmentType.Scythe || _data.equipmentType == EquipmentType.Sword)
         {
-            itemData.Type = Itemtype.Weapon;
+            this.itemtype = Itemtype.Weapon;
         }
-        else if (itemData.equipmentType == EquipmentType.Helmet || itemData.equipmentType == EquipmentType.Chestplate || itemData.equipmentType == EquipmentType.Leggings || itemData.equipmentType == EquipmentType.Boots)
+        else if (_data.equipmentType == EquipmentType.Helmet || _data.equipmentType == EquipmentType.Chestplate || _data.equipmentType == EquipmentType.Leggings || _data.equipmentType == EquipmentType.Boots)
         {
-            itemData.Type = Itemtype.Armor;
+            this.itemtype = Itemtype.Armor;
         }
-        else if (itemData.equipmentType == EquipmentType.Ring || itemData.equipmentType == EquipmentType.Necklace)
+        else if (_data.equipmentType == EquipmentType.Ring || _data.equipmentType == EquipmentType.Necklace)
         {
-            itemData.Type = Itemtype.Accessory;
+            this.itemtype = Itemtype.Accessory;
+        }
+        else
+        {
+            this.itemtype = Itemtype.None;
         }
 
-        if (_data is WeaponData wData) weaponStats = wData.weaponStats;
-        else if (_data is ArmorData aData) armorStats = aData.armorStats;
-        else if (_data is AccessoryData accData) accessoryStats = accData.accessoryStats;
+        if (_data is WeaponData wData) weaponStats = wData.weaponStats.Clone();
+        else if (_data is ArmorData aData) armorStats = aData.armorStats.Clone();
+        else if (_data is AccessoryData accData) accessoryStats = accData.accessoryStats.Clone();
     }
     public EquipmentStats GetEquipmentStats()
     {   

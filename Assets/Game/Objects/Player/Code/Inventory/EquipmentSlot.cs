@@ -1,10 +1,11 @@
+using System;
+
 [System.Serializable]
 public class EquipmentSlot : InventorySlot
 {
     public EquipmentType allowedType;
-
     public EquipmentInstance EquipInstance => inventoryItemInstance as EquipmentInstance;
-
+    public event Action<int> OnEquipmentChanged;
 
     public EquipmentSlot()
     {
@@ -20,6 +21,7 @@ public class EquipmentSlot : InventorySlot
             if (data != null && data.equipmentType == allowedType)
             {
                 UpdateInventorySlot(itemInstance, 1);
+                OnEquipmentChanged.Invoke(slotnum);
                 return true;
             }
         }

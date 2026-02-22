@@ -58,6 +58,10 @@ public class WeaponStats : EquipmentStats, INetworkSerializable
         critDamage = UnityEngine.Random.Range(1f, 10f) * rarity;
         attackSpeed = UnityEngine.Random.Range(0.1f, 0.5f) * rarity;
     }
+    public WeaponStats Clone()
+    {
+        return (WeaponStats)this.MemberwiseClone();
+    }
 }
 
 [System.Serializable]
@@ -76,6 +80,10 @@ public class ArmorStats : EquipmentStats, INetworkSerializable
     {
         defense = (UnityEngine.Random.Range(1, 5) + 5) * rarity;
         spellresistance = (UnityEngine.Random.Range(1, 5) + 5) * rarity;
+    }
+    public ArmorStats Clone()
+    {
+        return (ArmorStats)this.MemberwiseClone();
     }
 }
 [System.Serializable]
@@ -121,5 +129,9 @@ public class AccessoryStats : EquipmentStats, INetworkSerializable
         strength = (UnityEngine.Random.Range(1, 5) + 5) * rarity;
         defence = (UnityEngine.Random.Range(1, 5) + 5) * rarity;
         spellresistance = (UnityEngine.Random.Range(1, 5) + 5) * rarity;
+    }
+    public AccessoryStats Clone()
+    {
+        return (AccessoryStats)this.MemberwiseClone();
     }
 }
