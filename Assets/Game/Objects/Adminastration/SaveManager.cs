@@ -5,6 +5,7 @@ using System.IO;
 public class SaveManager : NetworkBehaviour
 {
     public static SaveManager Instance { get; private set; }
+    
 
     private void Awake()
     {
@@ -19,8 +20,6 @@ public class SaveManager : NetworkBehaviour
 
     public GameSaveData LoadPlayerData(string playerName)
     {
-        // ... (Dein Code Code bleibt gleich) ...
-        // (Ich kürze das hier ab, dein Code oben war korrekt)
         string safeName = string.Join("_", playerName.Split(Path.GetInvalidFileNameChars()));
         string fileName = $"save_{safeName}.json";
         string path = Path.Combine(Application.persistentDataPath, fileName);
@@ -59,12 +58,4 @@ public class GameSaveData
     public string playerName;
     public InventorySaveData inventoryData;
     public PlayerStatsSaveData statsData; 
-    public Vector3SaveData position;
-}
-
-[System.Serializable]
-public struct Vector3SaveData
-{
-    public float x, y, z;
-    public Vector3SaveData(UnityEngine.Vector3 vec) { x = vec.x; y = vec.y; z = vec.z; }
 }

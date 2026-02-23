@@ -10,6 +10,7 @@ public class PauseManager : MonoBehaviour
     private GameControls controls;
     private GameObject WhilePlayingObj;
     private GameObject InventoryObj;
+    private PlayerSaveHandler playerSaveHandler;
     private bool escapepressed = false;
 
     private bool isMenuOpen = false;
@@ -39,7 +40,6 @@ public class PauseManager : MonoBehaviour
         }
         if (controls.Gameplay.OpenInventory.WasPressedThisFrame())
         {
-//            Debug.Log("Try open inventory");
             if (InventoryObj.activeSelf)
             {
                 InventoryObj.SetActive(false);
@@ -92,8 +92,14 @@ public class PauseManager : MonoBehaviour
         pauseMenuUI.SetActive(false);
         settingsUI.SetActive(true);
     }
+
+    public void RegisterPlayerSaveHandler(PlayerSaveHandler _playerSaveHandler)
+    {
+        playerSaveHandler = _playerSaveHandler;
+    }
     public void QuitGame()
     {
+        playerSaveHandler.RequestLogoutAndSave();
         NetworkManager.Singleton.Shutdown();
         UnityEngine.SceneManagement.SceneManager.LoadScene("StartMenu");
     }

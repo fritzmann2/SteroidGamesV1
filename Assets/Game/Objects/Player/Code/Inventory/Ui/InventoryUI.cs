@@ -47,7 +47,7 @@ public class InventoryUI : MonoBehaviour
             updateSlot(i, true);
         }
         
-        Debug.Log("UI Refreshed via OnEnable");
+//        Debug.Log("UI Refreshed via OnEnable");
     }
 
     public void initplayer(Inventory _playerinventory)

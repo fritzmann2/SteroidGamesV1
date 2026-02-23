@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 [System.Serializable]
 public class EquipmentSlot : InventorySlot
@@ -12,20 +13,26 @@ public class EquipmentSlot : InventorySlot
         isequipment = true;
     }
 
+    public bool CanEquip(InventoryItemInstance itemInstance)
+    {
+        if (itemInstance == null) return true; 
+        
+        if (itemInstance is EquipmentInstance eqInstance && eqInstance.itemData is EquipmentData data)
+        {
+            return data.equipmentType == allowedType;
+        }
+        return false;
+    }
+
     public bool TryEquip(InventoryItemInstance itemInstance)
     {
-        if (itemInstance is EquipmentInstance eqInstance)
+        if (CanEquip(itemInstance))
         {
-            EquipmentData data = eqInstance.itemData as EquipmentData;
-
-            if (data != null && data.equipmentType == allowedType)
-            {
-                UpdateInventorySlot(itemInstance, 1);
-                OnEquipmentChanged.Invoke(slotnum);
-                return true;
-            }
+            UpdateInventorySlot(itemInstance, 1);
+            OnEquipmentChanged?.Invoke(slotnum);
+            Debug.Log("Equiped Item in slot: " + slotnum);
+            return true;
         }
-
         return false;
     }
 

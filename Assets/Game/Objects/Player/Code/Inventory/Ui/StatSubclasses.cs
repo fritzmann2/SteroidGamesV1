@@ -19,14 +19,14 @@ public class Playerstats
 
     public void calculateBaseStats(int level)
     {
-        attackSpeed = attackSpeed + level/100;
-        critChance = critChance + level/100;
-        critDamage = critDamage + level * 2;
-        strength = strength + level;
-        defense = defense + level;
-        spellresistance = spellresistance + level/100; 
-        mana = mana + level;
-        manaRegen = manaRegen + level/100;    
+        attackSpeed = level/100;
+        critChance = level/100;
+        critDamage = level * 2;
+        strength = level;
+        defense = level;
+        spellresistance = level/100; 
+        mana = level;
+        manaRegen = level/100;    
     }
 }
 

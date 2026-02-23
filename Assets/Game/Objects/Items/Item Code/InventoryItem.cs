@@ -33,6 +33,7 @@ public class InventoryItemInstance
     }
 }
 
+[System.Serializable]
 public class EquipmentInstance : InventoryItemInstance
 {
     public WeaponStats weaponStats;

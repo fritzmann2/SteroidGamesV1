@@ -112,7 +112,7 @@ public class Attackmanager : NetworkBehaviour
         }
         else
         {
-            Debug.Log("Hand wird sichtbar (keine Waffe).");
+//            Debug.Log("Hand wird sichtbar (keine Waffe).");
         }
 
     }

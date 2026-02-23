@@ -16,7 +16,8 @@ public class PlayerStats : BaseMobClass
     private bool isCrit;
     private int playerLevel = 1;
     private int playerXP = 0;
-
+    [Header("Spieler Info")]
+    public string playerName;
 
 
     public override void OnNetworkSpawn()
@@ -25,36 +26,50 @@ public class PlayerStats : BaseMobClass
         playerSaveHandler = GetComponent<PlayerSaveHandler>(); 
         itemInventory = GetComponentInParent<Inventory>().itemInventory;
         playerSaveHandler.dataLoaded += Init;
+        itemInventory.OnEquipmentChanged += Initbase;
     }
     public override void OnNetworkDespawn()
     {
         base.OnNetworkDespawn();
         playerSaveHandler.dataLoaded -= Init;
+        itemInventory.OnEquipmentChanged -= Initbase;
     }
 
     private void Init()
     {
+        Initbase();
+
+        calculateLevel(baseStats);
+        
+    }
+
+    private void Initbase()
+    {
+        equipmentDatas = new List<EquipmentInstance>();
+
         for (int i = 0; i < itemInventory.equipmentSlots.Count; i++)
         {
             EquipmentSlot slot = itemInventory.getEquipmentSlot(i);
             
             equipmentDatas.Add(slot.EquipInstance);
-            
-            slot.OnEquipmentChanged -= UpdateStatsFromEquipment;
-            slot.OnEquipmentChanged += UpdateStatsFromEquipment;
         }
-
-        // 3. Werte berechnen
-        calculateLevel(baseStats);
         calculateBaseStats();
         RecalculateTotalStats();
     }
 
 
+    public void LoadSaveData(PlayerStatsSaveData savedData)
+    {
+        if (savedData != null && savedData.baseStats != null)
+        {
+            this.baseStats = savedData.baseStats;
+        }
+    }
 
 
     public void UpdateStatsFromEquipment(int slotIndex)
     {
+        Debug.Log("updating slot nummer: " + slotIndex);
         equipmentDatas[slotIndex] = itemInventory.equipmentSlots[slotIndex].EquipInstance;
         RecalculateTotalStats();
     }
@@ -112,7 +127,6 @@ public class PlayerStats : BaseMobClass
             }
         }
         
-        Debug.Log($"Neue Stats berechnet. Total Strength: {totalStats.strength}");
     }
 
 
@@ -187,7 +201,7 @@ public class PlayerStats : BaseMobClass
     {
         baseStats.health = health.Value;
         baseStats.calculateBaseStats(playerLevel);
-        Debug.Log("stats calculated");
+//        Debug.Log("stats calculated");
     }
 }
 

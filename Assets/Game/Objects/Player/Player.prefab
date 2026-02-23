@@ -351,6 +351,33 @@ MonoBehaviour:
   health:
     m_InternalValue: 100
   maxHealth: 0
+  totalStats:
+    totalexperience: 0
+    movementSpeed: 0
+    weapondamage: 0
+    attackSpeed: 0
+    critChance: 0
+    critDamage: 0
+    strength: 0
+    defense: 0
+    spellresistance: 0
+    mana: 0
+    manaRegen: 0
+    health: 0
+  baseStats:
+    totalexperience: 0
+    movementSpeed: 0
+    weapondamage: 0
+    attackSpeed: 0
+    critChance: 0
+    critDamage: 0
+    strength: 0
+    defense: 0
+    spellresistance: 0
+    mana: 0
+    manaRegen: 0
+    health: 0
+  playerName: 
 --- !u!114 &131929589387796209
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -365,6 +392,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSaveHandler
   ShowTopMostFoldoutHeaderGroup: 1
   playerName: Fritzmann
+  autoSaveInterval: 30
 --- !u!114 &7091019695798207329
 MonoBehaviour:
   m_ObjectHideFlags: 0

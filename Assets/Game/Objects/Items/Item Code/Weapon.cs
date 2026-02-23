@@ -83,7 +83,7 @@ abstract public class Weapon : InventoryItem
     public virtual void EnableHitbox()
     {
         if (bx != null) bx.enabled = true;
-        Debug.Log("Enable Hitbox");
+//        Debug.Log("Enable Hitbox");
     }
 
     public virtual void DisableHitbox()

@@ -101,16 +101,22 @@ public class ItemInventory
         return true;
     }
 
-    public bool switchItem(int index1,int index2, bool eqfirst, bool eqsecond)
+    public bool switchItem(int index1, int index2, bool eqfirst, bool eqsecond)
     {
-        InventorySlot slot1;
-        if (eqfirst) slot1 = equipmentSlots[index1];
-        else         slot1 = inventorySlots[index1];
+        InventorySlot slot1 = eqfirst ? equipmentSlots[index1] : inventorySlots[index1];
+        InventorySlot slot2 = eqsecond ? equipmentSlots[index2] : inventorySlots[index2];
 
-        InventorySlot slot2;
-        if (eqsecond) slot2 = equipmentSlots[index2];
-        else          slot2 = inventorySlots[index2];
+        if (eqsecond && !slot1.IsEmpty && !((EquipmentSlot)slot2).CanEquip(slot1.InventoryItemInstance))
+        {
+            Debug.LogWarning("Tausch abgebrochen: Item 1 passt nicht in Equipment-Slot 2!");
+            return false;
+        }
 
+        if (eqfirst && !slot2.IsEmpty && !((EquipmentSlot)slot1).CanEquip(slot2.InventoryItemInstance))
+        {
+            Debug.LogWarning("Tausch abgebrochen: Item 2 passt nicht in Equipment-Slot 1!");
+            return false;
+        }
 
         if (!slot1.IsEmpty && !slot2.IsEmpty && slot1.InventoryItemInstance.itemData?.ID == slot2.InventoryItemInstance.itemData?.ID)
         {
@@ -124,14 +130,16 @@ public class ItemInventory
         {
             InventoryItemInstance temp = slot1.InventoryItemInstance;
             int stacksize = slot1.StackSize;
+            
             slot1.UpdateInventorySlot(slot2.InventoryItemInstance, slot2.StackSize);
             slot2.UpdateInventorySlot(temp, stacksize);
         }
+
         if (eqfirst || eqsecond)
         {
-            OnEquipmentChanged.Invoke();
+            OnEquipmentChanged?.Invoke();
         }
-        Debug.Log("switched slot:" + index1 + " und slot:" + index2);
+
         return true;
     }
 

@@ -38,9 +38,17 @@ public class NetworkUI : MonoBehaviour
         hostArea.SetActive(false);
         clientArea.SetActive(false);
 
+        if (PlayerPrefs.HasKey("PlayerName"))
+        {
+            playernameInput.text = PlayerPrefs.GetString("PlayerName");
+        }
+
         // --- HOST FLOW ---
         hostMenuBtn.onClick.AddListener(async () => 
         {
+            string pName = playernameInput.text;
+            if (string.IsNullOrEmpty(pName)) pName = "Spieler" + Random.Range(1000, 9999);
+            PlayerPrefs.SetString("PlayerName", pName);
             // UI Umschalten
             lobbyPanel.SetActive(true);
             hostArea.SetActive(true);
@@ -76,7 +84,12 @@ public class NetworkUI : MonoBehaviour
         });
 
         // --- CLIENT FLOW (Schritt 2: Wirklich beitreten) ---
-        submitCodeBtn.onClick.AddListener(async () => { 
+        submitCodeBtn.onClick.AddListener(async () => {
+
+            string pName = playernameInput.text;
+            if (string.IsNullOrEmpty(pName)) pName = "Spieler" + Random.Range(1000, 9999);
+            PlayerPrefs.SetString("PlayerName", pName); 
+            
             string code = joinCodeInput.text;
 
             if (!string.IsNullOrEmpty(code))
@@ -124,10 +137,7 @@ public class NetworkUI : MonoBehaviour
 
         // --- START GAME (Nur Host) ---
         startGameBtn.onClick.AddListener(() => {
-            if (playernameInput != null)
-            {
-                //GaemData.PlayerName = playernameInput.text;
-            }
+            
             NetworkManager.Singleton.SceneManager.LoadScene(firstlevel, UnityEngine.SceneManagement.LoadSceneMode.Single);
         });
 

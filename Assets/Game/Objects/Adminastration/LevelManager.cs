@@ -7,12 +7,18 @@ using System;
 
 public class LevelManager : NetworkBehaviour
 {
+    public static LevelManager Instance { get; private set; }
     [Header("Settings")]
     public GameObject playerPrefab;
     public float clientSpawnDelay = 0.5f;
-    private List<Transform> activePlayers = new List<Transform>();
+    private Dictionary<string, Transform> activePlayers = new Dictionary<string, Transform>();
     public event Action onPlayerRegistered;
 
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     public override void OnNetworkSpawn()
     {
@@ -65,26 +71,30 @@ public class LevelManager : NetworkBehaviour
     {
         Vector3 spawnPos = new Vector3(0, 2, 0); 
         GameObject playerInstance = Instantiate(playerPrefab, spawnPos, Quaternion.identity);
-
         playerInstance.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true);
-        RegisterPlayer(playerInstance.transform);
     }
-    public void RegisterPlayer(Transform playerTransform)
+
+    public bool TryRegisterPlayer(string playerName, Transform playerTransform)
     {
-        if (!activePlayers.Contains(playerTransform))
+        if (activePlayers.ContainsKey(playerName))
         {
-            activePlayers.Add(playerTransform);
-            onPlayerRegistered?.Invoke();
+            return false; 
+        }
+        
+        activePlayers.Add(playerName, playerTransform);
+        onPlayerRegistered?.Invoke();
+        return true;
+    }
+
+    public void UnregisterPlayer(string playerName)
+    {
+        if (!string.IsNullOrEmpty(playerName) && activePlayers.ContainsKey(playerName))
+        {
+            activePlayers.Remove(playerName);
         }
     }
-    public void UnregisterPlayer(Transform playerTransform)
-    {
-        if (activePlayers.Contains(playerTransform))
-        {
-            activePlayers.Remove(playerTransform);
-        }
-    }
-    public List<Transform> GetActivePlayers()
+
+    public Dictionary<string, Transform> GetActivePlayers()
     {
         return activePlayers;
     }

@@ -45,7 +45,7 @@ public class InventorySlot_UI : MonoBehaviour
             ClearSlot();
             return;
         }
-        Debug.Log("Updating UI slot" + slot.StackSize + " slotnum: " + slot.slotnum + " slotnum:"+ slotnum + " " + slot.InventoryItemInstance.itemData.ItemName);
+//        Debug.Log("Updating UI slot" + slot.StackSize + " slotnum: " + slot.slotnum + " slotnum:"+ slotnum + " " + slot.InventoryItemInstance.itemData.ItemName);
         itemSprite.sprite = slot.InventoryItemInstance.itemData.Icon;
         if (itemSprite.sprite == null)
         {

@@ -191,7 +191,7 @@ abstract public class BaseEnemy : BaseEntety
 
     public void updatePlayerList()
     {
-        activePlayers = levelManager.GetActivePlayers();
+        activePlayers = new List<Transform>(levelManager.GetActivePlayers().Values);
     }
 
     public void SetParentChunk(ChunkData chunk)
@@ -221,5 +221,10 @@ abstract public class BaseEnemy : BaseEntety
         Gizmos.color = Color.green;
         Vector3 boxCenter = transform.position + new Vector3(0, groundCheckPos, 0);
         Gizmos.DrawWireCube(boxCenter, new Vector3(groundCheckSize.x, groundCheckSize.y, 1));
+    }
+
+    public void Kill()
+    {
+        parentChunk.DespawnMob(this.GetComponent<NetworkObject>());
     }
 }

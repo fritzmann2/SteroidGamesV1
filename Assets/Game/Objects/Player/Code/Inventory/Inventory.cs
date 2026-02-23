@@ -171,7 +171,7 @@ public class Inventory : NetworkBehaviour
     {
         PlayerStats playerStats = GetComponent<PlayerStats>();
         float adjustedRarity = rarity + playerStats.getLevel() * 0.1f;
-        Debug.Log("Adjusted Rarity is: " + adjustedRarity);
+//        Debug.Log("Adjusted Rarity is: " + adjustedRarity);
         _equipmentStats.generateStats(adjustedRarity);        
         return _equipmentStats;
     }
