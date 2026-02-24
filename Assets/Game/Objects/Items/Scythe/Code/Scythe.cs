@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Unity.Netcode;
 
 public class Scythe : Weapon
 {
@@ -35,7 +36,21 @@ public class Scythe : Weapon
     {
         if (isThrown) return;
         attackmulti = 0.7f;
-        Throw();
+        Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
+        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
+        mouseWorldPos.z = 0f;
+        Vector3 direction = mouseWorldPos - transform.position;
+        direction.z = 0f;
+        direction.Normalize();
+        if (IsServer)
+        {
+            ThrowClientRpc(direction);
+        }
+        else
+        {
+            Debug.Log("try Throwing");
+            ThrowServerRpc(direction);
+        }
     }
 
     protected override void Awake()
@@ -56,26 +71,27 @@ public class Scythe : Weapon
         {
             HandleMovement();
         }
-
     }
-    private void Throw()
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    private void ThrowServerRpc(Vector3 direction)
+    {
+        ThrowClientRpc(direction);
+    }
+
+    [ClientRpc]
+    private void ThrowClientRpc(Vector3 direction)
     {
         anim.enabled = false;
-        Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
-        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
-        mouseWorldPos.z = 0f;
-        EnableHitbox();
-        viewdir = movement.transform.localScale.x > 0 ? 1 : -1;
         
-        throwDirection = mouseWorldPos - transform.position;
-        throwDirection.z = 0f;
-        throwDirection.Normalize();
+        EnableHitbox();
+        viewdir = transform.localScale.x > 0 ? 1 : -1;
+        throwDirection = direction;
+        
         throwTime = 0f;
         isAttacking = true;
         isThrown = true;
         isReturning = false;
         transform.parent = null;
-//        Debug.Log("Thrown");
     }
     private void HandleMovement()
     {

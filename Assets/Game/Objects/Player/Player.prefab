@@ -131,7 +131,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
-  m_EdgeRadius: 0
+  m_EdgeRadius: 0.015
 --- !u!222 &2671177495704341155
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -378,6 +378,8 @@ MonoBehaviour:
     mana: 0
     manaRegen: 0
     health: 0
+  playerLevel: 1
+  playerXP: 0
   playerName: 
 --- !u!114 &131929589387796209
 MonoBehaviour:

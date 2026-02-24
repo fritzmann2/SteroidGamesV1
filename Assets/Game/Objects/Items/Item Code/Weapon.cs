@@ -7,6 +7,7 @@ abstract public class Weapon : InventoryItem
 {
 
     [SerializeField] public WeaponStats weaponstats;
+    private Quaternion rotation;
     protected PlayerMovement movement;
 
     public PlayerStats playerStats;
@@ -39,7 +40,7 @@ abstract public class Weapon : InventoryItem
         controls = new GameControls();
         playerStats = GetComponentInParent<PlayerStats>();
         movement = GetComponentInParent<PlayerMovement>();
-        
+        rotation = transform.localRotation;
     }
 
     protected virtual void Start()
@@ -101,6 +102,10 @@ abstract public class Weapon : InventoryItem
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (playerStats == null)
+        {
+            Debug.LogWarning("Playerstats not foumd");
+        }
         if (other.gameObject == playerStats.gameObject) 
         {
             return; 
@@ -142,8 +147,13 @@ abstract public class Weapon : InventoryItem
         isAttacking = false;
         transform.parent = player;
         DisableHitbox();
-        transform.localRotation = Quaternion.identity; 
+        transform.localRotation = rotation; 
+        if (anim != null) 
+        {
+            anim.enabled = true; 
+        }
     }
+
 
     void FixedUpdate()
     {

@@ -185,7 +185,7 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": ""Attack4"",
                     ""type"": ""Button"",
-                    ""id"": ""4369d19f-b74d-4244-a19e-dc1da42ed910"",
+                    ""id"": ""6bfed486-c7db-4c5a-968e-db1fe2236616"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -393,7 +393,7 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""01bfd84a-620a-4c88-88d0-6dd5469cb7d7"",
+                    ""id"": ""a900ac7d-567e-44f8-960e-80d2650fddf9"",
                     ""path"": ""<Keyboard>/4"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -404,7 +404,7 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""c0885243-0759-4115-8c49-0faa27cad01f"",
+                    ""id"": ""b42983b5-ba44-40e6-a4fe-f63fe62d2587"",
                     ""path"": ""<Mouse>/backButton"",
                     ""interactions"": """",
                     ""processors"": """",
