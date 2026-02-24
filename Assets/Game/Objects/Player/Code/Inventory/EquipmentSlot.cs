@@ -1,10 +1,12 @@
 using System;
 using UnityEngine;
+using System.Collections.Generic;
+using NUnit.Framework;
 
 [System.Serializable]
 public class EquipmentSlot : InventorySlot
 {
-    public EquipmentType allowedType;
+    public List<EquipmentType> allowedType;
     public EquipmentInstance EquipInstance => inventoryItemInstance as EquipmentInstance;
     public event Action<int> OnEquipmentChanged;
 
@@ -15,12 +17,27 @@ public class EquipmentSlot : InventorySlot
 
     public bool CanEquip(InventoryItemInstance itemInstance)
     {
-        if (itemInstance == null) return true; 
+        if (itemInstance == null) 
+        {
+            Debug.LogWarning("itemInstance is null");
+            return true; 
+        }
         
         if (itemInstance is EquipmentInstance eqInstance && eqInstance.itemData is EquipmentData data)
         {
-            return data.equipmentType == allowedType;
+//            Debug.Log("item Type: " + data.equipmentType.ToString() + " allowed Type: " + allowedType.ToString());
+            bool isAllowed = false;
+            foreach (EquipmentType eqtype in allowedType)
+            {
+                if (data.equipmentType == eqtype)
+                {
+                    isAllowed = true;
+                    break;  
+                }
+            }
+            return isAllowed;
         }
+        Debug.LogWarning("No EquipmentInstance found");
         return false;
     }
 

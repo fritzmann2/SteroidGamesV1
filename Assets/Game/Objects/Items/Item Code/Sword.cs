@@ -28,6 +28,10 @@ public class Sword : Weapon
         type = EquipmentType.Sword;
         base.Awake();
     }
+    protected override void Start()
+    {
+        base.Start();
+    }
 
     protected virtual void LateUpdate()
     {

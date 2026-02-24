@@ -21,27 +21,52 @@ public class Inventory : NetworkBehaviour
     public UnityEvent<bool> addedsuccess;
     public UnityAction changesuccess;
     private BoxCollider2D bx;
-    private Collider2D othercollider;
     public MouseItemData mouseItemData;
     public WorldGenerator worldGenerator;
-    
+
     private void Awake()
     {
         Transform childTransform = transform.Find("ItemPickupRange");
-        worldGenerator = FindAnyObjectByType<WorldGenerator>();
         bx = childTransform.GetComponent<BoxCollider2D>();
         bx.isTrigger = true;
+        worldGenerator = FindAnyObjectByType<WorldGenerator>();
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        if (!IsOwner) return;
+
         InventoryUI inventoryUI = FindAnyObjectByType<InventoryUI>(FindObjectsInactive.Include);
         if (inventoryUI != null)
         {
             inventoryUI.initplayer(this);
         }
-        mouseItemData = FindAnyObjectByType<MouseItemData>();
-        mouseItemData.ItemChange += trySwitchItem;
+        else
+        {
+            Debug.LogWarning("InventoryUI not found");
+        }
+
+        mouseItemData = FindAnyObjectByType<MouseItemData>(FindObjectsInactive.Include);
+        if (mouseItemData != null)
+        {
+            mouseItemData.ItemChange += trySwitchItem;
+        }
     }
+
+    public override void OnNetworkDespawn() 
+    {        
+        if (IsOwner && mouseItemData != null)
+        {
+            mouseItemData.ItemChange -= trySwitchItem;
+        }
+    }
+
     public override void OnDestroy()
     {
-        mouseItemData.ItemChange -= trySwitchItem;
+        if (mouseItemData != null)
+        {
+            mouseItemData.ItemChange -= trySwitchItem;
+        }
     }
 
     public bool loadInventory(Purs _purs, ItemInventory _itemInventory)
@@ -59,17 +84,21 @@ public class Inventory : NetworkBehaviour
 
 
     [ServerRpc]
-    public void tryAddItemServerRPC(string ID, int rarity, int amount)
+    public void tryAddItemServerRPC(string ID, int rarity, int amount, NetworkObjectReference itemObjectRef)
     {
-        
-        tryAddItemClientRPC(ID,rarity, amount);
+        if (itemObjectRef.TryGet(out NetworkObject targetObject))
+        {
+            targetObject.Despawn();
+            
+            tryAddItemClientRPC(ID, rarity, amount);
+        }
     }
 
 
     [ClientRpc]
     public void tryAddItemClientRPC(string ID,int rarity, int amount)
     {
-        if (IsOwner)
+        if (IsOwner || IsServer)
         {
             ItemData itemDataToAdd;
             if (string.IsNullOrEmpty(ID))
@@ -112,19 +141,6 @@ public class Inventory : NetworkBehaviour
                 InventoryItemInstance itemInstance = new InventoryItemInstance(itemDataToAdd); 
                 isAdded = itemInventory.addItem(itemInstance, amount);
             }
-        
-            if(isAdded)
-            {
-                if (worldGenerator != null)
-                {
-                    worldGenerator.DespawnItem(othercollider.gameObject);
-                }
-                else
-                {
-                    worldGenerator = FindAnyObjectByType<WorldGenerator>();
-                    worldGenerator.DespawnItem(othercollider.gameObject);
-                }
-            }
         }
     }
     public ItemData getItemByID(string ID)
@@ -146,12 +162,30 @@ public class Inventory : NetworkBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (!IsOwner) return;
         if (bx.IsTouching(other) && other.CompareTag("ItemPickUp"))
         {
-            othercollider = other;
-            ItemPickUp itemPickUp = other.GetComponent<ItemPickUp>();
-            ItemPickUpData itemPickUpData = itemPickUp.getItemData();
-            tryAddItemServerRPC(itemPickUpData.id, itemPickUpData.itemRarity, itemPickUpData.amount);
+            NetworkObject itemNetObj = other.GetComponent<NetworkObject>();
+            if (itemNetObj != null)
+            {
+                tryAddItemServerRPC(itemNetObj);
+            }
+        }
+    }
+
+    [ServerRpc]
+    public void tryAddItemServerRPC(NetworkObjectReference itemObjectRef)
+    {
+        if (itemObjectRef.TryGet(out NetworkObject targetObject))
+        {
+            ItemPickUp itemPickUp = targetObject.GetComponent<ItemPickUp>();
+            
+            if (itemPickUp != null)
+            {
+                ItemPickUpData data = itemPickUp.getItemData();
+                targetObject.Despawn();
+                tryAddItemClientRPC(data.id, data.itemRarity, data.amount);
+            }
         }
     }
 
@@ -160,18 +194,32 @@ public class Inventory : NetworkBehaviour
         if (IsOwner)
         {
             bool success = itemInventory.switchItem(slot1, slot2, eqfirst, eqsecond);
+            
             if (success)
             {
-                changesuccess.Invoke();
+                changesuccess?.Invoke();
+                
+                if (!IsServer)
+                {
+                    SwitchItemServerRpc(slot1, slot2, eqfirst, eqsecond);
+                }
             }
         }
+    }
+
+    [ServerRpc]
+    public void SwitchItemServerRpc(int slot1, int slot2, bool eqfirst, bool eqsecond)
+    {
+        itemInventory.switchItem(slot1, slot2, eqfirst, eqsecond);
     }
     
     private EquipmentStats additemstats(EquipmentStats _equipmentStats, int rarity)
     {
         PlayerStats playerStats = GetComponent<PlayerStats>();
         float adjustedRarity = rarity + playerStats.getLevel() * 0.1f;
-//        Debug.Log("Adjusted Rarity is: " + adjustedRarity);
+        Debug.Log("adjustetRarity: " + adjustedRarity);
+        Debug.Log("player Level: " + playerStats.getLevel());
+        Debug.Log("rarity: " + rarity);
         _equipmentStats.generateStats(adjustedRarity);        
         return _equipmentStats;
     }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
 
 public class PlayerStats : BaseMobClass
@@ -14,8 +15,8 @@ public class PlayerStats : BaseMobClass
     [SerializeField] protected Playerstats baseStats; 
     private ItemInventory itemInventory;
     private bool isCrit;
-    private int playerLevel = 1;
-    private int playerXP = 0;
+    [SerializeField] private int playerLevel = 1;
+    [SerializeField] private int playerXP = 0;
     [Header("Spieler Info")]
     public string playerName;
 
@@ -135,6 +136,7 @@ public class PlayerStats : BaseMobClass
         int damage = calculateDamage(attackmulti);
         if (damage <= 0) damage = 5; 
         mob.TakeDamage(damage, isCrit);
+        mob.GetComponent<BaseEnemy>().SetLastAttacker(this.transform);
     }
 
     public int calculateDamage(float attackmulti)
@@ -171,19 +173,32 @@ public class PlayerStats : BaseMobClass
 
     private void calculateLevel(Playerstats stats)
     {
-        while (playerXP >= playerLevel * playerLevel *0.3f + 100 * playerLevel)
+        playerXP = stats.totalexperience;
+        playerLevel = 1;
+        while (playerXP >= GetRequiredXP())
         {
             playerLevel++;
-            playerXP -= (int)(playerLevel * playerLevel *0.3f + 100 * playerLevel);
+            playerXP -= GetRequiredXP();
+        }
+    }
+
+    [ClientRpc]
+    public void ReceiveXPClientRpc(int amount)
+    {
+        if (IsOwner)
+        {
+            gainXP(amount);
+            Debug.Log($"Du hast {amount} XP erhalten! Aktuelles Level: {playerLevel}");
         }
     }
     public void gainXP(int amount)
     {
         playerXP += amount;
-        if (playerXP >= playerLevel * playerLevel *0.3f + 100 * playerLevel)
+        while (playerXP >= GetRequiredXP())
         {
+            playerXP -= GetRequiredXP();
             playerLevel++;
-            playerXP -= (int)(playerLevel * playerLevel *0.3f + 100 * playerLevel);
+            Debug.Log($"Level Up! Du bist jetzt Level {playerLevel}");
         }
         baseStats.totalexperience += amount;
     }
@@ -201,7 +216,25 @@ public class PlayerStats : BaseMobClass
     {
         baseStats.health = health.Value;
         baseStats.calculateBaseStats(playerLevel);
-//        Debug.Log("stats calculated");
+    }
+
+    private int GetRequiredXP()
+    {
+        float requiredXP = (playerLevel * playerLevel * 0.3f) + (100 + (playerLevel * 10));
+        return Mathf.RoundToInt(requiredXP);
+    }
+
+    public void ResetToDefault()
+    {
+        baseStats.totalexperience = 0;
+        
+        if (health != null) health.Value = maxHealth;
+
+        calculateLevel(baseStats); 
+        
+        Initbase();
+        
+        Debug.Log("Spieler-Stats wurden erfolgreich auf Level 1 zurückgesetzt!");
     }
 }
 

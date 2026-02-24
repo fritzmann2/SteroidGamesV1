@@ -46,7 +46,11 @@ abstract public class BaseEnemy : BaseEntety
     private float attackCooldownTimer = 0f;
     protected float damage = 5f;
 
-    
+    [Header("XP System")]
+    public int baseXpReward = 50;
+    public float sharedXpRadius = 15f;
+    public float sharedXpPercentage = 0.5f;
+    private Transform lastAttacker;
 
 
     override public void Awake()
@@ -71,6 +75,7 @@ abstract public class BaseEnemy : BaseEntety
 
     virtual public void FixedUpdate()
     {
+        if (!IsServer) return;
         targetPlayer = getNerestPlayer();
         if (targetPlayer != null)
         {
@@ -159,12 +164,51 @@ abstract public class BaseEnemy : BaseEntety
         {
            worldgen.SpawnPickUpItem(id, transform);
            parentChunk.DespawnMob(this.GetComponent<NetworkObject>());
+            DistributeXP();
         }
         base.OnHealthChanged(previousValue, newValue);
         if (hpbarfiller != null)
         {
             hpbarfiller.transform.localScale = new Vector3 (newValue / maxHealth, 1f, 1f);
         }
+    }
+
+    private void DistributeXP()
+    {
+        for (int i = activePlayers.Count - 1; i >= 0; i--)
+        {
+            Transform player = activePlayers[i];
+            if (player == null) 
+            {
+                activePlayers.RemoveAt(i);
+                continue;
+            }
+
+            int xpToGive = 0;
+
+            if (player == lastAttacker)
+            {
+                xpToGive = baseXpReward;
+            }
+            else if (Vector3.Distance(transform.position, player.position) <= sharedXpRadius)
+            {
+                xpToGive = Mathf.RoundToInt(baseXpReward * sharedXpPercentage);
+            }
+
+            if (xpToGive > 0)
+            {
+                PlayerStats pStats = player.GetComponent<PlayerStats>();
+                if (pStats != null)
+                {
+                    pStats.ReceiveXPClientRpc(xpToGive);
+                }
+            }
+        }
+    }
+
+    public void SetLastAttacker(Transform attacker)
+    {
+        lastAttacker = attacker;
     }
 
     public void Setparrent(WorldGenerator parrentworldgen)
@@ -177,8 +221,16 @@ abstract public class BaseEnemy : BaseEntety
         Transform nearestPlayer = null;
         float nearestDistance = Mathf.Infinity;
 
-        foreach (Transform player in activePlayers)
+        for (int i = activePlayers.Count - 1; i >= 0; i--)
         {
+            Transform player = activePlayers[i];
+
+            if (player == null)
+            {
+                activePlayers.RemoveAt(i); 
+                continue;                
+            }
+
             float distance = Vector3.Distance(transform.position, player.position);
             if (distance < nearestDistance)
             {
@@ -186,6 +238,7 @@ abstract public class BaseEnemy : BaseEntety
                 nearestPlayer = player;
             }
         }
+        
         return nearestPlayer;        
     }
 

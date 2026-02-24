@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Collections;
+using TMPro;
 
 public class InventoryUI : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class InventoryUI : MonoBehaviour
     public List<EquipmentSlot_UI> equipmentSlot_UI;
     private Dictionary<InventorySlot_UI, InventorySlot> slotDictionary; 
     private bool hasInitializedOnce = false;
+    [Header("Multiplayer Info")]
+    public TextMeshProUGUI joinCodeText;
     
     
     
@@ -85,6 +88,14 @@ public class InventoryUI : MonoBehaviour
             equipmentSlot_UI[i].setSlotNum(i);
             updateSlot(i, true);
         }
+        if (RelayManager.Instance != null && !string.IsNullOrEmpty(RelayManager.Instance.CurrentJoinCode))
+        {
+            UpdateJoinCodeDisplay(RelayManager.Instance.CurrentJoinCode);
+        }
+        else
+        {
+            UpdateJoinCodeDisplay("Offline / Kein Code");
+        }
     }
 
     public void updateSlot(int _slotnum, bool isequipment)
@@ -98,6 +109,30 @@ public class InventoryUI : MonoBehaviour
         else
         {
             Debug.LogWarning("Kein Daten-Slot für dieses UI-Element im Dictionary gefunden.");
+        }
+    }
+    public void UpdateJoinCodeDisplay(string code)
+    {
+        if (joinCodeText != null)
+        {
+            joinCodeText.text = "Join Code: " + code;
+        }
+        else
+        {
+            Debug.LogWarning("JoinCodeText ist im Inspector nicht zugewiesen!");
+        }
+    }
+
+    public void CopyJoinCodeToClipboard()
+    {
+        if (RelayManager.Instance != null && !string.IsNullOrEmpty(RelayManager.Instance.CurrentJoinCode))
+        {
+            GUIUtility.systemCopyBuffer = RelayManager.Instance.CurrentJoinCode;
+            Debug.Log("Code in die Zwischenablage kopiert: " + RelayManager.Instance.CurrentJoinCode);
+        }
+        else
+        {
+            Debug.LogWarning("Kein Code zum Kopieren vorhanden!");
         }
     }
 }

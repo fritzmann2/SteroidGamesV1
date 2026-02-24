@@ -39,8 +39,16 @@ abstract public class Weapon : InventoryItem
         controls = new GameControls();
         playerStats = GetComponentInParent<PlayerStats>();
         movement = GetComponentInParent<PlayerMovement>();
-        handPosition = transform.parent.GetChild(0).transform;
-        player = transform.parent.parent;
+        
+    }
+
+    protected virtual void Start()
+    {
+        if (transform.GetChild(0) != null)
+        {
+            handPosition = transform.GetChild(0).transform;
+        }
+        player = transform.parent;
         transform.localPosition = handPosition.localPosition;
     }
     

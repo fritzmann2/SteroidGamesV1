@@ -8,8 +8,8 @@ public class PauseManager : MonoBehaviour
     public GameObject settingsUI;
     public GameObject pauseMenuUI;
     private GameControls controls;
-    private GameObject WhilePlayingObj;
-    private GameObject InventoryObj;
+    public GameObject WhilePlayingObj;
+    public GameObject InventoryObj;
     private PlayerSaveHandler playerSaveHandler;
     private bool escapepressed = false;
 
@@ -18,8 +18,6 @@ public class PauseManager : MonoBehaviour
     
     void Awake()
     {
-        InventoryObj = GameObject.FindGameObjectWithTag("Inventory");
-        WhilePlayingObj = GameObject.FindGameObjectWithTag("WhilePlaying");
         controls = new GameControls();
         pauseMenuUI.SetActive(false);
         settingsUI.SetActive(false);

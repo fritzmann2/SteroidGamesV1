@@ -99,6 +99,12 @@ public class PlayerSaveHandler : NetworkBehaviour
         this.playerName = clientPlayerName;
 
         GameSaveData data = SaveManager.Instance.LoadPlayerData(this.playerName);
+
+        if (data != null)
+        {
+            ApplyFullSaveData(data);
+        }
+        
         string json = data != null ? JsonUtility.ToJson(data) : "";
 
         ClientRpcParams clientRpcParams = new ClientRpcParams { Send = new ClientRpcSendParams { TargetClientIds = new ulong[] { clientId } } };
@@ -185,7 +191,6 @@ public class PlayerSaveHandler : NetworkBehaviour
         if (!IsOwner) return; 
         if (string.IsNullOrEmpty(json)) return;
 
-//        Debug.Log("[Client] Master-Savegame vom Server erhalten! Wende Daten an...");
         GameSaveData data = JsonUtility.FromJson<GameSaveData>(json);
         ApplyFullSaveData(data);
     }
@@ -198,7 +203,6 @@ public class PlayerSaveHandler : NetworkBehaviour
             playerStats.LoadSaveData(data.statsData);
         }
 
-        // 3. Inventar anwenden
         if (itemInventory != null && data.inventoryData != null)
         {
             foreach (var slot in itemInventory.inventorySlots) slot.clearSlot();
@@ -207,7 +211,7 @@ public class PlayerSaveHandler : NetworkBehaviour
             foreach (var slotData in data.inventoryData.invslots) RestoreItemToSlot(itemInventory.inventorySlots, slotData);
             foreach (var slotData in data.inventoryData.equipmentSlots) RestoreItemToSlot(itemInventory.equipmentSlots, slotData);
         }
-        
+        playerStats.playerName = playerName;
         dataLoaded?.Invoke();
     }
 
@@ -240,5 +244,45 @@ public class PlayerSaveHandler : NetworkBehaviour
 
             if (instance != null) slots[data.slotIndex].UpdateInventorySlot(instance, data.amount);
         }
+    }
+
+    public void RequestPlayerReset()
+    {
+        if (!IsOwner) return;
+        ResetPlayerServerRpc();
+    }
+
+    [ServerRpc]
+    private void ResetPlayerServerRpc()
+    {
+        PerformResetLocally();
+
+        GameSaveData emptyData = GenerateFullSaveData();
+        SaveManager.Instance.SaveGameData(emptyData);
+
+        ResetPlayerClientRpc();
+    }
+
+    [ClientRpc]
+    private void ResetPlayerClientRpc()
+    {
+        if (!IsOwner) return;
+        PerformResetLocally();
+    }
+
+    private void PerformResetLocally()
+    {
+        if (itemInventory != null)
+        {
+            foreach (var slot in itemInventory.inventorySlots) slot.clearSlot();
+            foreach (var slot in itemInventory.equipmentSlots) slot.clearSlot();
+        }
+
+        if (playerStats != null)
+        {
+            playerStats.ResetToDefault();
+        }
+
+        dataLoaded?.Invoke();
     }
 }

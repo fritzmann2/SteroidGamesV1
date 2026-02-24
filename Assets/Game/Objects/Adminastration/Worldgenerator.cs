@@ -212,13 +212,4 @@ public class WorldGenerator : NetworkBehaviour
             netObj.Spawn();
         }
     }
-
-    public void DespawnItem(GameObject itemToDespawn)
-    {
-        var netObj = itemToDespawn.GetComponent<NetworkObject>();
-        if (netObj != null)
-        {
-            netObj.Despawn();
-        }
-    }
 }

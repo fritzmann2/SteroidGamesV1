@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1561542812
+  GlobalObjectIdHash: 951506825
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -351,6 +351,7 @@ MonoBehaviour:
   health:
     m_InternalValue: 100
   maxHealth: 0
+  equipmentDatas: []
   totalStats:
     totalexperience: 0
     movementSpeed: 0
@@ -407,6 +408,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Inventory
   ShowTopMostFoldoutHeaderGroup: 1
   itemDatabase:
+  - {fileID: 11400000, guid: 2833195fba3e49c4eb1e6b8a6c316470, type: 2}
   - {fileID: 11400000, guid: f347961940402734db8da73e55f84d6e, type: 2}
   - {fileID: 11400000, guid: febc673f71f3ea249bd0bcef34d78966, type: 2}
   - {fileID: 11400000, guid: 79b4644908c1e4348ab57519d810b4a0, type: 2}
@@ -926,7 +928,7 @@ MonoBehaviour:
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
-      allowedType: 0
+      allowedType: 03000000
     - inventoryItemInstance:
         itemData: {fileID: 0}
         itemtype: 0
@@ -936,7 +938,7 @@ MonoBehaviour:
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
-      allowedType: 0
+      allowedType: 04000000
     - inventoryItemInstance:
         itemData: {fileID: 0}
         itemtype: 0
@@ -946,7 +948,7 @@ MonoBehaviour:
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
-      allowedType: 0
+      allowedType: 05000000
     - inventoryItemInstance:
         itemData: {fileID: 0}
         itemtype: 0
@@ -956,7 +958,7 @@ MonoBehaviour:
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
-      allowedType: 0
+      allowedType: 06000000
     - inventoryItemInstance:
         itemData: {fileID: 0}
         itemtype: 0
@@ -966,7 +968,7 @@ MonoBehaviour:
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
-      allowedType: 0
+      allowedType: 000000000100000002000000
     - inventoryItemInstance:
         itemData: {fileID: 0}
         itemtype: 0
@@ -976,7 +978,7 @@ MonoBehaviour:
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
-      allowedType: 0
+      allowedType: 07000000
     - inventoryItemInstance:
         itemData: {fileID: 0}
         itemtype: 0
@@ -986,7 +988,7 @@ MonoBehaviour:
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
-      allowedType: 0
+      allowedType: 07000000
     - inventoryItemInstance:
         itemData: {fileID: 0}
         itemtype: 0
@@ -996,7 +998,7 @@ MonoBehaviour:
       inventoryUI: {fileID: 0}
       IsEmpty: 1
       slotnum: 0
-      allowedType: 0
+      allowedType: 08000000
   addedsuccess:
     m_PersistentCalls:
       m_Calls: []

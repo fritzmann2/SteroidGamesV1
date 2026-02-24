@@ -202,6 +202,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   itemData: {fileID: 0}
   weaponstats:
+    count: 1
     weapondamage: 0
     strength: 0
     critChance: 0
@@ -213,3 +214,4 @@ MonoBehaviour:
   bx: {fileID: 0}
   animOffset: {x: 0, y: 0, z: 0}
   type: 0
+  isAttacking: 0

@@ -70,9 +70,12 @@ public class InventorySlot
         stacksize = amount;
         if (inventoryUI == null)
         {
-            Debug.Log ("inventoryUI is null");
+//            Debug.Log ("inventoryUI is null");
         }
-        inventoryUI.updateSlot(slotnum, isequipment);
+        else
+        {
+            inventoryUI.updateSlot(slotnum, isequipment); 
+        }
     }
     public bool RoomLeftInStack(int ammountToAdd, out int ammountRemaining)
     {

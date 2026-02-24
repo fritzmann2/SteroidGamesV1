@@ -20,6 +20,10 @@ public class Bow : Weapon
         type = EquipmentType.Bow;
         base.Awake();
     }
+    protected override void Start()
+    {
+        base.Start();
+    }
 }
 
 public enum AttackTypeBow

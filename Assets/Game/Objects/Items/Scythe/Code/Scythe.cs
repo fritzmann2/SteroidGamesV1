@@ -45,6 +45,11 @@ public class Scythe : Weapon
         isThrown = false;
         groundLayer = LayerMask.GetMask("Ground");        
     }
+
+    protected override void Start()
+    {
+        base.Start();
+    }
     void Update()
     {
         if (isThrown)
@@ -89,6 +94,10 @@ public class Scythe : Weapon
         }
         else if (isReturning)
         {
+            if (player == null)
+            {
+                Debug.LogWarning("Player not found");
+            }
             transform.position = Vector3.MoveTowards(transform.position, player.position, returnSpeed * Time.deltaTime);
 
             if (Vector3.Distance(transform.position, player.position) < 0.1f)
