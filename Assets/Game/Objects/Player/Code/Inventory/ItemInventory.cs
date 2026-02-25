@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using Unity.VisualScripting;
 
 [System.Serializable]
 public class ItemInventory
@@ -123,16 +124,20 @@ public class ItemInventory
             int amountToAdd;
             int amount = slot1.StackSize;
             slot2.RoomLeftInStack(amount, out amountToAdd);
-            slot2.addToStack(amountToAdd);
-            slot1.removeFromStack(amountToAdd);
+            if (amountToAdd <= 0)
+            {
+                swap2slots(slot1, slot2);
+            }
+            else
+            {
+                slot2.addToStack(amountToAdd);
+                slot1.removeFromStack(amountToAdd);
+            }
+            
         }
         else
         {
-            InventoryItemInstance temp = slot1.InventoryItemInstance;
-            int stacksize = slot1.StackSize;
-            
-            slot1.UpdateInventorySlot(slot2.InventoryItemInstance, slot2.StackSize);
-            slot2.UpdateInventorySlot(temp, stacksize);
+            swap2slots(slot1, slot2);
         }
 
         if (eqfirst || eqsecond)
@@ -143,4 +148,12 @@ public class ItemInventory
         return true;
     }
 
+    private void swap2slots(InventorySlot slot1, InventorySlot slot2)
+    {
+        InventoryItemInstance temp = slot1.InventoryItemInstance;
+            int stacksize = slot1.StackSize;
+            
+            slot1.UpdateInventorySlot(slot2.InventoryItemInstance, slot2.StackSize);
+            slot2.UpdateInventorySlot(temp, stacksize);
+    }
 }

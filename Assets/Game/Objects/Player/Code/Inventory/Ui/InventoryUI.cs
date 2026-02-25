@@ -53,11 +53,20 @@ public class InventoryUI : MonoBehaviour
 //        Debug.Log("UI Refreshed via OnEnable");
     }
 
+    
     public void initplayer(Inventory _playerinventory)
     {
         playerinventory = _playerinventory;
         initUI();
         FindAnyObjectByType<MouseItemData>().initMouse(_playerinventory);
+
+        PlayerSaveHandler saveHandler = playerinventory.GetComponent<PlayerSaveHandler>();
+        if (saveHandler != null)
+        {
+            saveHandler.dataLoaded -= RefreshAllSlots; 
+            
+            saveHandler.dataLoaded += RefreshAllSlots;
+        }
     }
 
     private void initUI()

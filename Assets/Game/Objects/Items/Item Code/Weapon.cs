@@ -42,10 +42,9 @@ abstract public class Weapon : InventoryItem
         movement = GetComponentInParent<PlayerMovement>();
         rotation = transform.localRotation;
     }
-
     protected virtual void Start()
     {
-        if (transform.GetChild(0) != null)
+        if (transform?.GetChild(0) != null)
         {
             handPosition = transform.GetChild(0).transform;
         }
@@ -57,7 +56,12 @@ abstract public class Weapon : InventoryItem
     {
         weaponstats = _weaponstats;
         playerStats.UpdateStatsFromEquipment(4);
+    }
 
+    public void initWeaponScript(PlayerStats _playerStats)
+    {
+        playerStats = _playerStats;
+        Debug.Log("PlayerStats set");
     }
 
     

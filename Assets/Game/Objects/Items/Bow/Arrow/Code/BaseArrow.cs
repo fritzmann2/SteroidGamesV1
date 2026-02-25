@@ -1,16 +1,12 @@
 using UnityEngine;
+using Unity.Netcode;
 
-public class BaseArrow : MonoBehaviour
+public class BaseArrow : NetworkBehaviour
 {
     [Header("Settings")]
     [SerializeField] private float movementspeed; 
     [SerializeField] private float gravity;
 
-    void Reset()
-    {
-        movementspeed = 20f;
-        gravity = 7f;
-    }
     private float despawnTimer = 15f;
     private BoxCollider2D bx;
     private bool hasHitWall = false;
@@ -18,6 +14,12 @@ public class BaseArrow : MonoBehaviour
     private Vector3 velocity;
 
     private bool isInitialized = false; 
+
+    void Reset()
+    {
+        movementspeed = 20f;
+        gravity = 7f;
+    }
 
     void Awake()
     {
@@ -31,7 +33,6 @@ public class BaseArrow : MonoBehaviour
         velocity = _direction.normalized * movementspeed;
         transform.rotation = _rotation;
         owner = _owner;
-        
         isInitialized = true; 
     }
 
@@ -48,22 +49,24 @@ public class BaseArrow : MonoBehaviour
                 transform.rotation = Quaternion.Euler(0, 0, angle); 
             }
             
-            despawnTimer -= Time.fixedDeltaTime;
-            if (despawnTimer <= 0)
+            if (IsServer)
             {
-                Destroy(gameObject);
-            }
-            
-            if (owner != null && Vector3.Distance(owner.position, transform.position) > 60f)
-            {
-                Destroy(gameObject);
+                despawnTimer -= Time.fixedDeltaTime;
+                if (despawnTimer <= 0)
+                {
+                    GetComponent<NetworkObject>().Despawn();
+                }
+                
+                if (owner != null && Vector3.Distance(owner.position, transform.position) > 60f)
+                {
+                    GetComponent<NetworkObject>().Despawn();
+                }
             }
         }
     }
 
     private void hitWall()
     {
-        Debug.Log("Hit Ground");
         hasHitWall = true;
         bx.enabled = false;
         if (despawnTimer > 3f)
@@ -80,14 +83,14 @@ public class BaseArrow : MonoBehaviour
             return;
         }
 
+        if (!IsServer) return; 
         if (owner == null) return; 
-
         if (other.TryGetComponent<BaseEntety>(out BaseEntety mob))
         {
             if (other.transform != owner)
             {
                 owner.GetComponent<PlayerStats>().DealotherDamage(mob, 0.4f);
-                Destroy(gameObject);
+                GetComponent<NetworkObject>().Despawn();
             }
         }
     }

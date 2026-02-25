@@ -24,13 +24,15 @@ public class PlayerStats : BaseMobClass
 
     public override void OnNetworkSpawn()
     {
-        base.OnNetworkSpawn();
+        base.OnNetworkSpawn(); 
+        
+        if (!IsOwner) return;
+
         playerSaveHandler = GetComponent<PlayerSaveHandler>(); 
         itemInventory = GetComponentInParent<Inventory>().itemInventory;
-        if (IsOwner)
-        {
-            statsUI = FindAnyObjectByType<PlayerStatsUI>();
-        }
+        
+        statsUI = FindAnyObjectByType<PlayerStatsUI>();
+        
         playerSaveHandler.dataLoaded += Init;
         itemInventory.OnEquipmentChanged += Initbase;
     }
@@ -147,7 +149,6 @@ public class PlayerStats : BaseMobClass
         int damage = (int)(_damage / (1 + totalStats.defense / 100f));
 
         TakeDamageServerRpc((int)damage, isCrit);
-        statsUI.UpdateHealthUI((int)health.Value, maxHealth);
     }
 
     public void DealotherDamage(BaseEntety mob, float attackmulti)
@@ -255,6 +256,16 @@ public class PlayerStats : BaseMobClass
         Initbase();
         
         Debug.Log("Spieler-Stats wurden erfolgreich auf Level 1 zurückgesetzt!");
+    }
+
+    public override void OnHealthChanged(float previousValue, float newValue)
+    {
+        base.OnHealthChanged(previousValue, newValue);
+
+        if (IsOwner && statsUI != null)
+        {
+            statsUI.UpdateHealthUI((int)newValue, maxHealth);
+        }
     }
 }
 

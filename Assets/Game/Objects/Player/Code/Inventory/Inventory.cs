@@ -35,7 +35,7 @@ public class Inventory : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         if (!IsOwner) return;
-
+        if(!IsOwner) Debug.LogWarning("safety fail");
         InventoryUI inventoryUI = FindAnyObjectByType<InventoryUI>(FindObjectsInactive.Include);
         if (inventoryUI != null)
         {

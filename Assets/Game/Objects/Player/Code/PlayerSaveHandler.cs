@@ -34,11 +34,11 @@ public class PlayerSaveHandler : NetworkBehaviour
             RequestLoadDataServerRpc(myName);
 
             autoSaveCoroutine = StartCoroutine(AutoSaveLoop());
-        }
-        PauseManager pauseManager = FindAnyObjectByType<PauseManager>();
-        if (pauseManager != null)
-        {
-            pauseManager.RegisterPlayerSaveHandler(this);
+            PauseManager pauseManager = FindAnyObjectByType<PauseManager>();
+            if (pauseManager != null)
+            {
+                pauseManager.RegisterPlayerSaveHandler(this);
+            }
         }
     }
 

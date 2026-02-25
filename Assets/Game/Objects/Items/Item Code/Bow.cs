@@ -1,6 +1,7 @@
 using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.InputSystem;
+using Unity.Services.Matchmaker.Models;
 
 
 public class Bow : Weapon
@@ -17,7 +18,7 @@ public class Bow : Weapon
         {
             canshoot = false;
 
-            if (IsOwner)
+            if (playerStats.IsOwner)
             {
                 Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
                 Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
@@ -60,7 +61,8 @@ public class Bow : Weapon
 
     void FixedUpdate()
     {
-        if (!IsOwner) return;
+        if (playerStats == null) return;
+        if (!playerStats.IsOwner) return;
         if (transform.parent != null)
         {
             transform.localPosition = handPosition.localPosition + animOffset + bowTransform;
@@ -82,6 +84,7 @@ public class Bow : Weapon
 
     public void shootArrow()
     {
+        if (!playerStats.IsOwner) return;
         Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
         Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
         mouseWorldPos.z = 0f;

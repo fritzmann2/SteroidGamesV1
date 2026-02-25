@@ -146,7 +146,6 @@ public class Attackmanager : NetworkBehaviour
 
             currentWeaponObject = netObj.gameObject;
             currentWeaponScript = netObj.GetComponent<Weapon>();
-            
             currentWeaponScript.SetFollowTarget(this.handHolder);
 
             EquipClientRpc(netObj.NetworkObjectId);
@@ -164,6 +163,7 @@ public class Attackmanager : NetworkBehaviour
         {            
             currentWeaponObject = weaponNetObj.gameObject;
             currentWeaponScript = weaponNetObj.GetComponent<Weapon>();
+            currentWeaponScript.initWeaponScript(GetComponent<PlayerStats>());
             currentWeaponScript.SetFollowTarget(this.handHolder);
         }
     }
