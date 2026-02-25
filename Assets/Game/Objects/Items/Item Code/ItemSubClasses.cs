@@ -28,7 +28,14 @@ public enum Itemtype
 public class EquipmentStats
 {
     public int count = 1;
+    public int compleatValue;
     public virtual void generateStats(float rarity){}
+    protected int calcRandomNum()
+    {
+        int randomnum = UnityEngine.Random.Range(1, 5);
+        compleatValue += randomnum;
+        return randomnum;
+    }
     
 }
 
@@ -52,11 +59,12 @@ public class WeaponStats : EquipmentStats, INetworkSerializable
     }
     public override void generateStats(float rarity)
     {
-        weapondamage = (UnityEngine.Random.Range(1, 5) + 5) * rarity * multiplier;
-        strength = (UnityEngine.Random.Range(1, 5) + 5) * rarity;
-        critChance = UnityEngine.Random.Range(0.5f, 5f) * rarity;
-        critDamage = UnityEngine.Random.Range(1f, 10f) * rarity;
-        attackSpeed = UnityEngine.Random.Range(0.1f, 0.5f) * rarity;
+        compleatValue = 0;   
+        weapondamage = (calcRandomNum() + 5) * rarity * multiplier;
+        strength = (calcRandomNum() + 5) * rarity;
+        critChance = calcRandomNum() * rarity;
+        critDamage = calcRandomNum() * 5 * rarity;
+        attackSpeed = calcRandomNum() * 0.1f * rarity;
     }
     public WeaponStats Clone()
     {
@@ -78,8 +86,9 @@ public class ArmorStats : EquipmentStats, INetworkSerializable
 
     public override void generateStats(float rarity)
     {
-        defense = (UnityEngine.Random.Range(1, 5) + 5) * rarity;
-        spellresistance = (UnityEngine.Random.Range(1, 5) + 5) * rarity;
+        compleatValue = 0;
+        defense = (calcRandomNum() + 5) * rarity;
+        spellresistance = (calcRandomNum() + 5) * rarity;
     }
     public ArmorStats Clone()
     {
@@ -118,17 +127,20 @@ public class AccessoryStats : EquipmentStats, INetworkSerializable
 
     public override void generateStats(float rarity)
     {
-        health = (UnityEngine.Random.Range(1, 5) + 5) * rarity;
-        mana = (UnityEngine.Random.Range(1, 5) + 5) * rarity;
-        healthRegen = (UnityEngine.Random.Range(0.1f, 0.5f) + 0.5f) * rarity;
-        manaRegen = (UnityEngine.Random.Range(0.1f, 0.5f) + 0.5f) * rarity;
-        movementSpeed = (UnityEngine.Random.Range(0.1f, 0.5f) + 0.5f) * rarity;
-        attackSpeed = (UnityEngine.Random.Range(0.1f, 0.5f) + 0.5f) * rarity;
-        critChance = UnityEngine.Random.Range(0.5f, 5f) * rarity;
-        critDamage = UnityEngine.Random.Range(1f, 10f) * rarity;
-        strength = (UnityEngine.Random.Range(1, 5) + 5) * rarity;
-        defence = (UnityEngine.Random.Range(1, 5) + 5) * rarity;
-        spellresistance = (UnityEngine.Random.Range(1, 5) + 5) * rarity;
+        compleatValue = 0;
+
+
+        health = (calcRandomNum() + 5) * rarity;
+        mana = (calcRandomNum() + 5) * rarity;
+        healthRegen = (calcRandomNum() * 0.1f + 0.5f) * rarity;
+        manaRegen = (calcRandomNum() * 0.1f + 0.5f) * rarity;
+        movementSpeed = (calcRandomNum() * 0.1f + 0.5f) * rarity;
+        attackSpeed = (calcRandomNum() * 0.1f + 0.5f) * rarity;
+        critChance = calcRandomNum() * rarity;
+        critDamage = calcRandomNum() * 5 * rarity;
+        strength = (calcRandomNum() + 5) * rarity;
+        defence = (calcRandomNum() + 5) * rarity;
+        spellresistance = (calcRandomNum() + 5) * rarity;
     }
     public AccessoryStats Clone()
     {

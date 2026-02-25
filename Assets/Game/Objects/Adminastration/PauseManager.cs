@@ -19,10 +19,7 @@ public class PauseManager : MonoBehaviour
     void Awake()
     {
         controls = new GameControls();
-        pauseMenuUI.SetActive(false);
-        settingsUI.SetActive(false);
-        InventoryObj.SetActive(false);
-        WhilePlayingObj.SetActive(true);        
+        ResetAllUI();     
     }
 
     void Update()
@@ -69,13 +66,29 @@ public class PauseManager : MonoBehaviour
         }
         else
         {
-            OpenMenu();
+            if (WhilePlayingObj.activeInHierarchy)
+            {
+                OpenMenu();
+            }
+            else
+            {
+                ResetAllUI();
+            }
         }
+    }
+
+    private void ResetAllUI()
+    {
+        pauseMenuUI.SetActive(false);
+        settingsUI.SetActive(false);
+        InventoryObj.SetActive(false);
+        WhilePlayingObj.SetActive(true);   
     }
 
     public void OpenMenu()
     {
         settingsUI.SetActive(false);
+        WhilePlayingObj.SetActive(false);
         pauseMenuUI.SetActive(true);
         isMenuOpen = true;
     }
@@ -84,10 +97,12 @@ public class PauseManager : MonoBehaviour
         isMenuOpen = false;
         settingsUI.SetActive(false);
         pauseMenuUI.SetActive(false);
+        WhilePlayingObj.SetActive(true);
     }
     public void OpenSettings()
     {
         pauseMenuUI.SetActive(false);
+        WhilePlayingObj.SetActive(false);
         settingsUI.SetActive(true);
     }
 

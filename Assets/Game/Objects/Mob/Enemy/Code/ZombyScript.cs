@@ -5,7 +5,8 @@ public class ZombyScript : BaseEnemy
     public override void Reset()
     {
         id = "Zomby";
-        maxHealth = 30;
+        maxHealth = 300;
+        damage = 20f;
         base.Reset();
     }
 

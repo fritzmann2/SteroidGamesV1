@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
+using Unity.Services.Matchmaker.Models;
 
 
 public class PlayerStats : BaseMobClass
@@ -13,6 +14,7 @@ public class PlayerStats : BaseMobClass
     [SerializeField] protected Playerstats totalStats;
     
     [SerializeField] protected Playerstats baseStats; 
+    [SerializeField] protected PlayerStatsUI statsUI;
     private ItemInventory itemInventory;
     private bool isCrit;
     [SerializeField] private int playerLevel = 1;
@@ -20,12 +22,15 @@ public class PlayerStats : BaseMobClass
     [Header("Spieler Info")]
     public string playerName;
 
-
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
         playerSaveHandler = GetComponent<PlayerSaveHandler>(); 
         itemInventory = GetComponentInParent<Inventory>().itemInventory;
+        if (IsOwner)
+        {
+            statsUI = FindAnyObjectByType<PlayerStatsUI>();
+        }
         playerSaveHandler.dataLoaded += Init;
         itemInventory.OnEquipmentChanged += Initbase;
     }
@@ -41,7 +46,8 @@ public class PlayerStats : BaseMobClass
         Initbase();
 
         calculateLevel(baseStats);
-        
+        statsUI.UpdateHealthUI((int)health.Value, maxHealth);
+        statsUI.UpdateXPUI(playerXP, GetRequiredXP(), playerLevel);
     }
 
     private void Initbase()
@@ -130,11 +136,24 @@ public class PlayerStats : BaseMobClass
         
     }
 
+    public override void TakeDamage(float _damage, bool isCrit)
+    {
+        if (NetworkManager.Singleton == null || !NetworkManager.Singleton.IsListening)
+        {
+            Debug.LogWarning("Kein Server/Client gestartet! Schlag ignoriert.");
+            return;
+        }
+
+        int damage = (int)(_damage / (1 + totalStats.defense / 100f));
+
+        TakeDamageServerRpc((int)damage, isCrit);
+        statsUI.UpdateHealthUI((int)health.Value, maxHealth);
+    }
 
     public void DealotherDamage(BaseEntety mob, float attackmulti)
     {
         int damage = calculateDamage(attackmulti);
-        if (damage <= 0) damage = 5; 
+        if (damage <= 0) damage = 40; 
         mob.TakeDamage(damage, isCrit);
         mob.GetComponent<BaseEnemy>().SetLastAttacker(this.transform);
     }
@@ -188,7 +207,7 @@ public class PlayerStats : BaseMobClass
         if (IsOwner)
         {
             gainXP(amount);
-            Debug.Log($"Du hast {amount} XP erhalten! Aktuelles Level: {playerLevel}");
+//            Debug.Log($"Du hast {amount} XP erhalten! Aktuelles Level: {playerLevel}");
         }
     }
     public void gainXP(int amount)
@@ -201,6 +220,7 @@ public class PlayerStats : BaseMobClass
             Debug.Log($"Level Up! Du bist jetzt Level {playerLevel}");
         }
         baseStats.totalexperience += amount;
+        statsUI.UpdateXPUI(playerXP, GetRequiredXP(), playerLevel);
     }
 
     public PlayerStatsSaveData GetSaveData()

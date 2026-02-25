@@ -55,6 +55,7 @@ abstract public class BaseEnemy : BaseEntety
 
     override public void Awake()
     {
+        Reset();
         base.Awake();
         worldgen = FindAnyObjectByType<WorldGenerator>();
         levelManager = FindAnyObjectByType<LevelManager>();

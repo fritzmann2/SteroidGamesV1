@@ -17,6 +17,10 @@ abstract public class BaseEntety : NetworkBehaviour
     {
         health.OnValueChanged += OnHealthChanged;
         damageTextManager = FindAnyObjectByType<DamageTextManager>();
+    }
+
+    override public void OnNetworkSpawn()
+    {
         if (IsServer)
         {
             health.Value = maxHealth;
@@ -49,6 +53,7 @@ abstract public class BaseEntety : NetworkBehaviour
         
         health.Value -= damage;
     }
+
     //Todesabfrage
     virtual public void OnHealthChanged(float previousValue, float newValue)
     {

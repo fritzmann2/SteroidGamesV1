@@ -13,10 +13,11 @@ public class WizardScript : BaseEnemy
     public override void Reset()    
     {
         id = "Wizard";
-        maxHealth = 10;
-        maxdistance = 15f; 
-        mindistance = 5f;
+        maxHealth = 100;
+        maxdistance = 20f; 
+        mindistance = 10f;
         attackCooldown = 3f;
+        damage = 10f;
         base.Reset();
 
         #if UNITY_EDITOR
@@ -36,6 +37,7 @@ public class WizardScript : BaseEnemy
     public override void Awake()
     {
         base.Awake();
+        
     }
 
     public override void Attack()

@@ -350,7 +350,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   health:
     m_InternalValue: 100
-  maxHealth: 0
+  maxHealth: 200
   equipmentDatas: []
   totalStats:
     totalexperience: 0
@@ -378,6 +378,7 @@ MonoBehaviour:
     mana: 0
     manaRegen: 0
     health: 0
+  statsUI: {fileID: 0}
   playerLevel: 1
   playerXP: 0
   playerName: 

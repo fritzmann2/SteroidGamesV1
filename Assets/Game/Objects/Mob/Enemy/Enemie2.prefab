@@ -209,8 +209,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WizardScript
   ShowTopMostFoldoutHeaderGroup: 1
   health:
-    m_InternalValue: 10
-  maxHealth: 10
+    m_InternalValue: 100
+  maxHealth: 100
   rb: {fileID: 0}
   levelManager: {fileID: 0}
   hpbarfiller: {fileID: 5453053679062184462}
@@ -226,9 +226,12 @@ MonoBehaviour:
   voidCheckStartY: -0.4
   voidCheckDistance: 1.5
   jumpforce: 5
-  mindistance: 5
-  maxdistance: 15
+  mindistance: 10
+  maxdistance: 20
   attackCooldown: 3
+  baseXpReward: 50
+  sharedXpRadius: 15
+  sharedXpPercentage: 0.5
   projectilePrefab: {fileID: 7554478117150871380, guid: 8406425a5eb305c48af0cfa9c65e7783, type: 3}
 --- !u!114 &-3471625493196022435
 MonoBehaviour:

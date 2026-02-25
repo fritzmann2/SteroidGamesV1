@@ -217,6 +217,10 @@ public class Inventory : NetworkBehaviour
     {
         PlayerStats playerStats = GetComponent<PlayerStats>();
         float adjustedRarity = rarity + playerStats.getLevel() * 0.1f;
+        if (adjustedRarity > 2.5f)
+        {
+            adjustedRarity = 2.5f;
+        }
         Debug.Log("adjustetRarity: " + adjustedRarity);
         Debug.Log("player Level: " + playerStats.getLevel());
         Debug.Log("rarity: " + rarity);

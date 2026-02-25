@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 8006004353797545002}
   - component: {fileID: 798113637872870010}
   - component: {fileID: 9030585604184931906}
-  - component: {fileID: 7972193725599456090}
   - component: {fileID: 665160826377802839}
   - component: {fileID: -6830443312780737250}
+  - component: {fileID: 7972193725599456090}
   m_Layer: 6
   m_Name: Enemie1
   m_TagString: Mob
@@ -195,40 +195,6 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
---- !u!114 &7972193725599456090
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 410988861812181967}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d301b904c875cd4eb7b33cff2d44c37, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ZombyScript
-  ShowTopMostFoldoutHeaderGroup: 1
-  health:
-    m_InternalValue: 30
-  maxHealth: 30
-  rb: {fileID: 0}
-  levelManager: {fileID: 0}
-  hpbarfiller: {fileID: 5918768793168050712}
-  targetPlayer: {fileID: 0}
-  worldgen: {fileID: 0}
-  parentChunk: {fileID: 0}
-  id: Zomby
-  groundCheckPos: -0.5
-  groundCheckSize: {x: 0.5, y: 0.1}
-  wallCheckDistance: 0.6
-  wallCheckHeight: -0.4
-  voidCheckOffsetx: 0.6
-  voidCheckStartY: -0.4
-  voidCheckDistance: 1.5
-  jumpforce: 5
-  mindistance: 1
-  maxdistance: 10
-  attackCooldown: 2
 --- !u!114 &665160826377802839
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -292,6 +258,43 @@ MonoBehaviour:
   UseRigidBodyForMotion: 0
   AutoUpdateKinematicState: 1
   AutoSetKinematicOnDespawn: 1
+--- !u!114 &7972193725599456090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 410988861812181967}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d301b904c875cd4eb7b33cff2d44c37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ZombyScript
+  ShowTopMostFoldoutHeaderGroup: 1
+  health:
+    m_InternalValue: 300
+  maxHealth: 300
+  rb: {fileID: 0}
+  levelManager: {fileID: 0}
+  hpbarfiller: {fileID: 5918768793168050712}
+  targetPlayer: {fileID: 0}
+  worldgen: {fileID: 0}
+  parentChunk: {fileID: 0}
+  id: Zomby
+  groundCheckPos: -0.5
+  groundCheckSize: {x: 0.5, y: 0.1}
+  wallCheckDistance: 0.6
+  wallCheckHeight: -0.4
+  voidCheckOffsetx: 0.6
+  voidCheckStartY: -0.4
+  voidCheckDistance: 1.5
+  jumpforce: 5
+  mindistance: 1
+  maxdistance: 10
+  attackCooldown: 2
+  baseXpReward: 50
+  sharedXpRadius: 15
+  sharedXpPercentage: 0.5
 --- !u!1001 &8658104160083641444
 PrefabInstance:
   m_ObjectHideFlags: 0

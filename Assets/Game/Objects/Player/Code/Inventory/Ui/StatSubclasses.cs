@@ -19,62 +19,19 @@ public class Playerstats
 
     public void calculateBaseStats(int level)
     {
-        attackSpeed = level/100;
-        critChance = level/100;
-        critDamage = level * 2;
+        attackSpeed = level/100f;
+        critChance = level/100f;
+        critDamage = level * 2f;
         strength = level;
         defense = level;
-        spellresistance = level/100; 
+        spellresistance = level/100f; 
         mana = level;
-        manaRegen = level/100;    
+        manaRegen = level/100f;    
     }
 }
 
+[System.Serializable]
 public class PlayerStatsSaveData
 {
     public Playerstats baseStats;
-}
-
-public static class StatExtensions
-{
-    public static Dictionary<string, string> GetActiveStats(this EquipmentStats stats)
-    {
-        Dictionary<string, string> activeStats = new Dictionary<string, string>();
-
-        if (stats == null) return activeStats;
-
-        System.Type type = stats.GetType();
-
-        FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
-
-        foreach (FieldInfo field in fields)
-        {
-            string statName = field.Name;
-            object value = field.GetValue(stats);
-
-            if (value is float fValue)
-            {
-                if (fValue != 0) 
-                {
-                    activeStats.Add(FormatName(statName), fValue.ToString("0.##")); 
-                }
-            }
-            else if (value is int iValue)
-            {
-                if (statName == "count") continue; 
-
-                if (iValue != 0)
-                {
-                    activeStats.Add(FormatName(statName), iValue.ToString());
-                }
-            }
-        }
-
-        return activeStats;
-    }
-
-    private static string FormatName(string name)
-    {
-        return char.ToUpper(name[0]) + name.Substring(1);
-    }
 }
