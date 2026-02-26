@@ -11469,6 +11469,7 @@ MonoBehaviour:
   allMapChunks:
   - {fileID: 9010883827131182753, guid: d5d9dc3e18a180147b9a8190c0d7ee18, type: 3}
   - {fileID: 6640263213549826177, guid: ee4cfb81cc0f9a24e9f303f899e91e0f, type: 3}
+  - {fileID: 5105195841852292044, guid: bc3017e3db16a0445aad879e05014cb2, type: 3}
   dummy: {fileID: 4964076883635186287, guid: b19c29f1fc9aa7040b895bb90835eca9, type: 3}
   PickUpItem: {fileID: 5033514447186220528, guid: 6d3ceba5535605045b96e6c248c77a1a, type: 3}
   chunkSize: 50

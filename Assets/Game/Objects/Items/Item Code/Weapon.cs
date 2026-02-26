@@ -1,12 +1,14 @@
 using UnityEngine;
 using Unity.Netcode;
 using System.Collections;
+using System.Collections.Generic;
 
 
 abstract public class Weapon : InventoryItem
 {
 
     [SerializeField] public WeaponStats weaponstats;
+    private List<Transform> hittedTargets = new List<Transform>();
     private Quaternion rotation;
     protected PlayerMovement movement;
 
@@ -102,6 +104,7 @@ abstract public class Weapon : InventoryItem
     public virtual void DisableHitbox()
     {
         if (bx != null) bx.enabled = false;
+        hittedTargets.Clear();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -110,6 +113,10 @@ abstract public class Weapon : InventoryItem
         {
             Debug.LogWarning("Playerstats not foumd");
         }
+        if (hittedTargets.Contains(other.transform))
+    {
+        return; 
+    }
         if (other.gameObject == playerStats.gameObject) 
         {
             return; 
@@ -117,14 +124,18 @@ abstract public class Weapon : InventoryItem
         BaseEntety mob = other.GetComponent<BaseEntety>();
         if (other.CompareTag("Mob"))
         {
-//            Debug.Log("Hit Mob");
-            playerStats.DealotherDamage(mob, attackmulti);
+            DealotherDamage(mob, attackmulti);
         } 
         if(other.CompareTag("Player"))
         {
-            playerStats.DealotherDamage(mob, attackmulti);
-            Debug.Log("Hit Player");
+            DealotherDamage(mob, attackmulti);
         }
+    }
+
+    private void DealotherDamage(BaseEntety mob, float attackmulti)
+    {
+        playerStats.DealotherDamage(mob, attackmulti);
+        hittedTargets.Add(mob.transform);
     }
 
     public float GetAnimationLength(string attacktype)

@@ -57,7 +57,8 @@ public class Scythe : Weapon
         type = EquipmentType.Scythe;
         base.Awake();
         isThrown = false;
-        groundLayer = LayerMask.GetMask("Ground");        
+        groundLayer = LayerMask.GetMask("Ground");       
+        DisableHitbox(); 
     }
 
     protected override void Start()

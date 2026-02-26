@@ -91,7 +91,7 @@ public class NetworkUI : MonoBehaviour
             if (string.IsNullOrEmpty(pName)) pName = "Spieler" + Random.Range(1000, 9999);
             PlayerPrefs.SetString("PlayerName", pName); 
             
-            string code = joinCodeInput.text;
+            string code = joinCodeInput.text.Trim();
 
             if (!string.IsNullOrEmpty(code))
             {

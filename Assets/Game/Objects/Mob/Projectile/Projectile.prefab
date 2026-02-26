@@ -102,7 +102,7 @@ BoxCollider2D:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
     oldSize: {x: 1.011, y: 1.019}
-    newSize: {x: 10.11, y: 10.19}
+    newSize: {x: 7.55, y: 5.03}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
@@ -161,7 +161,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 10.11, y: 10.19}
+  m_Size: {x: 7.55, y: 5.03}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -205,3 +205,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   ShowTopMostFoldoutHeaderGroup: 1
+  rotateSpeed: 90
+  spellSprites:
+  - {fileID: -3185113196874226541, guid: 0f263070aef2cae4c9823e225b68a65d, type: 3}
+  - {fileID: -5470055808993397305, guid: 2986d6fec6973b14cbe25896c472d9b8, type: 3}
+  - {fileID: -7662611962985505444, guid: 2ea94e25b4f3b924ea4d3c56aac0f5e6, type: 3}

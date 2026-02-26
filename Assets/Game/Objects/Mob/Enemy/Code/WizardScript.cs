@@ -9,6 +9,7 @@ public class WizardScript : BaseEnemy
 {
     [Header("Wizard Settings")]
     public GameObject projectilePrefab;
+    private float fireballHightf = 4f;
 
     public override void Reset()    
     {
@@ -16,8 +17,8 @@ public class WizardScript : BaseEnemy
         maxHealth = 100;
         maxdistance = 20f; 
         mindistance = 10f;
-        attackCooldown = 3f;
-        damage = 10f;
+        attackCooldown = 1f;
+        damage = 20f;
         movementSpeed = 3f;
         base.Reset();
 
@@ -54,12 +55,21 @@ public class WizardScript : BaseEnemy
 
         Vector2 playerDir = new Vector2(targetPlayer.position.x - transform.position.x, 0f).normalized;
         
-        Vector2 spawnPos = (Vector2)transform.position + new Vector2(playerDir.x * 0.3f, 4f);
+        Vector2 spawnPos = (Vector2)transform.position + new Vector2(playerDir.x * 0.3f, fireballHightf);
 
         GameObject projectileInstance = Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
 
         NetworkObject netObj = projectileInstance.GetComponent<NetworkObject>();
         netObj.Spawn(); 
-        projectileInstance.GetComponent<BaseSpell>().Init(targetPlayer.transform.position, damage);        
+        int randomnum = Random.Range(1,4);
+        if (randomnum < 3)
+        {
+            projectileInstance.GetComponent<BaseSpell>().Init(targetPlayer.position, damage);         
+        }
+        else
+        {
+            projectileInstance.GetComponent<BaseSpell>().Init(targetPlayer.position, damage, targetPlayer);   
+            attackCooldownTimer = attackCooldown * 2f;  
+        }
     }
 }

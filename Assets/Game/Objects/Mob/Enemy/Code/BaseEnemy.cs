@@ -50,7 +50,7 @@ abstract public class BaseEnemy : BaseEntety
     
     [Header("Attack Settings")]
     public float attackCooldown = 2f;
-    private float attackCooldownTimer = 0f;
+    protected float attackCooldownTimer = 0f;
     protected float damage = 5f;
 
     [Header("XP System")]
@@ -186,7 +186,7 @@ abstract public class BaseEnemy : BaseEntety
             if (Vector3.Distance(targetPlayer.position, transform.position) < mindistance + mindistance / 10 && attackCooldownTimer <= 0f)
             {
                 Attack();
-                attackCooldownTimer = attackCooldown;
+                attackCooldownTimer = attackCooldown * (1 + Random.Range(0f, 0.2f));
             }
         }
         
