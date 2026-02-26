@@ -7,6 +7,7 @@ public class ZombyScript : BaseEnemy
         id = "Zomby";
         maxHealth = 300;
         damage = 20f;
+        movementSpeed = 6f;
         base.Reset();
     }
 

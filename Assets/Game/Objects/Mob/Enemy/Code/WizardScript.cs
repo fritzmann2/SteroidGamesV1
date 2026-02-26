@@ -18,6 +18,7 @@ public class WizardScript : BaseEnemy
         mindistance = 10f;
         attackCooldown = 3f;
         damage = 10f;
+        movementSpeed = 3f;
         base.Reset();
 
         #if UNITY_EDITOR

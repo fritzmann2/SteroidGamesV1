@@ -41,7 +41,7 @@ abstract public class BaseEnemy : BaseEntety
     private LayerMask wallLayer;
 
     [Header("Movement")]
-    private float movementSpeed = 6f;
+    protected float movementSpeed = 6f;
     public float jumpforce = 5f;
     private bool canJump = true;
     private bool isGrounded;
