@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Collections;
 using TMPro;
+using UnityEngine.EventSystems;
 
 public class InventoryUI : MonoBehaviour
 {
@@ -12,14 +13,32 @@ public class InventoryUI : MonoBehaviour
     private bool hasInitializedOnce = false;
     [Header("Multiplayer Info")]
     public TextMeshProUGUI joinCodeText;
+    private GameObject firstSelectedSlot;
     
     
     
     private void OnEnable()
     {
         StartCoroutine(DelayedRefresh());
+        SetFirstSelectedSlot();
     }
 
+    private void SetFirstSelectedSlot()
+    {
+        if (firstSelectedSlot == null)
+        {
+            if (inventorySlot_UI != null && inventorySlot_UI.Count > 0)
+            {
+                firstSelectedSlot = inventorySlot_UI[0].gameObject;
+            }
+        }
+
+        if (firstSelectedSlot != null && EventSystem.current != null)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(firstSelectedSlot);
+        }
+    }
     private IEnumerator DelayedRefresh()
     {
         yield return null; 

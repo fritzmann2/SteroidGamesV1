@@ -5,6 +5,8 @@ using TMPro;
 public class InventorySlot_UI : MonoBehaviour
 {
     [SerializeField] public Image itemSprite;
+    [SerializeField] public Image raritySprite;
+
     [SerializeField] public TextMeshProUGUI itemCount;
     [SerializeField] private InventoryItemInstance inventoryItemInstance;
     public int slotnum;
@@ -52,9 +54,17 @@ public class InventorySlot_UI : MonoBehaviour
     {
         itemSprite.sprite = null;
         itemSprite.color = Color.clear;
+        if (raritySprite != null)
+        {
+            raritySprite.sprite = null;
+            raritySprite.color = Color.clear;
+        }
+        else
+        {
+            Debug.LogWarning($"Achtung: Auf Slot {slotnum} fehlt das RaritySprite im Inspector!");
+        }
         itemCount.text = "";
         itemRarity = 0;
-        GetComponent<Image>().color = Color.lightPink;
     }
     public void setSlotNum(int _slotnum)
     {
@@ -68,28 +78,28 @@ public class InventorySlot_UI : MonoBehaviour
             itemRarity = equipmentInstance.GetEquipmentStats().compleatValue;
             if (itemRarity > 0 && itemRarity <= 10)
             {
-                GetComponent<Image>().color = Color.grey;
+                raritySprite.color = Color.grey;
             }
             else if (itemRarity > 10 && itemRarity <= 15)
             {
-                GetComponent<Image>().color = Color.lightBlue;
+                raritySprite.color = Color.lightBlue;
             }
             else if (itemRarity > 15 && itemRarity <= 20)
             {
-                GetComponent<Image>().color = Color.yellow;
+                raritySprite.color = Color.yellow;
             }
             else if (itemRarity > 20 && itemRarity <= 25)
             {
-                GetComponent<Image>().color = Color.orange;
+                raritySprite.color = Color.orange;
             }
             else if (itemRarity > 25)
             {
-                GetComponent<Image>().color = Color.black;
+                raritySprite.color = Color.black;
             }
         }
         else
         {
-            GetComponent<Image>().color = Color.grey;
+            raritySprite.color = Color.grey;
         }
     }
     

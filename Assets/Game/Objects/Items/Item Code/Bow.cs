@@ -11,6 +11,7 @@ public class Bow : Weapon
     private bool canshoot = true;
     private bool isAiming = false;
     private float currentAimAngle = 0f;
+    [SerializeField] private float autoAimRadius = 20f;
 
     override public void Attack1()
     {
@@ -18,15 +19,12 @@ public class Bow : Weapon
         {
             canshoot = false;
 
-            if (playerStats.IsOwner)
+            if (playerStats != null && playerStats.IsOwner)
             {
-                Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
-                Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
-                mouseWorldPos.z = 0f;
-                Vector3 direction = mouseWorldPos - transform.position;
+                Vector3 direction = GetAimDirection();
                 
                 float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-                if (transform.parent.localScale.x == -1)
+                if (transform.parent != null && transform.parent.localScale.x == -1)
                 {
                     angle += 180;
                     if (angle > 360)
@@ -82,13 +80,58 @@ public class Bow : Weapon
         isAiming = true;
     }
 
-    public void shootArrow()
+    private Vector3 GetAimDirection()
     {
-        if (!playerStats.IsOwner) return;
+        if (Gamepad.current != null)
+        {
+            Transform nearestEnemy = GetNearestEnemy();
+            
+            if (nearestEnemy != null)
+            {
+                Vector3 aimDir = nearestEnemy.position - transform.position + new Vector3(0f, 0.3f, 0f);
+                aimDir.z = 0f;
+                return aimDir;
+            }
+            else
+            {
+                float facingDir = transform.parent != null ? transform.parent.localScale.x : 1f;
+                return new Vector3(facingDir, 0f, 0f);
+            }
+        }
+
         Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
         Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
         mouseWorldPos.z = 0f;
-        Vector3 direction = mouseWorldPos - transform.position;
+        return mouseWorldPos - transform.position;
+    }
+
+    private Transform GetNearestEnemy()
+    {
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, autoAimRadius);
+        Transform nearest = null;
+        float minDistance = Mathf.Infinity;
+
+        foreach (var hit in hits)
+        {
+            if (hit.CompareTag("Mob"))
+            {
+                float dist = Vector2.Distance(transform.position, hit.transform.position);
+                if (dist < minDistance)
+                {
+                    minDistance = dist;
+                    nearest = hit.transform;
+                }
+            }
+        }
+        return nearest;
+    }
+
+    public void shootArrow()
+    {
+        if (playerStats == null || !playerStats.IsOwner) return;
+
+        // 2. Auch hier nutzen wir einfach unsere neue Methode!
+        Vector3 direction = GetAimDirection();
 
         if (IsServer)
         {
@@ -99,6 +142,8 @@ public class Bow : Weapon
             ShootServerRpc(direction);
         }
     }
+
+
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
     private void ShootServerRpc(Vector3 direction)
     {

@@ -16,6 +16,9 @@ public class Scythe : Weapon
     private Vector3 throwDirection;
     public BoxCollider2D groundcheck;
 
+    [Header("Auto Aim")]
+    [SerializeField] private float autoAimRadius = 20f;
+
 
     override public void Attack1()
     {
@@ -36,12 +39,8 @@ public class Scythe : Weapon
     {
         if (isThrown) return;
         attackmulti = 0.7f;
-        Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
-        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
-        mouseWorldPos.z = 0f;
-        Vector3 direction = mouseWorldPos - transform.position;
-        direction.z = 0f;
-        direction.Normalize();
+        Vector3 direction = GetAimDirection().normalized;
+        
         if (IsServer)
         {
             ThrowClientRpc(direction);
@@ -72,6 +71,51 @@ public class Scythe : Weapon
             HandleMovement();
         }
     }
+
+    private Vector3 GetAimDirection()
+    {
+        if (Gamepad.current != null)
+        {
+            Transform nearestEnemy = GetNearestEnemy();
+            if (nearestEnemy != null)
+            {
+                Vector3 aimDir = nearestEnemy.position - transform.position;
+                aimDir.z = 0f;
+                return aimDir;
+            }
+            else
+            {
+                float facingDir = transform.parent != null ? transform.parent.localScale.x : 1f;
+                return new Vector3(facingDir, 0f, 0f);
+            }
+        }
+        Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
+        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
+        mouseWorldPos.z = 0f;
+        return mouseWorldPos - transform.position;
+    }
+
+    private Transform GetNearestEnemy()
+    {
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, autoAimRadius);
+        Transform nearest = null;
+        float minDistance = Mathf.Infinity;
+
+        foreach (var hit in hits)
+        {
+            if (hit.CompareTag("Mob"))
+            {
+                float dist = Vector2.Distance(transform.position, hit.transform.position);
+                if (dist < minDistance)
+                {
+                    minDistance = dist;
+                    nearest = hit.transform;
+                }
+            }
+        }
+        return nearest;
+    }
+
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
     private void ThrowServerRpc(Vector3 direction)
     {

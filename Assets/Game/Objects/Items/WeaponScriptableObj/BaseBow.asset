@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentData
   ID: item_bow_base
   ItemName: BaseBow
-  Icon: {fileID: -8667172148666518087, guid: 791e3057c0760ba48b09500a857bb67c, type: 3}
+  Icon: {fileID: 6104695662617085881, guid: 9864ecd5d303cc54992e0162edd7cdab, type: 3}
   Type: 1
   itemObject: {fileID: 6313268473118203971, guid: 5058cffd54ca4f442bdeb1b1aed16648, type: 3}
   _maxStackSize: 1

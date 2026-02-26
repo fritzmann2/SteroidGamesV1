@@ -5,7 +5,7 @@ using UnityEngine;
 public class WorldGenerator : NetworkBehaviour
 {
     [Header("Alle Prefabs hier reinziehen")]
-    public GameObject[] allMapChunks; // <-- WICHTIG: Die müssen im Inspector hier drin sein!
+    public GameObject[] allMapChunks;
     public GameObject dummy;
     public GameObject PickUpItem;
 
@@ -31,7 +31,6 @@ public class WorldGenerator : NetworkBehaviour
             return;
         }
 
-        // --- NAMEN PARSEN ---
         foreach (GameObject prefab in allMapChunks)
         {
             if (prefab == null) continue;
@@ -58,7 +57,6 @@ public class WorldGenerator : NetworkBehaviour
             }
         }
         
-//        Debug.Log($">>> WorldGenerator: Map initialisiert mit {mapLookup.Count} Chunks.");
     }
 
     void Update()
@@ -67,7 +65,6 @@ public class WorldGenerator : NetworkBehaviour
 
         HashSet<Vector2Int> chunksToKeep = new HashSet<Vector2Int>();
 
-        // 1. Liste erstellen: Was MUSS da sein?
         foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
         {
             if (client.PlayerObject == null) continue;
@@ -86,7 +83,6 @@ public class WorldGenerator : NetworkBehaviour
             }
         }
 
-        // 2. Neue Chunks spawnen (Was fehlt, wird gebaut)
         foreach (Vector2Int coord in chunksToKeep)
         {
             if (!activeChunks.ContainsKey(coord))
@@ -95,19 +91,16 @@ public class WorldGenerator : NetworkBehaviour
             }
         }
 
-        // 3. Alte Chunks löschen (Was nicht mehr gebraucht wird, kommt weg)
         List<Vector2Int> chunksToRemove = new List<Vector2Int>();
         
         foreach (var kvp in activeChunks)
         {
-            // Wenn der aktive Chunk NICHT in der "Behalten"-Liste steht -> Markieren zum Löschen
             if (!chunksToKeep.Contains(kvp.Key))
             {
                 chunksToRemove.Add(kvp.Key);
             }
         }
 
-        // Jetzt wirklich löschen
         foreach (Vector2Int coord in chunksToRemove)
         {
             RemoveChunk(coord);
@@ -157,7 +150,6 @@ public class WorldGenerator : NetworkBehaviour
         }
     }
 
-// Neue Hilfsfunktion
     void SpawnMobsInChunk(GameObject chunk)
     {
         ChunkData chunkData = chunk.GetComponentInChildren<ChunkData>();

@@ -1,6 +1,8 @@
 using UnityEngine;
 using Unity.Netcode;
-using NUnit.Framework;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
+
 
 public class PauseManager : MonoBehaviour
 {
@@ -14,6 +16,9 @@ public class PauseManager : MonoBehaviour
     private bool escapepressed = false;
 
     private bool isMenuOpen = false;
+    private GameObject firstSelectedSlot;
+    public Button firstButton;
+
 
     
     void Awake()
@@ -50,11 +55,29 @@ public class PauseManager : MonoBehaviour
     void OnEnable()
     {
         controls.Enable();
+        SetFirstSelectedSlot();
     }
 
     void OnDisable()
     {
         controls.Disable();
+    }
+
+    private void SetFirstSelectedSlot()
+    {
+        if (firstSelectedSlot == null)
+        {
+            if (firstButton != null)
+            {
+                firstSelectedSlot = firstButton.gameObject;
+            }
+        }
+
+        if (firstSelectedSlot != null && EventSystem.current != null)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(firstSelectedSlot);
+        }
     }
 
     private void ToggleMenu()

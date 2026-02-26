@@ -8,10 +8,21 @@ public class PlayerMovement : NetworkBehaviour
     private LayerMask wall;
     private GameControls controls;
     public Rigidbody2D rb;
+    private PlayerStatsUI statsUI;
 
     [Header("Movement Settings")]
     [SerializeField] private const float movementSpeed = 8f;
     [SerializeField] private const float wallSlideSpeed = 2f;
+
+    [Header("Custom Gravity")]
+    [SerializeField] private float customGravity; 
+    [SerializeField] private float maxFallSpeed;
+
+    public void Reset()
+    {
+        customGravity = 35f; 
+        maxFallSpeed = 25f;
+    }
 
     [Header("Accelerating Settings")]
     [SerializeField] private const float groundAcceleration = 15f;
@@ -43,7 +54,7 @@ public class PlayerMovement : NetworkBehaviour
         private const float wallCheckHeighty = 0.7f;
 
         [Header("Boolean States")]
-        private bool isGrounded;
+        [SerializeField] private bool isGrounded;
         [SerializeField] private bool isWallJumpPossible;
         private bool isJumping;
         private bool canDash;
@@ -58,11 +69,12 @@ public class PlayerMovement : NetworkBehaviour
         {
             Debug.Log("Warte auf Kamera...");
         }
-    
+        statsUI = FindAnyObjectByType<PlayerStatsUI>();
         Camera.main.GetComponent<CameraFollow>().target = transform;
         groundLayer = LayerMask.GetMask("Ground");
         wall = LayerMask.GetMask("Wall", "Ground");
         rb = GetComponent<Rigidbody2D>();
+        rb.gravityScale = 0f;
         controls = new GameControls();
         controls.Enable();
     }
@@ -76,11 +88,41 @@ public class PlayerMovement : NetworkBehaviour
     void FixedUpdate()
     {   
         if (!IsOwner) return;
+
+        if (statsUI != null && !statsUI.gameObject.activeInHierarchy)
+        {
+            rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
+            return; 
+        }
+
         checkColliders();
+        ApplyCustomGravity();
         move();
         checkJump();
         checkDash();
         checkSlide();
+    }
+
+    private void ApplyCustomGravity()
+    {
+        if (isDashing) return;
+
+        if (!isGrounded)
+        {
+            float currentGravity = customGravity;
+
+            if (isJumping && rb.linearVelocity.y > 0f && controls.Gameplay.jump.IsPressed())
+            {
+                currentGravity *= 0.5f;
+            }
+            float newVelocityY = rb.linearVelocity.y - (currentGravity * Time.fixedDeltaTime);
+            newVelocityY = Mathf.Max(newVelocityY, -maxFallSpeed);
+            if (isWallJumpPossible && newVelocityY < 0)
+            {
+                newVelocityY = Mathf.Max(newVelocityY, -wallSlideSpeed);
+            }
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, newVelocityY);
+        }
     }
 
     private void move()
@@ -89,48 +131,27 @@ public class PlayerMovement : NetworkBehaviour
         float moveInput = inputVector.x;
         float targetSpeed = moveInput * movementSpeed;
         float speedDif = targetSpeed - rb.linearVelocity.x;
-        if (moveInput != 0)
+        
+        if (Mathf.Abs(moveInput) > 0.15f)
         {
-            if (moveInput < 0)
-            {
-                transform.localScale = new Vector3(-1, 1, 1);
-            }
-            else
-            {
-                transform.localScale = new Vector3(1, 1, 1);
-            }
+            transform.localScale = new Vector3(moveInput < 0 ? -1 : 1, 1, 1);
         }
-        float accelRate;
-        if (isGrounded)
-        {
-            accelRate = (Mathf.Abs(targetSpeed) > 0.01f) ? groundAcceleration : groundDeceleration;
-        }
-        else
-        {
-            accelRate = airAcceleration;
-        }
+        
+        float accelRate = isGrounded ? 
+            (Mathf.Abs(targetSpeed) > 0.01f ? groundAcceleration : groundDeceleration) : 
+            airAcceleration;
 
         float movement = speedDif * accelRate;
 
         rb.AddForce(movement * Vector2.right, ForceMode2D.Force);
-
-        if (isWallJumpPossible)
-        {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, Mathf.Clamp(rb.linearVelocity.y, -wallSlideSpeed, float.MaxValue));
-
-        }
-        else if (!controls.Gameplay.jump.IsPressed() || rb.linearVelocity.y <= 0f)
-        {
-            rb.gravityScale = BaseGravityScale;
-        }
     }
-
     private void checkJump()
     {
         if (controls.Gameplay.jump.IsPressed())
         {
             if (NormalJump())
             {
+                didWallJump = true;
                 isJumping = true;
             }
             else if (WallJump())
@@ -159,16 +180,10 @@ public class PlayerMovement : NetworkBehaviour
     {
         if (coyoteTimeCounter < coyoteTime && !isJumping || canDashJump)
         {
-//            Debug.Log("Normal Jump");
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
             if(canDashJump) canDashJump = false;
             return true;
         }
-        if (isJumping && rb.linearVelocity.y > 0f && controls.Gameplay.jump.IsPressed())
-        {
-            rb.gravityScale = BaseGravityScale * 0.5f;
-        }
-        
         return false;
     }
 
@@ -210,20 +225,23 @@ public class PlayerMovement : NetworkBehaviour
         float dashup = 0;
         isDashing = true;
         
-        if (inputVector.y > 0)
+        if (inputVector.magnitude > 0.3f)
         {
-            dashup = 1;
+            if (Mathf.Abs(inputVector.y) > Mathf.Abs(inputVector.x))
+            {
+                dashup = inputVector.y > 0 ? 1 : -1;
+            }
+            else
+            {
+                dashside = inputVector.x > 0 ? 1 : -1;
+            }
         }
-        else if (inputVector.y < 0)
-        {
-            dashup = -1;
-        }
-    
-        if (dashup == 0)
+        else
         {
             dashside = transform.localScale.x;
         }
-        rb.linearVelocity = new Vector2(dashforce * 4f * dashside,dashforce * dashup);
+
+        rb.linearVelocity = new Vector2(dashforce * 4f * dashside, dashforce * dashup);
         canDash = false;
         canDashJump = true;
     }
@@ -233,12 +251,11 @@ public class PlayerMovement : NetworkBehaviour
         //if ()
     }
 
-
     private void checkColliders()
     {
         Vector2 origin = (Vector2)transform.position + new Vector2(0, groundCheckPosy);
-        
-        isGrounded = Physics2D.BoxCast(origin, new Vector2(groundCheckLengthx, 0.1f), 0, Vector2.down, 0.05f, groundLayer);
+        RaycastHit2D hit = Physics2D.BoxCast(origin, new Vector2(groundCheckLengthx, 0.1f), 0, Vector2.down, 0.05f, groundLayer);
+        isGrounded = hit.collider != null && hit.collider.CompareTag("Obstacle");
         if (isGrounded)
         {
             coyoteTimeCounter = 0f;
@@ -267,7 +284,7 @@ public class PlayerMovement : NetworkBehaviour
         Gizmos.color = Color.red;
         Vector2 boxCenter = (Vector2)transform.position + new Vector2(0, groundCheckPosy);
         Gizmos.DrawWireCube(boxCenter, new Vector2(groundCheckLengthx, 0.1f));
-
+        
         // WallCheck (Green)
         Gizmos.color = Color.green;
 
@@ -277,9 +294,4 @@ public class PlayerMovement : NetworkBehaviour
         
         Gizmos.DrawWireCube(wallCheckPos, new Vector2(0.1f, wallCheckHeighty));
     }
-}
-
-public class GaemData
-{
-    public string PlayerName;
 }
