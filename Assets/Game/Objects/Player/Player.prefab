@@ -331,7 +331,7 @@ MonoBehaviour:
     inventorySlots: []
     equipmentSlots: []
   weaponPrefab: {fileID: 6313268473118203971, guid: b7f137d7b0debec45836e9850ade4838, type: 3}
-  basicWeapon: {fileID: 8583526698003398638, guid: 6f2aaea7328f83344bea37c85d62d537, type: 3}
+  basicWeapon: {fileID: 6313268473118203971, guid: b7f137d7b0debec45836e9850ade4838, type: 3}
   references:
     version: 2
     RefIds: []

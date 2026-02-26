@@ -49,9 +49,7 @@ public class NetworkUI : MonoBehaviour
 
         hostMenuBtn.onClick.AddListener(async () => 
         {
-            string pName = playernameInput.text;
-            if (string.IsNullOrEmpty(pName)) pName = "Spieler" + Random.Range(1000, 9999);
-            PlayerPrefs.SetString("PlayerName", pName);
+            
             
             lobbyPanel.SetActive(true);
             hostArea.SetActive(true);
@@ -135,6 +133,9 @@ public class NetworkUI : MonoBehaviour
         });
 
         startGameBtn.onClick.AddListener(() => {
+            string pName = playernameInput.text;
+            if (string.IsNullOrEmpty(pName)) pName = "Spieler" + Random.Range(1000, 9999);
+            PlayerPrefs.SetString("PlayerName", pName);
             NetworkManager.Singleton.SceneManager.LoadScene(firstlevel, UnityEngine.SceneManagement.LoadSceneMode.Single);
         });
 

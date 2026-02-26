@@ -14,6 +14,7 @@ public class InventoryUI : MonoBehaviour
     [Header("Multiplayer Info")]
     public TextMeshProUGUI joinCodeText;
     private GameObject firstSelectedSlot;
+    private PlayerSaveHandler saveHandler;
     
     
     
@@ -79,7 +80,7 @@ public class InventoryUI : MonoBehaviour
         initUI();
         FindAnyObjectByType<MouseItemData>().initMouse(_playerinventory);
 
-        PlayerSaveHandler saveHandler = playerinventory.GetComponent<PlayerSaveHandler>();
+        saveHandler = playerinventory.GetComponent<PlayerSaveHandler>();
         if (saveHandler != null)
         {
             saveHandler.dataLoaded -= RefreshAllSlots; 
@@ -161,6 +162,14 @@ public class InventoryUI : MonoBehaviour
         else
         {
             Debug.LogWarning("Kein Code zum Kopieren vorhanden!");
+        }
+    }
+
+    public void RequestPlayerReset()
+    {
+        if (playerinventory != null)
+        {
+            saveHandler.RequestPlayerReset();
         }
     }
 }
