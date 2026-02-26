@@ -18,12 +18,18 @@ abstract public class BaseEnemy : BaseEntety
     {
         health.Value = maxHealth;
         hpbarfiller = transform.GetChild(0).GetChild(0).gameObject;
+        customGravity = 35f; 
+        maxFallSpeed = 25f;
     }
+
+        [Header("Custom Gravity")]
+    [SerializeField] private float customGravity; 
+    [SerializeField] private float maxFallSpeed;
 
 
     [Header("Collider Settings")]
     [SerializeField] protected float groundCheckPos = -0.5f; 
-    [SerializeField] protected Vector2 groundCheckSize = new Vector2(0.5f, 0.1f);
+    [SerializeField] protected Vector2 groundCheckSize = new Vector2(0.8f, 0.1f);
     [SerializeField] protected float wallCheckDistance = 0.6f;
     [SerializeField] protected float wallCheckHeight = -0.4f;
     [SerializeField] protected float voidCheckOffsetx = 0.6f;
@@ -38,6 +44,7 @@ abstract public class BaseEnemy : BaseEntety
     private float movementSpeed = 6f;
     public float jumpforce = 5f;
     private bool canJump = true;
+    private bool isGrounded;
     [SerializeField] protected float mindistance = 1f;
     [SerializeField] protected float maxdistance = 10f;
     
@@ -82,6 +89,7 @@ abstract public class BaseEnemy : BaseEntety
         {
             move();
             checkAttack();
+            checkGravity();
             if (canJump)
             {
                 checkForJump();
@@ -89,10 +97,21 @@ abstract public class BaseEnemy : BaseEntety
         }
     }
 
+    private void checkGravity()
+    {
+        if (!isGrounded)
+        {
+            float currentGravity = customGravity;
+            float newVelocityY = rb.linearVelocity.y - (currentGravity * Time.fixedDeltaTime);
+            newVelocityY = Mathf.Max(newVelocityY, -maxFallSpeed);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, newVelocityY);
+        }
+    }
+
     private void checkForJump()
     {
         Vector2 boxCenter = (Vector2)transform.position + new Vector2(0, groundCheckPos);
-        bool isGrounded = Physics2D.OverlapBox(boxCenter, groundCheckSize, 0, groundLayer);
+        isGrounded = Physics2D.OverlapBox(boxCenter, groundCheckSize, 0, groundLayer);
 
         float direction = transform.localScale.x > 0 ? 1 : -1;
         
@@ -120,19 +139,32 @@ abstract public class BaseEnemy : BaseEntety
 
             if (direction.x != 0) transform.localScale = new Vector3(facingDirection, 1f, 1f);
 
-            Vector2 origin = new Vector2(
+            Vector2 voidOrigin = new Vector2(
                 transform.position.x + (voidCheckOffsetx * facingDirection), 
                 transform.position.y + voidCheckStartY
             );
+            bool isGroundAhead = Physics2D.Raycast(voidOrigin, Vector2.down, voidCheckDistance, groundLayer);
 
-            bool isGroundAhead = Physics2D.Raycast(origin, Vector2.down, voidCheckDistance, groundLayer);
-
-            bool distanceCheck = (direction.x > mindistance || direction.x < -mindistance) && 
-                                 (direction.x < maxdistance || direction.x > -maxdistance);
+            bool distanceCheck = Mathf.Abs(direction.x) > mindistance && Mathf.Abs(direction.x) < maxdistance;
 
             if (distanceCheck && isGroundAhead)
             {
-                rb.linearVelocity = new Vector2(direction.normalized.x * movementSpeed, rb.linearVelocity.y);
+                RaycastHit2D groundHit = Physics2D.Raycast(transform.position, Vector2.down, 1.5f, groundLayer);
+                
+                if (groundHit.collider != null)
+                {
+                    Vector2 groundNormal = groundHit.normal;
+                    
+                    Vector2 slopeDirection = new Vector2(groundNormal.y, -groundNormal.x);
+                    
+                    if (facingDirection < 0) slopeDirection = -slopeDirection;
+
+                    rb.linearVelocity = slopeDirection * movementSpeed;
+                }
+                else
+                {
+                    rb.linearVelocity = new Vector2(facingDirection * movementSpeed, rb.linearVelocity.y);
+                }
             }
             else
             {

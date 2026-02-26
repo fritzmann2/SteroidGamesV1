@@ -60,6 +60,17 @@ public class PlayerSaveHandler : NetworkBehaviour
             SyncDataWithServer();
         }
     }
+    public void SyncDataWithServer()
+    {
+        if (!IsOwner) return;
+        
+        GameSaveData data = GenerateFullSaveData();
+        string json = JsonUtility.ToJson(data);
+        
+        byte[] jsonData = System.Text.Encoding.UTF8.GetBytes(json);
+        SendSaveDataToServerRpc(jsonData);
+    }
+
 
     private void OnApplicationQuit()
     {
@@ -74,7 +85,8 @@ public class PlayerSaveHandler : NetworkBehaviour
         }
         else if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsConnectedClient)
         {
-            SendSaveDataToServerRpc(JsonUtility.ToJson(data));
+            byte[] jsonData = System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(data));
+            SendSaveDataToServerRpc(jsonData);
         }
     }
 
@@ -93,6 +105,7 @@ public class PlayerSaveHandler : NetworkBehaviour
             });
 
             NetworkManager.Singleton.DisconnectClient(clientId);
+            
             return;
         }
 
@@ -104,11 +117,12 @@ public class PlayerSaveHandler : NetworkBehaviour
         {
             ApplyFullSaveData(data);
         }
-        
         string json = data != null ? JsonUtility.ToJson(data) : "";
+        byte[] jsonData = System.Text.Encoding.UTF8.GetBytes(json);
 
         ClientRpcParams clientRpcParams = new ClientRpcParams { Send = new ClientRpcSendParams { TargetClientIds = new ulong[] { clientId } } };
-        ReceiveDataFromServerClientRpc(json, clientRpcParams);
+        
+        ReceiveDataFromServerClientRpc(jsonData, clientRpcParams);
     }
 
     [ClientRpc]
@@ -126,19 +140,11 @@ public class PlayerSaveHandler : NetworkBehaviour
         SyncDataWithServer();
     }
 
-    public void SyncDataWithServer()
-    {
-        if (!IsOwner) return;
-        
-        GameSaveData data = GenerateFullSaveData();
-        string json = JsonUtility.ToJson(data);
-        
-        SendSaveDataToServerRpc(json);
-    }
-
     [ServerRpc]
-    private void SendSaveDataToServerRpc(string json)
+    private void SendSaveDataToServerRpc(byte[] jsonData)
     {
+        string json = System.Text.Encoding.UTF8.GetString(jsonData);
+        
         GameSaveData data = JsonUtility.FromJson<GameSaveData>(json);
         SaveManager.Instance.SaveGameData(data);
     }
@@ -186,11 +192,12 @@ public class PlayerSaveHandler : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void ReceiveDataFromServerClientRpc(string json, ClientRpcParams rpcParams = default)
+    private void ReceiveDataFromServerClientRpc(byte[] jsonData, ClientRpcParams rpcParams = default)
     {
         if (!IsOwner) return; 
+        if (jsonData == null || jsonData.Length == 0) return;
+        string json = System.Text.Encoding.UTF8.GetString(jsonData);
         if (string.IsNullOrEmpty(json)) return;
-
         GameSaveData data = JsonUtility.FromJson<GameSaveData>(json);
         ApplyFullSaveData(data);
     }
