@@ -54,7 +54,6 @@ abstract public class BaseEntety : NetworkBehaviour
         health.Value -= damage;
     }
 
-    //Todesabfrage
     virtual public void OnHealthChanged(float previousValue, float newValue)
     {
         if(newValue <= 0)

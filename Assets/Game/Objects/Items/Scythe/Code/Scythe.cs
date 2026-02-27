@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.Netcode;
+using System.Collections.Generic;
+
 
 public class Scythe : Weapon
 {
@@ -199,7 +201,7 @@ public class Scythe : Weapon
     public override void DisableHitbox()
     {
         BoxCollider2D[] hitboxes = GetComponentsInChildren<BoxCollider2D>();
-
+        hittedTargets = new List<Transform>();
         foreach (BoxCollider2D bx in hitboxes)
         {
             bx.enabled = false;

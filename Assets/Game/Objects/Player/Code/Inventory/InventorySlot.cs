@@ -33,7 +33,6 @@ public class InventorySlot
 
     public void clearSlot()
     {
-//        Debug.Log("clearing slot");
         inventoryItemInstance = null;
         stacksize = -1;
         IsEmpty = true;

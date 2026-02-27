@@ -29,10 +29,17 @@ public class EquipmentStats
 {
     public int count = 1;
     public int compleatValue;
-    public virtual void generateStats(float rarity){}
+    protected int bonuspoint = 0;
+    public virtual void generateStats(float rarity)
+    {
+        if (rarity == 3.5f)
+        {
+            bonuspoint = 1;
+        }
+    }
     protected int calcRandomNum()
     {
-        int randomnum = UnityEngine.Random.Range(1, 5);
+        int randomnum = UnityEngine.Random.Range(1, 5) + bonuspoint;
         compleatValue += randomnum;
         return randomnum;
     }
@@ -59,6 +66,7 @@ public class WeaponStats : EquipmentStats, INetworkSerializable
     }
     public override void generateStats(float rarity)
     {
+        base.generateStats(rarity);
         compleatValue = 0;   
         weapondamage = (calcRandomNum() + 5) * rarity * multiplier;
         strength = (calcRandomNum() + 5) * rarity;
@@ -86,6 +94,7 @@ public class ArmorStats : EquipmentStats, INetworkSerializable
 
     public override void generateStats(float rarity)
     {
+        base.generateStats(rarity);
         compleatValue = 0;
         defense = (calcRandomNum() + 5) * rarity;
         spellresistance = (calcRandomNum() + 5) * rarity;
@@ -127,8 +136,8 @@ public class AccessoryStats : EquipmentStats, INetworkSerializable
 
     public override void generateStats(float rarity)
     {
+        base.generateStats(rarity);
         compleatValue = 0;
-
 
         health = (calcRandomNum() + 5) * rarity;
         mana = (calcRandomNum() + 5) * rarity;

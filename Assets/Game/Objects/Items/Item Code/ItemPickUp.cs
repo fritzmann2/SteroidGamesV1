@@ -1,6 +1,5 @@
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.Events;
 
 [RequireComponent(typeof(BoxCollider2D))]
 public class ItemPickUp : NetworkBehaviour
@@ -17,11 +16,11 @@ public class ItemPickUp : NetworkBehaviour
     }
     
     
-    public void setitem(int itemRarity, int amount, string id)
+    public void setitem(int _itemRarity, int _amount, string _id)
     {
-        this.itemRarity  = itemRarity;
-        this.amount = amount;
-        this.id = id;
+        itemRarity  = _itemRarity;
+        amount = _amount;
+        id = _id;
     }
 
 

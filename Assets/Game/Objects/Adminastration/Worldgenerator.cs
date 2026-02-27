@@ -8,11 +8,24 @@ public class WorldGenerator : NetworkBehaviour
     public GameObject[] allMapChunks;
     public GameObject dummy;
     public GameObject PickUpItem;
+    public GameObject DropItem;
 
+    [Header("Optimization")]
+    public float chunkCheckInterval = 0.5f;
+
+    [Header("Boss Arenen")]
+    public GameObject[] bossArenaPrefabs;
+    
+    private Dictionary<Vector2Int, Vector2Int> bossArenaAnchors = new Dictionary<Vector2Int, Vector2Int>();
+    private HashSet<Vector2Int> knownBossCoordinates = new HashSet<Vector2Int>();
+    
+    private HashSet<Vector2Int> noSpawnZones = new HashSet<Vector2Int>();
 
     [Header("Settings")]
     public int chunkSize = 50;
     public GameObject defaultChunkPrefab; 
+    public CameraFollow cam;
+
 
     private Dictionary<Vector2Int, GameObject> mapLookup = new Dictionary<Vector2Int, GameObject>();
     private Dictionary<Vector2Int, GameObject> activeChunks = new Dictionary<Vector2Int, GameObject>();
@@ -57,53 +70,127 @@ public class WorldGenerator : NetworkBehaviour
             }
         }
         
+        foreach (GameObject prefab in bossArenaPrefabs)
+        {
+            if (prefab == null) continue;
+
+            string[] parts = prefab.name.Split('_');
+            
+            int x = 0, y = 0, w = 1, h = 1;
+            bool parsed = false;
+
+            if (parts.Length >= 5 &&
+                int.TryParse(parts[parts.Length - 4], out x) &&
+                int.TryParse(parts[parts.Length - 3], out y) &&
+                int.TryParse(parts[parts.Length - 2], out w) &&
+                int.TryParse(parts[parts.Length - 1], out h))
+            {
+                parsed = true;
+            }
+            else if (parts.Length >= 3 &&
+                int.TryParse(parts[parts.Length - 2], out x) &&
+                int.TryParse(parts[parts.Length - 1], out y))
+            {
+                parsed = true;
+            }
+
+            if (parsed)
+            {
+                Vector2Int anchorCoord = new Vector2Int(x, y);
+                if (!bossArenaAnchors.ContainsKey(anchorCoord))
+                {
+                    knownBossCoordinates.Add(anchorCoord);
+                    mapLookup.Add(anchorCoord, prefab); 
+
+                    int startX = x - w / 2;
+                    int endX = x + (w - 1) / 2;
+                    int startY = y - h / 2;
+                    int endY = y + (h - 1) / 2;
+
+                    for (int i = startX; i <= endX; i++)
+                    {
+                        for (int j = startY; j <= endY; j++)
+                        {
+                            Vector2Int occupiedCoord = new Vector2Int(i, j);
+                            bossArenaAnchors[occupiedCoord] = anchorCoord;
+                        }
+                    }
+
+                    int buffer = 2;
+                    for (int i = startX - buffer; i <= endX + buffer; i++)
+                    {
+                        for (int j = startY - buffer; j <= endY + buffer; j++)
+                        {
+                            Vector2Int bufferCoord = new Vector2Int(i, j);
+                            noSpawnZones.Add(bufferCoord);
+                        }
+                    }
+                }
+            }
+        }
+        StartCoroutine(ChunkCheckRoutine());
     }
 
-    void Update()
+    private System.Collections.IEnumerator ChunkCheckRoutine()
     {
-        if (NetworkManager.Singleton == null || !NetworkManager.Singleton.IsListening) return;
-
-        HashSet<Vector2Int> chunksToKeep = new HashSet<Vector2Int>();
-
-        foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
+        while (true)
         {
-            if (client.PlayerObject == null) continue;
+            yield return new WaitForSeconds(chunkCheckInterval);
 
-            Transform playerTransform = client.PlayerObject.transform;
-            
-            int pX = Mathf.FloorToInt(playerTransform.position.x / chunkSize);
+            if (NetworkManager.Singleton == null || !NetworkManager.Singleton.IsListening) continue;
 
-            int pY = Mathf.RoundToInt(playerTransform.position.y / chunkSize);
+            HashSet<Vector2Int> chunksToKeep = new HashSet<Vector2Int>();
 
-            Vector2Int playerGridPos = new Vector2Int(pX, pY);
-
-            foreach (Vector2Int offset in ChunkOffsets)
+            foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
             {
-                chunksToKeep.Add(playerGridPos + offset);
-            }
-        }
+                if (client.PlayerObject == null) continue;
 
-        foreach (Vector2Int coord in chunksToKeep)
-        {
-            if (!activeChunks.ContainsKey(coord))
+                Transform playerTransform = client.PlayerObject.transform;
+                
+                int pX = Mathf.FloorToInt(playerTransform.position.x / chunkSize);
+                int pY = Mathf.RoundToInt(playerTransform.position.y / chunkSize);
+
+                Vector2Int playerGridPos = new Vector2Int(pX, pY);
+
+                if (bossArenaAnchors.TryGetValue(playerGridPos, out Vector2Int anchorPos))
+                {
+                    chunksToKeep.Add(anchorPos); 
+                }
+                else
+                {
+                    foreach (Vector2Int offset in ChunkOffsets)
+                    {
+                        Vector2Int targetChunk = playerGridPos + offset;
+                        
+                        if (!noSpawnZones.Contains(targetChunk))
+                        {
+                            chunksToKeep.Add(targetChunk);
+                        }
+                    }
+                }
+            }
+
+            foreach (Vector2Int coord in chunksToKeep)
             {
-                SpawnChunkByCoord(coord);
+                if (!activeChunks.ContainsKey(coord))
+                {
+                    SpawnChunkByCoord(coord);
+                }
             }
-        }
 
-        List<Vector2Int> chunksToRemove = new List<Vector2Int>();
-        
-        foreach (var kvp in activeChunks)
-        {
-            if (!chunksToKeep.Contains(kvp.Key))
+            List<Vector2Int> chunksToRemove = new List<Vector2Int>();
+            foreach (var kvp in activeChunks)
             {
-                chunksToRemove.Add(kvp.Key);
+                if (!chunksToKeep.Contains(kvp.Key))
+                {
+                    chunksToRemove.Add(kvp.Key);
+                }
             }
-        }
 
-        foreach (Vector2Int coord in chunksToRemove)
-        {
-            RemoveChunk(coord);
+            foreach (Vector2Int coord in chunksToRemove)
+            {
+                RemoveChunk(coord);
+            }
         }
     }
 
@@ -130,7 +217,12 @@ public class WorldGenerator : NetworkBehaviour
         }
 
         activeChunks.Add(coord, newChunk);
-        SpawnMobsInChunk(newChunk);
+
+        ChunkData chunkData = newChunk.GetComponentInChildren<ChunkData>();
+        if (chunkData != null)
+        {
+            chunkData.SpawnMyMobs(this);
+        }
     }
 
     void RemoveChunk(Vector2Int coord)
@@ -140,7 +232,7 @@ public class WorldGenerator : NetworkBehaviour
             if (chunkObj != null)
             {
                 ChunkData chunkData = chunkObj.GetComponentInChildren<ChunkData>();
-                chunkData.DespawnAllMobs();
+                if(chunkData != null) chunkData.DespawnAllMobs();
 
                 NetworkObject netObj = chunkObj.GetComponent<NetworkObject>();
                 if (netObj != null) netObj.Despawn();
@@ -150,55 +242,69 @@ public class WorldGenerator : NetworkBehaviour
         }
     }
 
-    void SpawnMobsInChunk(GameObject chunk)
+    public void SpawnPickUpItem(string id, Transform spawnTransform)
     {
-        ChunkData chunkData = chunk.GetComponentInChildren<ChunkData>();
-        MobSpawnPoint[] spawnPoints = chunk.GetComponentsInChildren<MobSpawnPoint>();
-        foreach (MobSpawnPoint spawnPoint in spawnPoints)
+        GameObject pickupitem = Instantiate(PickUpItem, spawnTransform.position, Quaternion.identity);
+        pickupitem.name = id;
+        ItemPickUp itemPickUp = pickupitem.GetComponent<ItemPickUp>();
+        int itemRarity = 1;
+        if (id == "WizardBoss")
         {
-            Transform position = spawnPoint.transform;
-            GameObject MobToSpawn = null;
-            if (spawnPoint.possibleMobsNames.Count != 0)
+            itemRarity = 2;
+        }
+        if (itemPickUp != null) itemPickUp.setitem(itemRarity, 1, null);
+        
+        var netObj = pickupitem.GetComponent<NetworkObject>();
+        if (netObj != null)
+        {
+            netObj.Spawn();
+        }
+    }
+
+    public void TeleportToBoss(Vector3 _bossArenaCords, Transform PlayerToTeleport)
+    {
+        if (!IsServer) return;
+        NetworkObject playerNetObj = PlayerToTeleport.GetComponent<NetworkObject>();
+        if (playerNetObj != null)
+        {
+            ulong clientId = playerNetObj.OwnerClientId;
+            ClientRpcParams clientRpcParams = new ClientRpcParams
             {
-                string mobName = spawnPoint.getRandomMobName();
-                foreach (GameObject mobPrefab in chunkData.posibleMobs)
+                Send = new ClientRpcSendParams
                 {
-                    if (mobPrefab.GetComponent<BaseEnemy>().id == mobName)
-                    {
-                        MobToSpawn = Instantiate(mobPrefab, spawnPoint.transform);
-                        break;
-                    }
+                    TargetClientIds = new ulong[] { clientId }
                 }
-                
-                
+            };
+            TeleportSinglePlayerClientRpc(_bossArenaCords, clientRpcParams);
+        }
+    }
+
+    [ClientRpc]
+    private void TeleportSinglePlayerClientRpc(Vector3 destination, ClientRpcParams rpcParams = default)
+    {
+        if (NetworkManager.Singleton.LocalClient != null && NetworkManager.Singleton.LocalClient.PlayerObject != null)
+        {
+            GameObject localPlayer = NetworkManager.Singleton.LocalClient.PlayerObject.gameObject;
+            Rigidbody2D rb = localPlayer.GetComponent<Rigidbody2D>();
+            if (rb != null) rb.linearVelocity = Vector2.zero;
+            localPlayer.transform.position = destination;
+
+            if (cam != null)
+            {
+                cam.SetZoom(7f);
             }
             else
             {
-                if (chunkData.posibleMobs.Count != 0)
-                {
-                    MobToSpawn = Instantiate(chunkData.posibleMobs[Random.Range(0, chunkData.posibleMobs.Count)], position);
-                }
-            }
-            if (MobToSpawn == null)
-            {
-                MobToSpawn = Instantiate(dummy, position);   
-            }
-            var netObj = MobToSpawn.GetComponent<NetworkObject>();
-            if (netObj != null)
-            {
-                chunkData.RegisterMob(netObj);
-                netObj.Spawn(); 
-                netObj.GetComponent<BaseEnemy>().SetParentChunk(chunkData);               
+                Debug.LogWarning("camera not found");
             }
         }
     }
-    public void SpawnPickUpItem(string id, Transform transform)
+
+    public void dropItem(InventoryItemInstance _item, Vector3 _spawnTransform, int _amount)
     {
-        GameObject pickupitem = Instantiate(PickUpItem, transform);
-        pickupitem.name = id;
-        ItemPickUp itemPickUp = pickupitem.GetComponent<ItemPickUp>();
-        itemPickUp.setitem(1, 1, null);
-        var netObj = pickupitem.GetComponent<NetworkObject>();
+        GameObject dropItem = Instantiate(DropItem, _spawnTransform, Quaternion.identity);
+        dropItem.GetComponent<DropItem>().init(_item, _amount);
+        var netObj = dropItem.GetComponent<NetworkObject>();
         if (netObj != null)
         {
             netObj.Spawn();

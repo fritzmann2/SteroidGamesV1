@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Microsoft.Unity.VisualStudio.Editor;
+using NUnit.Framework;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -9,12 +9,17 @@ public class BaseSpell : NetworkBehaviour
     protected float speed = 7f;
     protected float damage = 0;
     protected float despawnTime = 5f;
-    protected int spelltype = 0;
+
+    public NetworkVariable<int> spelltype = new NetworkVariable<int>(
+        0, 
+        NetworkVariableReadPermission.Everyone, 
+        NetworkVariableWritePermission.Server
+    );
     protected float baseAnimationTimer = 0.5f;
     protected float animationTimer;
     
     [Header("Homing Settings")]
-    public float rotateSpeed = 90f;
+    public float rotateSpeed = 40f;
 
     protected Vector2 direction = Vector2.zero;
     protected Rigidbody2D rb;
@@ -29,7 +34,7 @@ public class BaseSpell : NetworkBehaviour
     }
     public virtual void Init(Vector2 targetPosition, float _damage)
     {
-        spelltype = 0;
+        spelltype.Value = 0;
         spriteRenderer.sprite = spellSprites[0];
         damage = _damage; 
         Vector2 dir = (targetPosition - (Vector2)transform.position).normalized;
@@ -39,9 +44,11 @@ public class BaseSpell : NetworkBehaviour
     public void Init(Vector2 targetPosition, float _damage, Transform _target)
     {
         speed += speed * 0.1f;
-        spelltype = 1;
+        if (IsServer)
+        {
+            spelltype.Value = 1; 
+        }
         spriteRenderer.sprite = spellSprites[2];
-        damage = _damage * 1.3f;
         target = _target;
 
         Vector2 dir = (targetPosition - (Vector2)transform.position).normalized;
@@ -80,7 +87,7 @@ public class BaseSpell : NetworkBehaviour
             rb.linearVelocity = direction * speed;
             transform.rotation = Quaternion.Euler(0, 0, newAngle);
         }
-        if (spelltype == 0 && animationTimer <= 0f)
+        if (spelltype.Value == 0 && animationTimer <= 0f)
         {
             if (spriteRenderer.sprite != spellSprites[1])
             {
@@ -105,7 +112,7 @@ public class BaseSpell : NetworkBehaviour
         }
         else if (IsSpawned)
         {
-            GetComponent<NetworkObject>().Despawn();
+            Despawn();
         }
     }
 
@@ -116,11 +123,19 @@ public class BaseSpell : NetworkBehaviour
         if (other.CompareTag("Player"))
         {
             other.GetComponent<BaseEntety>().TakeDamage(damage, false);
-            GetComponent<NetworkObject>().Despawn();
+            Despawn();
         }
         else if (other.CompareTag("Obstacle"))
         {
-            GetComponent<NetworkObject>().Despawn();
+            Despawn();
+        }
+    }
+
+    private void Despawn()
+    {
+        if (NetworkObject != null && NetworkObject.IsSpawned)
+        {
+            NetworkObject.Despawn();
         }
     }
 }

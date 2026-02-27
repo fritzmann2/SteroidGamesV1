@@ -11,6 +11,7 @@ public class Attackmanager : NetworkBehaviour
     [Header("Setup")]
     public Transform handHolder;
     public ItemInventory itemInventory;
+    private PlayerStatsUI statsUI;
 
     [Header("Input")]
     private GameControls controls;
@@ -33,7 +34,11 @@ public class Attackmanager : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if (IsOwner) controls.Enable();
+        if (IsOwner) 
+        {
+            controls.Enable();
+            statsUI = FindAnyObjectByType<PlayerStatsUI>();
+        }
         if (IsOwner || IsServer)
         {
             itemInventory = GetComponent<Inventory>().itemInventory;
@@ -81,14 +86,15 @@ public class Attackmanager : NetworkBehaviour
     void Update()
     {
         if (!IsOwner) return;
-        // Waffe ausrüsten/ablegen
+        if (statsUI != null && statsUI.gameObject.activeInHierarchy) 
+        {
+            return; 
+        }
         if (controls.Gameplay.SummonWeapon.triggered)
         {  
-//            Debug.Log("Summoning or despawning weapon");
             bool shouldEquip = currentWeaponObject == null;
             EquipRequestServerRpc(shouldEquip ? 0 : -1);
         }
-        // Angriffe ausführen und abfrage welche
         if (currentWeaponScript != null)
         {
             if (controls.Gameplay.Attack1.triggered || controls.Gameplay.Attack2.triggered || controls.Gameplay.Attack3.triggered || controls.Gameplay.Attack4.triggered)
@@ -110,7 +116,6 @@ public class Attackmanager : NetworkBehaviour
             else if (controls.Gameplay.Attack3.triggered) currentWeaponScript.Attack3();
             else if (controls.Gameplay.Attack4.triggered) 
             {
-//                Debug.Log("[Client] Attack 4 Taste WURDE GEDRÜCKT im Attackmanager!");
                 currentWeaponScript.Attack4();
             }
             if (controls.Gameplay.Attack1.triggered || controls.Gameplay.Attack2.triggered || controls.Gameplay.Attack3.triggered || controls.Gameplay.Attack4.triggered)
@@ -149,10 +154,6 @@ public class Attackmanager : NetworkBehaviour
             currentWeaponScript.SetFollowTarget(this.handHolder);
 
             EquipClientRpc(netObj.NetworkObjectId);
-        }
-        else
-        {
-            // Debug.Log("Hand wird sichtbar (keine Waffe).");
         }
     }
 

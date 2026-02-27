@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
-using Unity.Services.Matchmaker.Models;
 
 
 public class PlayerStats : BaseMobClass
@@ -25,7 +24,6 @@ public class PlayerStats : BaseMobClass
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn(); 
-        
         if (!IsOwner) return;
 
         playerSaveHandler = GetComponent<PlayerSaveHandler>(); 
@@ -39,6 +37,8 @@ public class PlayerStats : BaseMobClass
     public override void OnNetworkDespawn()
     {
         base.OnNetworkDespawn();
+        if (!IsOwner) return;
+
         playerSaveHandler.dataLoaded -= Init;
         itemInventory.OnEquipmentChanged -= Initbase;
     }
@@ -208,7 +208,6 @@ public class PlayerStats : BaseMobClass
         if (IsOwner)
         {
             gainXP(amount);
-//            Debug.Log($"Du hast {amount} XP erhalten! Aktuelles Level: {playerLevel}");
         }
     }
     public void gainXP(int amount)
@@ -248,23 +247,48 @@ public class PlayerStats : BaseMobClass
     public void ResetToDefault()
     {
         baseStats.totalexperience = 0;
-        
         if (health != null) health.Value = maxHealth;
-
         calculateLevel(baseStats); 
-        
         Initbase();
-        
         Debug.Log("Spieler-Stats wurden erfolgreich auf Level 1 zurückgesetzt!");
     }
 
     public override void OnHealthChanged(float previousValue, float newValue)
     {
         base.OnHealthChanged(previousValue, newValue);
-
         if (IsOwner && statsUI != null)
         {
             statsUI.UpdateHealthUI((int)newValue, maxHealth);
+        }
+        if (newValue <= 0)
+        {
+            if (IsServer)
+            {
+                Vector3 spawnPos = new Vector3(0, 0, 2f);
+                transform.position = spawnPos;
+                health.Value = maxHealth;
+                TeleportClientRpc(spawnPos);
+            }
+        }
+    }
+
+    
+    [ClientRpc]
+    private void TeleportClientRpc(Vector3 newPos)
+    {
+        if (TryGetComponent(out Rigidbody2D rb))
+        {
+            rb.linearVelocity = Vector2.zero;
+        }
+        transform.position = newPos;
+
+        if (IsOwner)
+        {
+            CameraFollow cam = FindAnyObjectByType<CameraFollow>();
+            if (cam != null)
+            {
+                cam.ResetZoom();
+            }
         }
     }
 }

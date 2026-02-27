@@ -135,14 +135,14 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.4}
-    oldSize: {x: 0.70714283, y: 1.03}
+    oldSize: {x: 0.64285713, y: 1.03}
     newSize: {x: 4.95, y: 7.21}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   m_Size: {x: 0.6, y: 1}
-  m_EdgeRadius: 0.1
+  m_EdgeRadius: 0.015
 --- !u!50 &5903848121326052161
 Rigidbody2D:
   serializedVersion: 5
@@ -182,7 +182,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1199982190
+  GlobalObjectIdHash: 1554599064
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -220,7 +220,7 @@ MonoBehaviour:
   id: Wizard
   customGravity: 35
   maxFallSpeed: 25
-  groundCheckPos: -0.5
+  groundCheckPos: -0.37
   groundCheckSize: {x: 0.8, y: 0.1}
   wallCheckDistance: 0.6
   wallCheckHeight: -0.4

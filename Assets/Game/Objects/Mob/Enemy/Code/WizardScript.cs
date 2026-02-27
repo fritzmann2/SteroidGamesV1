@@ -9,7 +9,7 @@ public class WizardScript : BaseEnemy
 {
     [Header("Wizard Settings")]
     public GameObject projectilePrefab;
-    private float fireballHightf = 4f;
+    protected float fireballHightf = 4f;
 
     public override void Reset()    
     {
@@ -28,7 +28,7 @@ public class WizardScript : BaseEnemy
             {
                 string path = AssetDatabase.GUIDToAssetPath(guids[0]);
                 projectilePrefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-                Debug.Log($"WizardScript: Prefab '{projectilePrefab.name}' automatisch gefunden und zugewiesen!");
+//                Debug.Log($"WizardScript: Prefab '{projectilePrefab.name}' automatisch gefunden und zugewiesen!");
             }
             else
             {
@@ -49,7 +49,7 @@ public class WizardScript : BaseEnemy
         spawnAttackProjectile();
     }
 
-    private void spawnAttackProjectile()
+    protected virtual void spawnAttackProjectile()
     {
         if (targetPlayer == null) return;
 
@@ -61,15 +61,6 @@ public class WizardScript : BaseEnemy
 
         NetworkObject netObj = projectileInstance.GetComponent<NetworkObject>();
         netObj.Spawn(); 
-        int randomnum = Random.Range(1,4);
-        if (randomnum < 3)
-        {
-            projectileInstance.GetComponent<BaseSpell>().Init(targetPlayer.position, damage);         
-        }
-        else
-        {
-            projectileInstance.GetComponent<BaseSpell>().Init(targetPlayer.position, damage, targetPlayer);   
-            attackCooldownTimer = attackCooldown * 2f;  
-        }
+        projectileInstance.GetComponent<BaseSpell>().Init(targetPlayer.position, damage);         
     }
 }

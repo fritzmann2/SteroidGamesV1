@@ -12,9 +12,11 @@ public class PlayerStatsUI : MonoBehaviour
 
     public Image xpBarFill;
     public TextMeshProUGUI xpText;
+    public static PlayerStatsUI LocalInstance;
 
     private void Awake()
     {
+        LocalInstance = this;
         HPText.color = Color.black;
         manaText.color = Color.black;
         xpText.color = Color.black;

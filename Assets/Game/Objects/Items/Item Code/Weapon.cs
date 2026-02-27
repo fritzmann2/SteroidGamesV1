@@ -1,6 +1,5 @@
 using UnityEngine;
 using Unity.Netcode;
-using System.Collections;
 using System.Collections.Generic;
 
 
@@ -8,7 +7,7 @@ abstract public class Weapon : InventoryItem
 {
 
     [SerializeField] public WeaponStats weaponstats;
-    private List<Transform> hittedTargets = new List<Transform>();
+    protected List<Transform> hittedTargets = new List<Transform>();
     private Quaternion rotation;
     protected PlayerMovement movement;
 
@@ -98,13 +97,12 @@ abstract public class Weapon : InventoryItem
     public virtual void EnableHitbox()
     {
         if (bx != null) bx.enabled = true;
-//        Debug.Log("Enable Hitbox");
     }
 
     public virtual void DisableHitbox()
     {
         if (bx != null) bx.enabled = false;
-        hittedTargets.Clear();
+        hittedTargets = new List<Transform>();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -134,6 +132,7 @@ abstract public class Weapon : InventoryItem
 
     private void DealotherDamage(BaseEntety mob, float attackmulti)
     {
+        if(!IsServer) return;
         playerStats.DealotherDamage(mob, attackmulti);
         hittedTargets.Add(mob.transform);
     }
@@ -161,6 +160,7 @@ abstract public class Weapon : InventoryItem
     {
         isAttacking = false;
         transform.parent = player;
+        hittedTargets = new List<Transform>();
         DisableHitbox();
         transform.localRotation = rotation; 
         if (anim != null) 

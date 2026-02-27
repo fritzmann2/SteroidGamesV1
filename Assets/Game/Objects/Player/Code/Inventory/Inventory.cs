@@ -2,6 +2,8 @@ using Unity.Netcode;
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
+
 
 
 
@@ -221,14 +223,23 @@ public class Inventory : NetworkBehaviour
         {
             adjustedRarity = 2.5f;
         }
-        Debug.Log("adjustetRarity: " + adjustedRarity);
-        Debug.Log("player Level: " + playerStats.getLevel());
-        Debug.Log("rarity: " + rarity);
         _equipmentStats.generateStats(adjustedRarity);        
         return _equipmentStats;
     }
         
-    
+    public void dropItem()
+    {
+        if (mouseItemData.hasitem)
+        {
+            int index = mouseItemData.indexslot;
+            mouseItemData.ClearSlot();
+            InventoryItemInstance inventoryItemInstance = itemInventory.inventorySlots[index].InventoryItemInstance;
+            int amount = itemInventory.inventorySlots[index].StackSize;
+            itemInventory.inventorySlots[index].clearSlot();
+            itemInventory.inventorySlots[index].inventoryUI.updateSlot(index, false);
+            worldGenerator.dropItem(inventoryItemInstance, transform.position + new Vector3 (1f, 0f, 0f), amount);
+        }
+    }
 
 
 

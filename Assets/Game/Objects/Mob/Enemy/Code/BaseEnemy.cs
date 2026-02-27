@@ -20,6 +20,8 @@ abstract public class BaseEnemy : BaseEntety
         hpbarfiller = transform.GetChild(0).GetChild(0).gameObject;
         customGravity = 35f; 
         maxFallSpeed = 25f;
+        baseXpReward = 50;
+
     }
 
         [Header("Custom Gravity")]
@@ -46,7 +48,8 @@ abstract public class BaseEnemy : BaseEntety
     private bool canJump = true;
     private bool isGrounded;
     [SerializeField] protected float mindistance = 1f;
-    [SerializeField] protected float maxdistance = 10f;
+    [SerializeField] protected float attackDistance = 8f;
+    [SerializeField] protected float maxdistance = 15f;
     
     [Header("Attack Settings")]
     public float attackCooldown = 2f;
@@ -69,7 +72,7 @@ abstract public class BaseEnemy : BaseEntety
         rb = GetComponent<Rigidbody2D>();
         levelManager.onPlayerRegistered += updatePlayerList;
         updatePlayerList();
-        mindistance = mindistance + Random.Range(10, 0)*0.05f;
+        attackDistance = attackDistance + Random.Range(10, 0)*0.05f;
         wallLayer = LayerMask.GetMask("Wall", "Ground");
         groundLayer = LayerMask.GetMask("Ground");
     }
@@ -145,7 +148,7 @@ abstract public class BaseEnemy : BaseEntety
             );
             bool isGroundAhead = Physics2D.Raycast(voidOrigin, Vector2.down, voidCheckDistance, groundLayer);
 
-            bool distanceCheck = Mathf.Abs(direction.x) > mindistance && Mathf.Abs(direction.x) < maxdistance;
+            bool distanceCheck = Mathf.Abs(direction.x) > attackDistance && Mathf.Abs(direction.x) < maxdistance;
 
             if (distanceCheck && isGroundAhead)
             {
@@ -183,7 +186,7 @@ abstract public class BaseEnemy : BaseEntety
         }
         else
         {
-            if (Vector3.Distance(targetPlayer.position, transform.position) < mindistance + mindistance / 10 && attackCooldownTimer <= 0f)
+            if (Vector3.Distance(targetPlayer.position, transform.position) < attackDistance + attackDistance / 10 && attackCooldownTimer <= 0f)
             {
                 Attack();
                 attackCooldownTimer = attackCooldown * (1 + Random.Range(0f, 0.2f));
@@ -206,7 +209,7 @@ abstract public class BaseEnemy : BaseEntety
         }
     }
 
-    private void DistributeXP()
+    protected void DistributeXP()
     {
         for (int i = activePlayers.Count - 1; i >= 0; i--)
         {
@@ -246,7 +249,7 @@ abstract public class BaseEnemy : BaseEntety
 
     public void Setparrent(WorldGenerator parrentworldgen)
     {
-        this.worldgen = parrentworldgen;
+        worldgen = parrentworldgen;
     }
 
     public Transform getNerestPlayer()

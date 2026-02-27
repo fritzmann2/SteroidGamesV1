@@ -10,8 +10,8 @@ public class MouseItemData : MonoBehaviour
     public TextMeshProUGUI itemCount;
     public InventorySlot_UI inventorySlot;
     public Inventory inventory;
-    private int indexslot;
-    private bool hasitem = false;
+    public int indexslot;
+    public bool hasitem = false;
     private bool eqfirst = false;
     private bool eqsecond = false;
     private bool invoke = false;
@@ -61,14 +61,13 @@ public class MouseItemData : MonoBehaviour
         }
         if (invoke)
         {
-//            Debug.Log("Invoking with indexes:" + indexslot + " and " + index);
             ItemChange?.Invoke(indexslot, index, eqfirst, eqsecond);
             return;
         }
     }
 
 
-    private void ClearSlot()
+    public void ClearSlot()
     {
         eqfirst = false;
         eqsecond = false;
@@ -84,7 +83,6 @@ public class MouseItemData : MonoBehaviour
     {
         inventorySlot = clickedSlot;
         indexslot = index;
-//        Debug.Log("set index to:" + indexslot);
         ItemSprite.sprite = inventorySlot.itemSprite.sprite;
         itemCount.text = inventorySlot.itemCount.text;
         ItemSprite.color = Color.white;

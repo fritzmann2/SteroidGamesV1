@@ -172,4 +172,9 @@ public class InventoryUI : MonoBehaviour
             saveHandler.RequestPlayerReset();
         }
     }
+
+    public void DropItem()
+    {
+        playerinventory.dropItem();
+    }
 }

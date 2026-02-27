@@ -88,7 +88,7 @@ public class Bow : Weapon
             
             if (nearestEnemy != null)
             {
-                Vector3 aimDir = nearestEnemy.position - transform.position + new Vector3(0f, 0.3f, 0f);
+                Vector3 aimDir = nearestEnemy.position - transform.position + new Vector3(0f, 0.5f, 0f);
                 aimDir.z = 0f;
                 return aimDir;
             }

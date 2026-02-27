@@ -1,19 +1,25 @@
 fileFormatVersion: 2
-guid: 34a7953e9c9b48c43bf98f09d1f170da
+guid: 59e559122f0043f47ace51974d8260da
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 2813682412738083287
-    second: Zombi_wizzard_0
+      213: -2539602376813821636
+    second: SkelletBoss_0
   - first:
-      213: -2475740267249517541
-    second: Zombi_wizzard_1
+      213: 3294976024686520281
+    second: SkelletBoss_1
   - first:
-      213: 6591464482011648062
-    second: Zombi_wizzard_2
+      213: 4275812127993386431
+    second: SkelletBoss_2
   - first:
-      213: 5513909875135058897
-    second: Zombi_wizzard_3
+      213: -4563198953363400611
+    second: SkelletBoss_3
+  - first:
+      213: 969856311497419297
+    second: SkelletBoss_4
+  - first:
+      213: 6810920841671702120
+    second: SkelletBoss_5
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -60,7 +66,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 700
+  spritePixelsToUnits: 200
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -161,35 +167,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Zombi_wizzard_0
+      name: SkelletBoss_0
       rect:
         serializedVersion: 2
-        x: 50
-        y: 767
-        width: 450
-        height: 721
-      alignment: 9
-      pivot: {x: 0.5, y: 0.4}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 7d974023f353c0720800000000000000
-      internalID: 2813682412738083287
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Zombi_wizzard_1
-      rect:
-        serializedVersion: 2
-        x: 518
-        y: 768
-        width: 450
-        height: 721
+        x: 15
+        y: 512
+        width: 320
+        height: 512
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -198,20 +182,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b1c367e085764add0800000000000000
-      internalID: -2475740267249517541
+      spriteID: c31464bf71581ccd0800000000000000
+      internalID: -2539602376813821636
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Zombi_wizzard_2
+      name: SkelletBoss_1
       rect:
         serializedVersion: 2
-        x: 50
-        y: 45
-        width: 450
-        height: 721
+        x: 341
+        y: 512
+        width: 341
+        height: 512
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -220,20 +204,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e3098e7f506997b50800000000000000
-      internalID: 6591464482011648062
+      spriteID: 9d76ed6ac3b1abd20800000000000000
+      internalID: 3294976024686520281
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Zombi_wizzard_3
+      name: SkelletBoss_2
       rect:
         serializedVersion: 2
-        x: 518
-        y: 45
-        width: 450
-        height: 721
+        x: 682
+        y: 512
+        width: 341
+        height: 512
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -242,8 +226,74 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1d391f641d7558c40800000000000000
-      internalID: 5513909875135058897
+      spriteID: fb55a57e97cb65b30800000000000000
+      internalID: 4275812127993386431
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkelletBoss_3
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 0
+        width: 320
+        height: 512
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5817519ab24ca0c0800000000000000
+      internalID: -4563198953363400611
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkelletBoss_4
+      rect:
+        serializedVersion: 2
+        x: 341
+        y: 0
+        width: 341
+        height: 512
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 12a69f14d2f957d00800000000000000
+      internalID: 969856311497419297
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SkelletBoss_5
+      rect:
+        serializedVersion: 2
+        x: 682
+        y: 0
+        width: 341
+        height: 512
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86675217b60458e50800000000000000
+      internalID: 6810920841671702120
       vertices: []
       indices: 
       edges: []
@@ -252,7 +302,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: a436e324728e38c4f9997ef6bf745218
+    spriteID: b6e008edc9814c742bff202f48de0aa1
     internalID: 0
     vertices: []
     indices: 
@@ -260,12 +310,16 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":3.0,"y":2.0},"gridSpriteSize":{"x":341.0,"y":512.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      Zombi_wizzard_0: 2813682412738083287
-      Zombi_wizzard_1: -2475740267249517541
-      Zombi_wizzard_2: 6591464482011648062
-      Zombi_wizzard_3: 5513909875135058897
+      SkelletBoss_0: -2539602376813821636
+      SkelletBoss_1: 3294976024686520281
+      SkelletBoss_2: 4275812127993386431
+      SkelletBoss_3: -4563198953363400611
+      SkelletBoss_4: 969856311497419297
+      SkelletBoss_5: 6810920841671702120
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

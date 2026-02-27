@@ -1,19 +1,22 @@
 fileFormatVersion: 2
-guid: 34a7953e9c9b48c43bf98f09d1f170da
+guid: 51934ae4c21872e40a9871758ce22efd
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 2813682412738083287
-    second: Zombi_wizzard_0
+      213: -3353423032840111351
+    second: BossPortal_0
   - first:
-      213: -2475740267249517541
-    second: Zombi_wizzard_1
+      213: -261074603040912295
+    second: BossPortal_1
   - first:
-      213: 6591464482011648062
-    second: Zombi_wizzard_2
+      213: -6132733689381001293
+    second: BossPortal_2
   - first:
-      213: 5513909875135058897
-    second: Zombi_wizzard_3
+      213: -8523431382640955410
+    second: BossPortal_3
+  - first:
+      213: 4663082200542559508
+    second: BossPortal_4
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -60,7 +63,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 700
+  spritePixelsToUnits: 300
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -161,35 +164,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Zombi_wizzard_0
+      name: BossPortal_1
       rect:
         serializedVersion: 2
-        x: 50
-        y: 767
-        width: 450
-        height: 721
-      alignment: 9
-      pivot: {x: 0.5, y: 0.4}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 7d974023f353c0720800000000000000
-      internalID: 2813682412738083287
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Zombi_wizzard_1
-      rect:
-        serializedVersion: 2
-        x: 518
-        y: 768
-        width: 450
-        height: 721
+        x: 38
+        y: 124
+        width: 959
+        height: 889
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -198,52 +179,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b1c367e085764add0800000000000000
-      internalID: -2475740267249517541
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Zombi_wizzard_2
-      rect:
-        serializedVersion: 2
-        x: 50
-        y: 45
-        width: 450
-        height: 721
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: e3098e7f506997b50800000000000000
-      internalID: 6591464482011648062
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Zombi_wizzard_3
-      rect:
-        serializedVersion: 2
-        x: 518
-        y: 45
-        width: 450
-        height: 721
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 1d391f641d7558c40800000000000000
-      internalID: 5513909875135058897
+      spriteID: 95cced1280a706cf0800000000000000
+      internalID: -261074603040912295
       vertices: []
       indices: 
       edges: []
@@ -252,7 +189,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: a436e324728e38c4f9997ef6bf745218
+    spriteID: 3e32a8056418f724b859fccc3b8dc29a
     internalID: 0
     vertices: []
     indices: 
@@ -262,10 +199,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Zombi_wizzard_0: 2813682412738083287
-      Zombi_wizzard_1: -2475740267249517541
-      Zombi_wizzard_2: 6591464482011648062
-      Zombi_wizzard_3: 5513909875135058897
+      BossPortal_0: -3353423032840111351
+      BossPortal_1: -261074603040912295
+      BossPortal_2: -6132733689381001293
+      BossPortal_3: -8523431382640955410
+      BossPortal_4: 4663082200542559508
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

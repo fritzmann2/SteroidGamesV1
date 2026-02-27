@@ -129,6 +129,9 @@ public class PlayerMovement : NetworkBehaviour
     {
         Vector2 inputVector = controls.Gameplay.Move.ReadValue<Vector2>();
         float moveInput = inputVector.x;
+        if (moveInput < 0) moveInput = -1;
+        else if (moveInput > 0) moveInput = 1;
+
         float targetSpeed = moveInput * movementSpeed;
         float speedDif = targetSpeed - rb.linearVelocity.x;
         
