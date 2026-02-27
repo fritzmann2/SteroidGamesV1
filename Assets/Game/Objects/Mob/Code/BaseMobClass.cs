@@ -10,13 +10,10 @@ abstract public class BaseEntety : NetworkBehaviour
     );
 
     public int maxHealth;
-    private DamageTextManager damageTextManager;
-
 
     virtual public void Awake()
     {
         health.OnValueChanged += OnHealthChanged;
-        damageTextManager = FindAnyObjectByType<DamageTextManager>();
     }
 
     override public void OnNetworkSpawn()
@@ -28,30 +25,31 @@ abstract public class BaseEntety : NetworkBehaviour
     }
 
     
-    // Schaden nehmen
     public virtual void TakeDamage(float damage, bool isCrit)
     {
-        if (NetworkManager.Singleton == null || !NetworkManager.Singleton.IsListening)
-        {
-            Debug.LogWarning("Kein Server/Client gestartet! Schlag ignoriert.");
-            return;
-        }
+        if (NetworkManager.Singleton == null || !NetworkManager.Singleton.IsListening) return;
+        if (!IsSpawned) return;
 
-        if (!IsSpawned) 
+        if (IsServer)
         {
-            Debug.LogWarning("Map-Objekt ist noch nicht gespawnt! (Warte auf Sync)");
+            ApplyDamageServer(damage, isCrit);
         }
-        
-
-        TakeDamageServerRpc((int)damage, isCrit);
+        else
+        {
+            TakeDamageServerRpc(damage, isCrit);
+        }
     }
 
-    [Rpc(SendTo.Server)]
-    public virtual void TakeDamageServerRpc(int damage, bool isCrit)
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    public virtual void TakeDamageServerRpc(float damage, bool isCrit)
     {
-        damageTextManager.ShowDamageText(damage, transform.position, isCrit);
-        
-        health.Value -= damage;
+        ApplyDamageServer(damage, isCrit);
+    }
+
+    protected virtual void ApplyDamageServer(float finalDamage, bool isCrit)
+    {
+        DamageTextManager.Instance.ShowDamageText((int)finalDamage, transform.position, isCrit);
+        health.Value -= finalDamage;
     }
 
     virtual public void OnHealthChanged(float previousValue, float newValue)

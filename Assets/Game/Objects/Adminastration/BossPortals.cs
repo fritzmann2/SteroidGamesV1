@@ -1,20 +1,69 @@
 using UnityEngine;
 using Unity.Netcode;
+using UnityEngine.InputSystem;
 
 public class BossPortals : NetworkBehaviour
 {
     [Header("Teleport Ziel")]
     public Vector3 destinationCoordinate; 
+    private bool isLocalPlayerInZone = false;
+    private NetworkObject localPlayerNetObj;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
             NetworkObject netObj = other.GetComponent<NetworkObject>();
+            
             if (netObj != null && netObj.IsOwner)
             {
-                RequestTeleportServerRpc(netObj.NetworkObjectId);
+                isLocalPlayerInZone = true;
+                localPlayerNetObj = netObj;
             }
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            NetworkObject netObj = other.GetComponent<NetworkObject>();
+            
+            if (netObj != null && netObj.IsOwner)
+            {
+                isLocalPlayerInZone = false;
+                localPlayerNetObj = null;
+            }
+        }
+    }
+
+    private void Update()
+    {
+        if (!isLocalPlayerInZone || localPlayerNetObj == null) return;
+
+        bool teleportTriggered = false;
+
+        if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            Vector2 mousePosition = Mouse.current.position.ReadValue();
+            Vector2 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
+            Collider2D hit = Physics2D.OverlapPoint(worldPosition);
+            
+            if (hit != null && hit.gameObject == gameObject)
+            {
+                teleportTriggered = true;
+            }
+        }
+
+        if (Gamepad.current != null && Gamepad.current.buttonEast.wasPressedThisFrame)
+        {
+            teleportTriggered = true;
+        }
+
+        if (teleportTriggered)
+        {
+            RequestTeleportServerRpc(localPlayerNetObj.NetworkObjectId);
+            isLocalPlayerInZone = false;
         }
     }
 

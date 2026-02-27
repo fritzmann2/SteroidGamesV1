@@ -50,7 +50,7 @@ public class BaseSpell : NetworkBehaviour
         }
         spriteRenderer.sprite = spellSprites[2];
         target = _target;
-
+        damage = _damage;
         Vector2 dir = (targetPosition - (Vector2)transform.position).normalized;
         ulong targetNetId = 0;
         if (_target != null && _target.TryGetComponent(out NetworkObject netObj))
@@ -87,18 +87,30 @@ public class BaseSpell : NetworkBehaviour
             rb.linearVelocity = direction * speed;
             transform.rotation = Quaternion.Euler(0, 0, newAngle);
         }
-        if (spelltype.Value == 0 && animationTimer <= 0f)
+
+        if (spelltype.Value == 0)
         {
-            if (spriteRenderer.sprite != spellSprites[1])
+            if (animationTimer <= 0f)
             {
-                spriteRenderer.sprite = spellSprites[1];
+                if (spriteRenderer.sprite != spellSprites[1])
+                {
+                    spriteRenderer.sprite = spellSprites[1];
+                }
+                else
+                {
+                    spriteRenderer.sprite = spellSprites[0];
+                }
+                animationTimer = baseAnimationTimer;
             }
-            else
-            {
-                spriteRenderer.sprite = spellSprites[0];
-            }
-            animationTimer = baseAnimationTimer;
         }
+        else if (spelltype.Value == 1)
+        {
+            if (spriteRenderer.sprite != spellSprites[2])
+            {
+                spriteRenderer.sprite = spellSprites[2];
+            }
+        }
+
         if (animationTimer > 0f)
         {
             animationTimer -= Time.fixedDeltaTime;

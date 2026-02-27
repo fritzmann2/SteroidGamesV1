@@ -14,6 +14,8 @@ abstract public class BaseEnemy : BaseEntety
     public ChunkData parentChunk;
     private List<Transform> activePlayers = new List<Transform>();
     public string id = "Testsubject";
+    public bool canSpawnItem = true;
+
     public virtual void Reset()    
     {
         health.Value = maxHealth;
@@ -49,7 +51,7 @@ abstract public class BaseEnemy : BaseEntety
     private bool isGrounded;
     [SerializeField] protected float mindistance = 1f;
     [SerializeField] protected float attackDistance = 8f;
-    [SerializeField] protected float maxdistance = 15f;
+    [SerializeField] protected float maxdistance = 20f;
     
     [Header("Attack Settings")]
     public float attackCooldown = 2f;
@@ -198,8 +200,15 @@ abstract public class BaseEnemy : BaseEntety
     {
         if (newValue <= 0)
         {
-           worldgen.SpawnPickUpItem(id, transform);
-           parentChunk.DespawnMob(this.GetComponent<NetworkObject>());
+            if (canSpawnItem)
+            {
+                int randomnum = Random.Range(0, 2);
+                if (randomnum == 0)
+                {
+                    worldgen.SpawnPickUpItem(id, transform);
+                }
+            }
+            parentChunk.DespawnMob(this.GetComponent<NetworkObject>());
             DistributeXP();
         }
         base.OnHealthChanged(previousValue, newValue);

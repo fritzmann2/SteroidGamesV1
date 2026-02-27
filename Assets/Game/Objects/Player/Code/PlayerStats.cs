@@ -264,7 +264,7 @@ public class PlayerStats : BaseMobClass
         {
             if (IsServer)
             {
-                Vector3 spawnPos = new Vector3(0, 0, 2f);
+                Vector3 spawnPos = new Vector3(0, 2f, 0);
                 transform.position = spawnPos;
                 health.Value = maxHealth;
                 TeleportClientRpc(spawnPos);
@@ -272,7 +272,7 @@ public class PlayerStats : BaseMobClass
         }
     }
 
-    
+
     [ClientRpc]
     private void TeleportClientRpc(Vector3 newPos)
     {

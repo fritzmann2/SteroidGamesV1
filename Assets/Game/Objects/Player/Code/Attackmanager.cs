@@ -86,7 +86,7 @@ public class Attackmanager : NetworkBehaviour
     void Update()
     {
         if (!IsOwner) return;
-        if (statsUI != null && statsUI.gameObject.activeInHierarchy) 
+        if (statsUI != null && !statsUI.gameObject.activeInHierarchy) 
         {
             return; 
         }

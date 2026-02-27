@@ -232,7 +232,7 @@ public class WorldGenerator : NetworkBehaviour
             if (chunkObj != null)
             {
                 ChunkData chunkData = chunkObj.GetComponentInChildren<ChunkData>();
-                if(chunkData != null) chunkData.DespawnAllMobs();
+                if(chunkData != null) chunkData.DespawnAllMobs(null);
 
                 NetworkObject netObj = chunkObj.GetComponent<NetworkObject>();
                 if (netObj != null) netObj.Despawn();

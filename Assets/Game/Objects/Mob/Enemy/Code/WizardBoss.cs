@@ -5,7 +5,7 @@ using Unity.Netcode;
 using UnityEditor;
 #endif
 
-public class WizardBoss : WizardScript
+public class WizardBoss : BaseBoss
 {
     [Header("Teleport Settings")]
     public float teleportRadius = 15f;           
@@ -19,14 +19,19 @@ public class WizardBoss : WizardScript
     public float obstacleCheckRadius = 1.5f; 
     public float obstacleCheckDistance = 1.5f;
 
+    [Header("Wizard Settings")]
+    public GameObject projectilePrefab;
+    protected float fireballHightf = 4f;
+
 
     public override void Reset()
     {
+        bossName = "Death Wizard";
         id = "WizardBoss";
         maxHealth = 1000;
         
         maxdistance = 60f;     
-        attackDistance = 11f; 
+        attackDistance = 20f; 
         mindistance = 7f;  
         
         attackCooldown = 2f;
@@ -39,7 +44,6 @@ public class WizardBoss : WizardScript
         teleportTimer = 15f;
         baseXpReward = 500;
         health.Value = maxHealth;
-        hpbarfiller = transform.GetChild(0).GetChild(0).gameObject;
 
 
         #if UNITY_EDITOR
@@ -118,7 +122,7 @@ public class WizardBoss : WizardScript
         }
     }
 
-    protected override void spawnAttackProjectile()
+    protected void spawnAttackProjectile()
     {
         if (targetPlayer == null) return;
 
@@ -139,7 +143,7 @@ public class WizardBoss : WizardScript
         {
             desiredDir = Vector2.zero;
         }
-        else if (dist > attackDistance)
+        else if (dist > attackDistance * 0.9f)
         {
             desiredDir = (targetPlayer.position - transform.position).normalized;
         }
@@ -224,26 +228,7 @@ public class WizardBoss : WizardScript
     public override void OnHealthChanged(float previousValue, float newValue)
     {
         
-        if (previousValue > maxHealth * 2/3 && newValue <= maxHealth * 2 / 3)
-        {
-            health.Value = maxHealth * 2/3 - 1;
-            parentChunk.SpawnMyMobs(worldgen);
-        }
-        if (previousValue > maxHealth * 1/3 && newValue <= maxHealth * 1 / 3)
-        {
-            health.Value = maxHealth * 1/3 - 1;
-            parentChunk.SpawnMyMobs(worldgen);
-        }
-        if (newValue <= 0)
-        {
-            worldgen.SpawnPickUpItem(id, transform);
-            parentChunk.DespawnMob(this.GetComponent<NetworkObject>());
-            DistributeXP();
-        }
-        if (hpbarfiller != null)
-        {
-            hpbarfiller.transform.localScale = new Vector3 (newValue / maxHealth, 1f, 1f);
-        }
+        base.OnHealthChanged(previousValue, newValue);
     }
 
     private void OnDrawGizmosSelected()

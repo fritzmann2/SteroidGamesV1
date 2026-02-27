@@ -1,6 +1,6 @@
 using UnityEngine;
 using Unity.Netcode;
-using UnityEngine.InputSystem; // WICHTIG: Den neuen Namespace hinzufügen!
+using UnityEngine.InputSystem;
 
 public class DropItem : NetworkBehaviour
 {
@@ -26,7 +26,7 @@ public class DropItem : NetworkBehaviour
             }
         }
 
-        if (Mouse.current.leftButton.wasPressedThisFrame)
+        if (Mouse.current.leftButton.wasPressedThisFrame || (Gamepad.current != null && Gamepad.current.buttonEast.wasPressedThisFrame))
         {
             Vector2 mousePosition = Mouse.current.position.ReadValue();
             Vector2 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);

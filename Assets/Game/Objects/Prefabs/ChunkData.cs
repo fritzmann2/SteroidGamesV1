@@ -69,6 +69,10 @@ public class ChunkData : MonoBehaviour
                     {
                         enemyScript.SetParentChunk(this);
                         enemyScript.Setparrent(generator);
+                        if (isBossArena)
+                        {
+                            enemyScript.canSpawnItem = false;
+                        }
                     }
                 }
                 else
@@ -96,11 +100,11 @@ public class ChunkData : MonoBehaviour
         myMobs.Add(mob);
     }
 
-    public void DespawnAllMobs()
+    public void DespawnAllMobs(Transform _dontdespawn)
     {
         foreach (var mob in myMobs)
         {
-            if (mob != null && mob.IsSpawned)
+            if (mob != null && mob.IsSpawned && mob.transform != _dontdespawn)
             {
                 mob.Despawn();
             }
