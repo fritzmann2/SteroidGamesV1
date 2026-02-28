@@ -12,6 +12,8 @@ public class BaseArrow : NetworkBehaviour
     private bool hasHitWall = false;
     private Transform owner;
     private Vector3 velocity;
+    private bool hasHit = false;
+
 
     private bool isInitialized = false; 
 
@@ -65,9 +67,11 @@ public class BaseArrow : NetworkBehaviour
         }
     }
 
+
     private void hitWall()
     {
         hasHitWall = true;
+        hasHit = true;
         bx.enabled = false;
         if (despawnTimer > 3f)
         {
@@ -77,21 +81,37 @@ public class BaseArrow : NetworkBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
+        if (hasHit) return;
+
         if (other.CompareTag("Obstacle"))
         {
             hitWall();
             return;
         }
 
-        if (!IsServer) return; 
         if (owner == null) return; 
-        if (other.TryGetComponent<BaseEntety>(out BaseEntety mob))
+        
+        NetworkObject ownerNetObj = owner.GetComponent<NetworkObject>();
+        if (ownerNetObj != null && ownerNetObj.IsOwner)
         {
-            if (other.transform != owner)
+            if (other.TryGetComponent<BaseEntety>(out BaseEntety mob))
             {
-                owner.GetComponent<PlayerStats>().DealotherDamage(mob, 0.4f);
-                GetComponent<NetworkObject>().Despawn();
+                if (other.transform != owner)
+                {
+                    hasHit = true;
+                    owner.GetComponent<PlayerStats>().DealotherDamage(mob, 0.6f);
+                    RequestDespawnServerRpc();
+                }
             }
+        }
+    }
+
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    public void RequestDespawnServerRpc()
+    {
+        if (NetworkObject != null && NetworkObject.IsSpawned)
+        {
+            NetworkObject.Despawn();
         }
     }
 }

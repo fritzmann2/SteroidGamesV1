@@ -21,7 +21,7 @@ public class PlayerMovement : NetworkBehaviour
     public void Reset()
     {
         customGravity = 35f; 
-        maxFallSpeed = 25f;
+        maxFallSpeed = 15f;
     }
 
     [Header("Accelerating Settings")]

@@ -19,7 +19,7 @@ public class BaseSpell : NetworkBehaviour
     protected float animationTimer;
     
     [Header("Homing Settings")]
-    public float rotateSpeed = 40f;
+    public float rotateSpeed = 30f;
 
     protected Vector2 direction = Vector2.zero;
     protected Rigidbody2D rb;
@@ -32,13 +32,15 @@ public class BaseSpell : NetworkBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         animationTimer = baseAnimationTimer;
     }
+    
     public virtual void Init(Vector2 targetPosition, float _damage)
     {
         spelltype.Value = 0;
         spriteRenderer.sprite = spellSprites[0];
         damage = _damage; 
         Vector2 dir = (targetPosition - (Vector2)transform.position).normalized;
-        SetMovementClientRpc(dir, 0);
+        
+        SetMovementClientRpc(dir, 0, _damage); 
     }
 
     public void Init(Vector2 targetPosition, float _damage, Transform _target)
@@ -51,18 +53,22 @@ public class BaseSpell : NetworkBehaviour
         spriteRenderer.sprite = spellSprites[2];
         target = _target;
         damage = _damage;
+
         Vector2 dir = (targetPosition - (Vector2)transform.position).normalized;
         ulong targetNetId = 0;
         if (_target != null && _target.TryGetComponent(out NetworkObject netObj))
         {
             targetNetId = netObj.NetworkObjectId;
         }
-        SetMovementClientRpc(dir, targetNetId);
+        
+        SetMovementClientRpc(dir, targetNetId, _damage); 
     }
 
     [ClientRpc]
-    private void SetMovementClientRpc(Vector2 dir, ulong targetNetId)
+    private void SetMovementClientRpc(Vector2 dir, ulong targetNetId, float syncedDamage)
     {
+        damage = syncedDamage;
+        
         direction = dir;
         rb = GetComponent<Rigidbody2D>();
         rb.linearVelocity = direction * speed;
@@ -73,6 +79,7 @@ public class BaseSpell : NetworkBehaviour
             target = targetObj.transform;
         }
     }
+
 
     public virtual void FixedUpdate()
     {
@@ -130,17 +137,27 @@ public class BaseSpell : NetworkBehaviour
 
     public void OnTriggerEnter2D(Collider2D other)
     {
-        if (!IsServer) return;
-
         if (other.CompareTag("Player"))
         {
-            other.GetComponent<BaseEntety>().TakeDamage(damage, false);
-            Despawn();
+            NetworkObject playerNetObj = other.GetComponent<NetworkObject>();
+            
+            if (playerNetObj != null && playerNetObj.IsOwner)
+            {
+                other.GetComponent<BaseEntety>().TakeDamage(damage, false);
+                
+                RequestDespawnServerRpc(); 
+            }
         }
-        else if (other.CompareTag("Obstacle"))
+        else if (IsServer && other.CompareTag("Obstacle"))
         {
             Despawn();
         }
+    }
+
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    public void RequestDespawnServerRpc()
+    {
+        Despawn();
     }
 
     private void Despawn()

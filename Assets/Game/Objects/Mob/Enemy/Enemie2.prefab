@@ -218,9 +218,10 @@ MonoBehaviour:
   worldgen: {fileID: 0}
   parentChunk: {fileID: 0}
   id: Wizard
+  canSpawnItem: 1
   customGravity: 35
   maxFallSpeed: 25
-  groundCheckPos: -0.37
+  groundCheckPos: -0.5
   groundCheckSize: {x: 0.8, y: 0.1}
   wallCheckDistance: 0.6
   wallCheckHeight: -0.4
@@ -229,8 +230,9 @@ MonoBehaviour:
   voidCheckDistance: 1.5
   jumpforce: 5
   mindistance: 10
+  attackDistance: 8
   maxdistance: 20
-  attackCooldown: 3
+  attackCooldown: 1
   baseXpReward: 50
   sharedXpRadius: 15
   sharedXpPercentage: 0.5

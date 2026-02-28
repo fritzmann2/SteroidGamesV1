@@ -265,11 +265,16 @@ public class PlayerStats : BaseMobClass
             if (IsServer)
             {
                 Vector3 spawnPos = new Vector3(0, 2f, 0);
-                transform.position = spawnPos;
                 health.Value = maxHealth;
                 TeleportClientRpc(spawnPos);
             }
         }
+    }
+
+    public void ResetHP()
+    {
+        health.Value = maxHealth;
+        statsUI.UpdateHealthUI((int)health.Value, maxHealth);
     }
 
 

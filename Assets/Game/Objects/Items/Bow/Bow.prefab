@@ -343,6 +343,8 @@ MonoBehaviour:
   isAttacking: 0
   bowTransform: {x: 0.3, y: 0, z: 0}
   Arrow: {fileID: 183354625355044798, guid: 7506e2c3984d63e4381177c3c56c83c4, type: 3}
+  autoAimRadius: 20
+  dropCompensationFactor: 0.005
 --- !u!1 &6457280025995956875
 GameObject:
   m_ObjectHideFlags: 0

@@ -17,7 +17,7 @@ public abstract class BaseBoss : BaseEnemy
 
         if (BossUIController.Instance != null)
         {
-            BossUIController.Instance.ShowBoss(bossName, maxHealth);
+            BossUIController.Instance.ShowBoss(bossName, maxHealth, transform);
             BossUIController.Instance.changeHPcolor(healthState);
         }
     }
@@ -68,12 +68,31 @@ public abstract class BaseBoss : BaseEnemy
         {
             worldgen.SpawnPickUpItem(id, transform);
             DistributeXP();
-            parentChunk.DespawnAllMobs(this.transform);
-            parentChunk.DespawnMob(this.GetComponent<NetworkObject>());
+            StartCoroutine(VictorySequenceRoutine());
+            parentChunk.DespawnAllMobs();
         }
         if (BossUIController.Instance != null)
         {
             BossUIController.Instance.UpdateHealth(newValue);
+        }
+    }
+
+    private System.Collections.IEnumerator VictorySequenceRoutine()
+    {
+        Vector3 deathPosition = transform.position;
+        float teleportRange = 200f;
+
+        yield return new WaitForSeconds(15f);
+
+        Vector3 returnPosition = new Vector3(0, 2, 0); 
+
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject p in players)
+        {
+            if (Vector3.Distance(p.transform.position, deathPosition) <= teleportRange)
+            {
+                worldgen.TeleportToBoss(returnPosition, p.transform);
+            }
         }
     }
     

@@ -8,6 +8,8 @@ public class ZombyScript : BaseEnemy
         maxHealth = 300;
         damage = 30f;
         movementSpeed = 6f;
+        attackDistance = 1f;
+        attackCooldown = 2f;
         base.Reset();
     }
 

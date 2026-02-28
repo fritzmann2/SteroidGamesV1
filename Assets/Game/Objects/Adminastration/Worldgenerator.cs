@@ -232,7 +232,7 @@ public class WorldGenerator : NetworkBehaviour
             if (chunkObj != null)
             {
                 ChunkData chunkData = chunkObj.GetComponentInChildren<ChunkData>();
-                if(chunkData != null) chunkData.DespawnAllMobs(null);
+                if(chunkData != null) chunkData.DespawnAllMobs();
 
                 NetworkObject netObj = chunkObj.GetComponent<NetworkObject>();
                 if (netObj != null) netObj.Despawn();
@@ -300,14 +300,74 @@ public class WorldGenerator : NetworkBehaviour
         }
     }
 
-    public void dropItem(InventoryItemInstance _item, Vector3 _spawnTransform, int _amount)
+    public void dropItem(InventoryItemInstance _item, Vector3 _spawnPosition, int _amount)
     {
-        GameObject dropItem = Instantiate(DropItem, _spawnTransform, Quaternion.identity);
-        dropItem.GetComponent<DropItem>().init(_item, _amount);
-        var netObj = dropItem.GetComponent<NetworkObject>();
+        string itemID = _item.itemData.ID; 
+        bool isEquipment = _item is EquipmentInstance;
+        string serializedStats = "";
+
+        if (isEquipment)
+        {
+            serializedStats = JsonUtility.ToJson((EquipmentInstance)_item);
+        }
+        if (IsServer)
+        {
+            SpawnDropItemOnServer(itemID, isEquipment, serializedStats, _spawnPosition, _amount);
+        }
+        else
+        {
+            RequestDropItemServerRpc(itemID, isEquipment, serializedStats, _spawnPosition, _amount);
+        }
+    }
+
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    private void RequestDropItemServerRpc(string itemID, bool isEquipment, string serializedStats, Vector3 spawnPosition, int amount)
+    {
+        SpawnDropItemOnServer(itemID, isEquipment, serializedStats, spawnPosition, amount);
+    }
+
+    private void SpawnDropItemOnServer(string itemID, bool isEquipment, string serializedStats, Vector3 _spawnPosition, int _amount)
+    {
+
+        ItemData baseItemData = GetItemDataByID(itemID); 
+
+        if (baseItemData == null)
+        {
+            Debug.LogError($"ItemData für ID {itemID} nicht gefunden!");
+            return;
+        }
+
+        InventoryItemInstance reconstructedItem;
+
+        if (isEquipment)
+        {
+            EquipmentInstance equip = new EquipmentInstance((EquipmentData)baseItemData);
+            JsonUtility.FromJsonOverwrite(serializedStats, equip);
+            reconstructedItem = equip;
+        }
+        else
+        {
+            reconstructedItem = new InventoryItemInstance(baseItemData);
+        }
+
+        GameObject dropItemObj = Instantiate(DropItem, _spawnPosition, Quaternion.identity); 
+        dropItemObj.GetComponent<DropItem>().init(reconstructedItem, _amount);
+        
+        var netObj = dropItemObj.GetComponent<NetworkObject>();
         if (netObj != null)
         {
             netObj.Spawn();
         }
+    }
+
+    private ItemData GetItemDataByID(string id)
+    {
+        Inventory playerInventory = FindAnyObjectByType<Inventory>();
+        
+        if (playerInventory != null)
+        {
+            return playerInventory.getItemByID(id);
+        }
+        return null; 
     }
 }

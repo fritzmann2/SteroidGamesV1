@@ -77,6 +77,7 @@ abstract public class BaseEnemy : BaseEntety
         attackDistance = attackDistance + Random.Range(10, 0)*0.05f;
         wallLayer = LayerMask.GetMask("Wall", "Ground");
         groundLayer = LayerMask.GetMask("Ground");
+        attackCooldownTimer = attackCooldown;
     }
     virtual public void Attack() {}
 

@@ -100,17 +100,18 @@ public class ChunkData : MonoBehaviour
         myMobs.Add(mob);
     }
 
-    public void DespawnAllMobs(Transform _dontdespawn)
+    public void DespawnAllMobs()
     {
         foreach (var mob in myMobs)
         {
-            if (mob != null && mob.IsSpawned && mob.transform != _dontdespawn)
+            if (mob != null && mob.IsSpawned)
             {
                 mob.Despawn();
             }
         }
         myMobs.Clear();
     }
+
     public void DespawnMob(NetworkObject mob)
     {
         if (myMobs.Contains(mob))

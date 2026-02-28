@@ -181,7 +181,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 2324575985
+  GlobalObjectIdHash: 3058370883
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -292,7 +292,7 @@ MonoBehaviour:
   voidCheckDistance: 1.5
   jumpforce: 5
   mindistance: 7
-  attackDistance: 11
+  attackDistance: 20
   maxdistance: 60
   attackCooldown: 2
   baseXpReward: 500
@@ -306,4 +306,4 @@ MonoBehaviour:
   teleportTimer: 15
   obstacleCheckRadius: 1.5
   obstacleCheckDistance: 1.5
-  projectilePrefab: {fileID: 0}
+  projectilePrefab: {fileID: 7554478117150871380, guid: 8406425a5eb305c48af0cfa9c65e7783, type: 3}
