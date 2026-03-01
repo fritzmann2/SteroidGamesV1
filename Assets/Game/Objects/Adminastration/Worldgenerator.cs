@@ -232,7 +232,7 @@ public class WorldGenerator : NetworkBehaviour
             if (chunkObj != null)
             {
                 ChunkData chunkData = chunkObj.GetComponentInChildren<ChunkData>();
-                if(chunkData != null) chunkData.DespawnAllMobs();
+                if(chunkData != null) chunkData.DespawnEveryThing();
 
                 NetworkObject netObj = chunkObj.GetComponent<NetworkObject>();
                 if (netObj != null) netObj.Despawn();
@@ -242,9 +242,9 @@ public class WorldGenerator : NetworkBehaviour
         }
     }
 
-    public void SpawnPickUpItem(string id, Transform spawnTransform)
+    public void SpawnPickUpItem(string id, Vector3 spawnPosition)
     {
-        GameObject pickupitem = Instantiate(PickUpItem, spawnTransform.position, Quaternion.identity);
+        GameObject pickupitem = Instantiate(PickUpItem, spawnPosition, Quaternion.identity);
         pickupitem.name = id;
         ItemPickUp itemPickUp = pickupitem.GetComponent<ItemPickUp>();
         int itemRarity = 1;
@@ -288,6 +288,7 @@ public class WorldGenerator : NetworkBehaviour
             Rigidbody2D rb = localPlayer.GetComponent<Rigidbody2D>();
             if (rb != null) rb.linearVelocity = Vector2.zero;
             localPlayer.transform.position = destination;
+            localPlayer.GetComponent<PlayerMovement>().pauseGravity();
 
             if (cam != null)
             {

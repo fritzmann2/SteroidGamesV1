@@ -7,10 +7,24 @@ public class DropItem : NetworkBehaviour
     private InventoryItemInstance inventoryItemInstance;
     private int amount;
     public SpriteRenderer image;
+    private GameControls controls;
+
+    
     
     [Header("Pickup Settings")]
     public float maxPickupDistance = 2f;
     private float timer = 10f;
+
+    public override void OnNetworkSpawn()
+    {
+        controls = new GameControls();
+        controls.Enable();
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        controls.Disable();
+    }
 
     void Update()
     {
@@ -26,7 +40,7 @@ public class DropItem : NetworkBehaviour
             }
         }
 
-        if (Mouse.current.leftButton.wasPressedThisFrame || (Gamepad.current != null && Gamepad.current.buttonEast.wasPressedThisFrame))
+        if (controls.Gameplay.LeftMouse.IsPressed() || controls.Gameplay.Teleport.IsPressed())
         {
             Vector2 mousePosition = Mouse.current.position.ReadValue();
             Vector2 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);

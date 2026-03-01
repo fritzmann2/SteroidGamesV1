@@ -5,6 +5,7 @@ using UnityEngine;
 public class ChunkData : MonoBehaviour
 {
     private List<NetworkObject> myMobs = new List<NetworkObject>();
+    private List<NetworkObject> myPortals = new List<NetworkObject>();
     public List<GameObject> posibleMobs;
     public bool isBossArena = false;
     private bool boosSpawned = false;
@@ -82,15 +83,24 @@ public class ChunkData : MonoBehaviour
             }
         }
 
+        if (!isBossArena)
+        {
+            SpawnPortal();
+        }
+    }
+
+    public void SpawnPortal()
+    {
         Transform portalSpawnPoint = transform.parent.Find("PortalSpawnPoint");
         if (portalSpawnPoint != null && bossPortalPrefab != null)
         {
             GameObject portalInstance = Instantiate(bossPortalPrefab, portalSpawnPoint.position, Quaternion.identity);
+            portalInstance.GetComponent<BossPortals>().destinationCoordinate = portalSpawnPoint.GetComponent<PortalSpawner>().teleportDestination;
             NetworkObject portalNetObj = portalInstance.GetComponent<NetworkObject>();
             if (portalNetObj != null)
             {
                 portalNetObj.Spawn();
-                RegisterMob(portalNetObj); 
+                myPortals.Add(portalNetObj);
             }
         }
     }
@@ -98,6 +108,12 @@ public class ChunkData : MonoBehaviour
     public void RegisterMob(NetworkObject mob)
     {
         myMobs.Add(mob);
+    }
+
+    public void DespawnEveryThing()
+    {
+        DespawnAllMobs();
+        DespawnAllPortals();
     }
 
     public void DespawnAllMobs()
@@ -110,6 +126,18 @@ public class ChunkData : MonoBehaviour
             }
         }
         myMobs.Clear();
+    }
+
+    public void DespawnAllPortals()
+    {
+        foreach (var portal in myPortals)
+        {
+            if (portal != null && portal.IsSpawned)
+            {
+                portal.Despawn();
+            }
+        }
+        myPortals.Clear();
     }
 
     public void DespawnMob(NetworkObject mob)

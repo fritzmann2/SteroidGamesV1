@@ -190,6 +190,33 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Teleport"",
+                    ""type"": ""Button"",
+                    ""id"": ""e59e325f-b834-4c36-b344-c8b7367ec031"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""LeftMouse"",
+                    ""type"": ""Button"",
+                    ""id"": ""8ebeaf8c-8ec9-499f-93eb-17d6c0e38128"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RightMouse"",
+                    ""type"": ""Button"",
+                    ""id"": ""5fd3e459-ec7e-4ea2-97e9-f1732806f76c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -522,6 +549,39 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
                     ""action"": ""Attack4"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8a0a846d-43d1-4e9a-b5cf-6e8689835e40"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Teleport"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4c1d96e9-869a-4fbd-b34a-22dc0d8a7cd1"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""LeftMouse"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8602b105-9432-4779-bda5-0f41e55161a0"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RightMouse"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -541,6 +601,9 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
         m_Gameplay_Attack2 = m_Gameplay.FindAction("Attack2", throwIfNotFound: true);
         m_Gameplay_Attack3 = m_Gameplay.FindAction("Attack3", throwIfNotFound: true);
         m_Gameplay_Attack4 = m_Gameplay.FindAction("Attack4", throwIfNotFound: true);
+        m_Gameplay_Teleport = m_Gameplay.FindAction("Teleport", throwIfNotFound: true);
+        m_Gameplay_LeftMouse = m_Gameplay.FindAction("LeftMouse", throwIfNotFound: true);
+        m_Gameplay_RightMouse = m_Gameplay.FindAction("RightMouse", throwIfNotFound: true);
     }
 
     ~@GameControls()
@@ -632,6 +695,9 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Gameplay_Attack2;
     private readonly InputAction m_Gameplay_Attack3;
     private readonly InputAction m_Gameplay_Attack4;
+    private readonly InputAction m_Gameplay_Teleport;
+    private readonly InputAction m_Gameplay_LeftMouse;
+    private readonly InputAction m_Gameplay_RightMouse;
     /// <summary>
     /// Provides access to input actions defined in input action map "Gameplay".
     /// </summary>
@@ -687,6 +753,18 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Gameplay/Attack4".
         /// </summary>
         public InputAction @Attack4 => m_Wrapper.m_Gameplay_Attack4;
+        /// <summary>
+        /// Provides access to the underlying input action "Gameplay/Teleport".
+        /// </summary>
+        public InputAction @Teleport => m_Wrapper.m_Gameplay_Teleport;
+        /// <summary>
+        /// Provides access to the underlying input action "Gameplay/LeftMouse".
+        /// </summary>
+        public InputAction @LeftMouse => m_Wrapper.m_Gameplay_LeftMouse;
+        /// <summary>
+        /// Provides access to the underlying input action "Gameplay/RightMouse".
+        /// </summary>
+        public InputAction @RightMouse => m_Wrapper.m_Gameplay_RightMouse;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -746,6 +824,15 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
             @Attack4.started += instance.OnAttack4;
             @Attack4.performed += instance.OnAttack4;
             @Attack4.canceled += instance.OnAttack4;
+            @Teleport.started += instance.OnTeleport;
+            @Teleport.performed += instance.OnTeleport;
+            @Teleport.canceled += instance.OnTeleport;
+            @LeftMouse.started += instance.OnLeftMouse;
+            @LeftMouse.performed += instance.OnLeftMouse;
+            @LeftMouse.canceled += instance.OnLeftMouse;
+            @RightMouse.started += instance.OnRightMouse;
+            @RightMouse.performed += instance.OnRightMouse;
+            @RightMouse.canceled += instance.OnRightMouse;
         }
 
         /// <summary>
@@ -790,6 +877,15 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
             @Attack4.started -= instance.OnAttack4;
             @Attack4.performed -= instance.OnAttack4;
             @Attack4.canceled -= instance.OnAttack4;
+            @Teleport.started -= instance.OnTeleport;
+            @Teleport.performed -= instance.OnTeleport;
+            @Teleport.canceled -= instance.OnTeleport;
+            @LeftMouse.started -= instance.OnLeftMouse;
+            @LeftMouse.performed -= instance.OnLeftMouse;
+            @LeftMouse.canceled -= instance.OnLeftMouse;
+            @RightMouse.started -= instance.OnRightMouse;
+            @RightMouse.performed -= instance.OnRightMouse;
+            @RightMouse.canceled -= instance.OnRightMouse;
         }
 
         /// <summary>
@@ -907,5 +1003,26 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnAttack4(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Teleport" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnTeleport(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "LeftMouse" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnLeftMouse(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "RightMouse" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnRightMouse(InputAction.CallbackContext context);
     }
 }

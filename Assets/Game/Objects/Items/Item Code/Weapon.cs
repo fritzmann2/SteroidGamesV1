@@ -10,10 +10,7 @@ abstract public class Weapon : InventoryItem
     protected List<Transform> hittedTargets = new List<Transform>();
     private Quaternion rotation;
     protected PlayerMovement movement;
-
-    public PlayerStats playerStats;
     protected Transform player;
-
     public float attackmulti = 1f;
     public Animator anim;
     public Collider2D bx;

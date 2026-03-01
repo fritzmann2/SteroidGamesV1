@@ -18,6 +18,7 @@ public class WizardBoss : BaseBoss
     [Header("Flying Settings")]
     public float obstacleCheckRadius = 1.5f; 
     public float obstacleCheckDistance = 1.5f;
+    public float idealDistanceMax;
 
     [Header("Wizard Settings")]
     public GameObject projectilePrefab;
@@ -28,15 +29,17 @@ public class WizardBoss : BaseBoss
     {
         bossName = "Death Wizard";
         id = "WizardBoss";
+        itemSpawnPosition = new Vector3(-5, 981, 0);
         maxHealth = 1000;
         
         maxdistance = 60f;     
         attackDistance = 20f; 
+        idealDistanceMax = 10f;
         mindistance = 7f;  
         
         attackCooldown = 2f;
         damage = 40f;
-        movementSpeed = 5f; 
+        movementSpeed = 1f; 
         fireballHightf = 0;
         teleportRadius = 8f;        
         minTeleportDistanceToPlayer = 6f; 
@@ -58,6 +61,12 @@ public class WizardBoss : BaseBoss
                 Debug.LogError("WizardScript: Konnte kein Prefab mit Namen 'WizardProjectile' finden!");
             }
         #endif
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+        Reset();
     }
 
     public override void FixedUpdate()
@@ -143,7 +152,7 @@ public class WizardBoss : BaseBoss
         {
             desiredDir = Vector2.zero;
         }
-        else if (dist > attackDistance * 0.9f)
+        else if (dist > idealDistanceMax)
         {
             desiredDir = (targetPlayer.position - transform.position).normalized;
         }

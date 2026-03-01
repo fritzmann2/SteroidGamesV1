@@ -299,6 +299,7 @@ MonoBehaviour:
   sharedXpRadius: 15
   sharedXpPercentage: 0.5
   bossName: Death Wizard
+  itemSpawnPosition: {x: -5, y: 981, z: 0}
   teleportRadius: 8
   minTeleportDistanceToPlayer: 6
   maxTeleportAttempts: 20
@@ -306,4 +307,5 @@ MonoBehaviour:
   teleportTimer: 15
   obstacleCheckRadius: 1.5
   obstacleCheckDistance: 1.5
+  idealDistanceMax: 12
   projectilePrefab: {fileID: 7554478117150871380, guid: 8406425a5eb305c48af0cfa9c65e7783, type: 3}

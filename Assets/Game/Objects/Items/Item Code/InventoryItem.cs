@@ -5,6 +5,8 @@ using Unity.Netcode;
 public class InventoryItem : NetworkBehaviour
 {
     public ItemData itemData;
+    public PlayerStats playerStats;
+
 
     public void Initialize(string _id)
     {        
@@ -17,6 +19,12 @@ public class InventoryItem : NetworkBehaviour
             Debug.LogError("ItemData ist im Inspector nicht zugewiesen!");
         }
         
+    }
+
+    public void initScript(PlayerStats _playerStats)
+    {
+        playerStats = _playerStats;
+        Debug.Log("PlayerStats set");
     }
 }
 

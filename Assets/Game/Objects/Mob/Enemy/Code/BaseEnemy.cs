@@ -206,7 +206,7 @@ abstract public class BaseEnemy : BaseEntety
                 int randomnum = Random.Range(0, 2);
                 if (randomnum == 0)
                 {
-                    worldgen.SpawnPickUpItem(id, transform);
+                    worldgen.SpawnPickUpItem(id, transform.position);
                 }
             }
             parentChunk.DespawnMob(this.GetComponent<NetworkObject>());

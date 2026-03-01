@@ -281,6 +281,20 @@ public class PlayerMovement : NetworkBehaviour
         transform.localScale = localScale;
     }
 
+    public void pauseGravity()
+    {
+        rb.linearVelocity = new Vector2(0f, 0f);
+    }
+
+    private System.Collections.IEnumerator NoGravityRotine(float duration)
+    {
+        float tempCustomGravity = customGravity;
+        
+        customGravity = 0f;
+        yield return new WaitForSeconds(duration);
+        customGravity = tempCustomGravity;
+    }
+
     private void OnDrawGizmos()
     {
         // GroundCheck (Red)

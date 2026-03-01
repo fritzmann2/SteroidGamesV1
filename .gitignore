@@ -73,3 +73,65 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# General build artifacts
+default/
+
+# clangd cache
+.cache/
+compile_commands.json
+
+# Mac stuff
+*.DS_Store
+
+# Qt Creator
+*.user*
+*.creator.*
+*.autosave
+build/ 
+
+# Visual Studio
+.vscode/
+*.sln
+*.suo
+*.vcxproj
+*.vcxproj.*
+*.ncb
+*.sdf
+*.opensdf
+
+# CLion / JetBrains IDEs
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Ronn html outputs
+man/*.1.html
+
+# Doxygen and Sphinx
+html/
+docs/_build/html/
+docs/_build/gettext/.doctrees
+docs/_build/doctrees/
+docs/.venv/
+*.mo
+
+# tsdoc generation results
+docs/scripting-doc/out/
+docs/scripting-doc/node_modules
+
+# Work-in-progress worktrees
+wip/
+
+# Java stuff
+util/java/tmxviewer-java/target
+util/java/libtiled-java/target
+/util/java/target/
+
+# Linux perf/debugging
+gmon.out
+
+# Vim files
+*.swp
+*.swo

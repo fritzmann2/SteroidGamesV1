@@ -18,19 +18,26 @@ public class PlayerStats : BaseMobClass
     private bool isCrit;
     [SerializeField] private int playerLevel = 1;
     [SerializeField] private int playerXP = 0;
+    public NetworkVariable<float> mana = new NetworkVariable<float>(
+        100f, 
+        NetworkVariableReadPermission.Everyone, 
+        NetworkVariableWritePermission.Server
+    );
+    protected float maxMana = 0;
+    private float regenInterval = 1f;
     [Header("Spieler Info")]
     public string playerName;
+
+    
 
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn(); 
         if (!IsOwner) return;
-
+        StartCoroutine(HealthRegenerationRoutine());
         playerSaveHandler = GetComponent<PlayerSaveHandler>(); 
         itemInventory = GetComponentInParent<Inventory>().itemInventory;
-        
         statsUI = FindAnyObjectByType<PlayerStatsUI>();
-        
         playerSaveHandler.dataLoaded += Init;
         itemInventory.OnEquipmentChanged += Initbase;
     }
@@ -38,9 +45,43 @@ public class PlayerStats : BaseMobClass
     {
         base.OnNetworkDespawn();
         if (!IsOwner) return;
-
         playerSaveHandler.dataLoaded -= Init;
         itemInventory.OnEquipmentChanged -= Initbase;
+    }
+
+    private System.Collections.IEnumerator HealthRegenerationRoutine()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(regenInterval);
+            
+            bool needsUpdate = false;
+            float currentHealth = health.Value;
+            float currentMana = mana.Value;
+            if (totalStats.healthRegen > 0 && currentHealth > 0 && currentHealth < maxHealth)
+            {
+                currentHealth += totalStats.healthRegen;
+                if (currentHealth > maxHealth) currentHealth = maxHealth;
+                needsUpdate = true;
+            }
+            if (totalStats.manaRegen > 0 && currentMana < maxMana)
+            {
+                currentMana += totalStats.manaRegen;
+                if (currentMana > maxMana) currentMana = maxMana;
+                needsUpdate = true;
+            }
+            if (needsUpdate)
+            {
+                ApplyRegenServerRpc(currentHealth, currentMana);
+            }
+        }
+    }
+
+    [ServerRpc]
+    private void ApplyRegenServerRpc(float newHealth, float newMana)
+    {
+        health.Value = newHealth;
+        mana.Value = newMana;
     }
 
     private void Init()
@@ -98,15 +139,14 @@ public class PlayerStats : BaseMobClass
             mana = baseStats.mana,
             manaRegen = baseStats.manaRegen,
             health = baseStats.health,
+            healthRegen = baseStats.healthRegen
         };
         foreach (var data in equipmentDatas)
         {
             if (data == null) continue;
 
             EquipmentStats stats = data.GetEquipmentStats();
-
             if (stats == null) continue;
-
             if (stats is WeaponStats w)
             {
                 totalStats.weapondamage += w.weapondamage;
@@ -125,6 +165,7 @@ public class PlayerStats : BaseMobClass
                 totalStats.health += acc.health;
                 totalStats.mana += acc.mana;
                 totalStats.manaRegen += acc.manaRegen;
+                totalStats.healthRegen += acc.healthRegen;
                 totalStats.movementSpeed += acc.movementSpeed;
                 totalStats.attackSpeed += acc.attackSpeed;
                 totalStats.critChance += acc.critChance;
@@ -132,10 +173,10 @@ public class PlayerStats : BaseMobClass
                 totalStats.strength += acc.strength;
                 totalStats.defense += acc.defence;
                 totalStats.spellresistance += acc.spellresistance;
-                
             }
         }
-        
+        maxHealth = (int)totalStats.health;
+        maxMana = totalStats.mana;
     }
 
     public override void TakeDamage(float _damage, bool isCrit)
@@ -236,6 +277,8 @@ public class PlayerStats : BaseMobClass
     {
         baseStats.health = health.Value;
         baseStats.calculateBaseStats(playerLevel);
+        maxMana = baseStats.mana;
+        mana.Value = maxMana;
     }
 
     private int GetRequiredXP()

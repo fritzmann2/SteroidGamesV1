@@ -8,7 +8,18 @@ public class BossPortals : NetworkBehaviour
     public Vector3 destinationCoordinate; 
     private bool isLocalPlayerInZone = false;
     private NetworkObject localPlayerNetObj;
+    private GameControls controls;
 
+    public override void OnNetworkSpawn()
+    {
+        controls = new GameControls();
+        controls.Enable();
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        controls.Disable();
+    }
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
@@ -43,7 +54,7 @@ public class BossPortals : NetworkBehaviour
 
         bool teleportTriggered = false;
 
-        if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+        if (Mouse.current != null && controls.Gameplay.RightMouse .IsPressed())
         {
             Vector2 mousePosition = Mouse.current.position.ReadValue();
             Vector2 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
@@ -55,7 +66,7 @@ public class BossPortals : NetworkBehaviour
             }
         }
 
-        if (Gamepad.current != null && Gamepad.current.buttonEast.wasPressedThisFrame)
+        if (Gamepad.current != null && controls.Gameplay.Teleport.IsPressed())
         {
             teleportTriggered = true;
         }

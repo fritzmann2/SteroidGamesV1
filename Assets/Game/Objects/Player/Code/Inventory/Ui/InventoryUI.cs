@@ -11,17 +11,100 @@ public class InventoryUI : MonoBehaviour
     public List<EquipmentSlot_UI> equipmentSlot_UI;
     private Dictionary<InventorySlot_UI, InventorySlot> slotDictionary; 
     private bool hasInitializedOnce = false;
+
     [Header("Multiplayer Info")]
     public TextMeshProUGUI joinCodeText;
     private GameObject firstSelectedSlot;
     private PlayerSaveHandler saveHandler;
+    private GameControls controls;
+
+    [Header("Stats UI")]
+    public GameObject statsPanel;
+    public TextMeshProUGUI statsContentText;
+
     
-    
+    void Update()
+    {
+        if (controls.Gameplay.Teleport.triggered || controls.Gameplay.RightMouse.triggered) 
+        {
+            if (!statsPanel.activeSelf)
+            {
+                ShowItemStats();
+            }
+            else
+            {
+                statsPanel.SetActive(false);
+            }
+        }
+        if (statsPanel.activeSelf)
+        {
+            ShowItemStats();
+        }
+    }
     
     private void OnEnable()
     {
+        controls = new GameControls();
+        controls.Enable();
         StartCoroutine(DelayedRefresh());
         SetFirstSelectedSlot();
+    }
+    private void OnDisable()
+    {
+        controls.Disable();
+    }
+
+    private void ShowItemStats()
+    {
+        GameObject selected = EventSystem.current.currentSelectedGameObject;
+        if (selected == null) return;
+
+        InventorySlot_UI slotUI = selected.GetComponent<InventorySlot_UI>();
+        if (slotUI == null) return;
+
+        if (slotDictionary.TryGetValue(slotUI, out InventorySlot dataSlot))
+        {
+            InventoryItemInstance item = dataSlot.inventoryItemInstance;
+
+            if (item is EquipmentInstance eqitem)
+            {
+                statsPanel.SetActive(true);
+                UpdateStatDisplay(eqitem);
+            }
+            else
+            {
+                statsPanel.SetActive(false); 
+            }
+        }
+    }
+
+    private void UpdateStatDisplay(EquipmentInstance eqInstance)
+    {
+        EquipmentStats stats = eqInstance.GetEquipmentStats();
+        string displayString = $"<size=120%><color=yellow>{eqInstance.itemData.name}</color></size>\n\n";
+
+        if (stats is WeaponStats w)
+        {
+            displayString += $"Angriff: {w.weapondamage:F0}\n";
+            displayString += $"Stärke: {w.strength:F0}\n";
+            displayString += $"Crit Chance: {w.critChance:F1}%\n";
+            displayString += $"Crit Schaden: {w.critDamage:F0}%\n";
+            displayString += $"Attack Speed: {w.attackSpeed:F2}";
+        }
+        else if (stats is ArmorStats a)
+        {
+            displayString += $"Verteidigung: {a.defense:F0}\n";
+            displayString += $"Magieresistenz: {a.spellresistance:F0}";
+        }
+        else if (stats is AccessoryStats acc)
+        {
+            displayString += $"Leben: {acc.health:F0} | Mana: {acc.mana:F0}\n";
+            displayString += $"Regeneration: L:{acc.healthRegen:F1} M:{acc.manaRegen:F1}\n";
+            displayString += $"Bewegung: {acc.movementSpeed:F1}\n";
+            displayString += $"Stärke: {acc.strength:F0} | Def: {acc.defence:F0}";
+        }
+
+        statsContentText.text = displayString;
     }
 
     private void SetFirstSelectedSlot()
