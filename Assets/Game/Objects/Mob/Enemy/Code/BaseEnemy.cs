@@ -2,7 +2,6 @@ using UnityEngine;
 using System.Collections.Generic;
 using Unity.Netcode;
 
-
 abstract public class BaseEnemy : BaseEntety
 {
     [Header("General Settings")]
@@ -16,6 +15,10 @@ abstract public class BaseEnemy : BaseEntety
     public string id = "Testsubject";
     public bool canSpawnItem = true;
 
+    [Header("Optimization")]
+    public float activationDistance = 20f;
+    private float timeSinceSpawn = 0f;
+
     public virtual void Reset()    
     {
         health.Value = maxHealth;
@@ -23,10 +26,12 @@ abstract public class BaseEnemy : BaseEntety
         customGravity = 35f; 
         maxFallSpeed = 25f;
         baseXpReward = 50;
-
+        
+        // Timer bei jedem Spawn/Reset wieder auf 0 setzen
+        timeSinceSpawn = 0f;
     }
 
-        [Header("Custom Gravity")]
+    [Header("Custom Gravity")]
     [SerializeField] private float customGravity; 
     [SerializeField] private float maxFallSpeed;
 
@@ -90,44 +95,52 @@ abstract public class BaseEnemy : BaseEntety
     virtual public void FixedUpdate()
     {
         if (!IsServer) return;
+
+        timeSinceSpawn += Time.fixedDeltaTime;
+
+        if (timeSinceSpawn < 1f)
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.isKinematic = true;
+            return;
+        }
+        else if (rb.isKinematic)
+        {
+            rb.isKinematic = false;
+        }
+
         targetPlayer = getNerestPlayer();
+        
         if (targetPlayer != null)
         {
-            move();
-            checkAttack();
-            checkGravity();
-            if (canJump)
+            if (Vector3.Distance(transform.position, targetPlayer.position) > activationDistance)
             {
-                checkForJump();
+                rb.linearVelocity = Vector2.zero; 
+                return; 
             }
+
+            checkCollisions();
+            move();
+            checkGravity();
+            checkAttack();
         }
     }
 
-    private void checkGravity()
-    {
-        if (!isGrounded)
-        {
-            float currentGravity = customGravity;
-            float newVelocityY = rb.linearVelocity.y - (currentGravity * Time.fixedDeltaTime);
-            newVelocityY = Mathf.Max(newVelocityY, -maxFallSpeed);
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, newVelocityY);
-        }
-    }
-
-    private void checkForJump()
+    private void checkCollisions()
     {
         Vector2 boxCenter = (Vector2)transform.position + new Vector2(0, groundCheckPos);
         isGrounded = Physics2D.OverlapBox(boxCenter, groundCheckSize, 0, groundLayer);
-
-        float direction = transform.localScale.x > 0 ? 1 : -1;
-        
-        Vector2 wallCheckOrigin = (Vector2)transform.position + new Vector2(0, wallCheckHeight);
-
-        bool hitsWall = Physics2D.Raycast(wallCheckOrigin, Vector2.right * direction, wallCheckDistance, wallLayer);
-
-        if (isGrounded && hitsWall && rb.linearVelocity.y < 0.1f)
+        if (isGrounded && canJump && rb.linearVelocity.y <= 0.1f)
         {
-            jump();
+            float direction = transform.localScale.x > 0 ? 1 : -1;
+            Vector2 wallCheckOrigin = (Vector2)transform.position + new Vector2(0, 0f); 
+
+            bool hitsWall = Physics2D.Raycast(wallCheckOrigin, Vector2.right * direction, wallCheckDistance, wallLayer);
+
+            if (hitsWall)
+            {
+                jump();
+            }
         }
     }
 
@@ -145,27 +158,36 @@ abstract public class BaseEnemy : BaseEntety
 
             if (direction.x != 0) transform.localScale = new Vector3(facingDirection, 1f, 1f);
 
-            Vector2 voidOrigin = new Vector2(
-                transform.position.x + (voidCheckOffsetx * facingDirection), 
-                transform.position.y + voidCheckStartY
-            );
-            bool isGroundAhead = Physics2D.Raycast(voidOrigin, Vector2.down, voidCheckDistance, groundLayer);
-
             bool distanceCheck = Mathf.Abs(direction.x) > attackDistance && Mathf.Abs(direction.x) < maxdistance;
 
-            if (distanceCheck && isGroundAhead)
+            if (distanceCheck)
             {
-                RaycastHit2D groundHit = Physics2D.Raycast(transform.position, Vector2.down, 1.5f, groundLayer);
-                
-                if (groundHit.collider != null)
+                Vector2 voidOrigin = new Vector2(
+                    transform.position.x + (voidCheckOffsetx * facingDirection), 
+                    transform.position.y + voidCheckStartY
+                );
+                bool isGroundAhead = Physics2D.Raycast(voidOrigin, Vector2.down, voidCheckDistance, groundLayer);
+                if (isGrounded && !isGroundAhead)
                 {
-                    Vector2 groundNormal = groundHit.normal;
+                    stop();
+                    return; 
+                }
+                if (isGrounded && rb.linearVelocity.y <= 0.1f) 
+                {
+                    RaycastHit2D groundHit = Physics2D.Raycast(transform.position, Vector2.down, 1.5f, groundLayer);
                     
-                    Vector2 slopeDirection = new Vector2(groundNormal.y, -groundNormal.x);
-                    
-                    if (facingDirection < 0) slopeDirection = -slopeDirection;
+                    if (groundHit.collider != null)
+                    {
+                        Vector2 groundNormal = groundHit.normal;
+                        Vector2 slopeDirection = new Vector2(groundNormal.y, -groundNormal.x);
+                        if (facingDirection < 0) slopeDirection = -slopeDirection;
 
-                    rb.linearVelocity = slopeDirection * movementSpeed;
+                        rb.linearVelocity = slopeDirection * movementSpeed;
+                    }
+                    else
+                    {
+                        rb.linearVelocity = new Vector2(facingDirection * movementSpeed, rb.linearVelocity.y);
+                    }
                 }
                 else
                 {
@@ -178,6 +200,18 @@ abstract public class BaseEnemy : BaseEntety
             }
         }
     }
+
+    private void checkGravity()
+    {
+        if (!isGrounded)
+        {
+            float currentGravity = customGravity;
+            float newVelocityY = rb.linearVelocity.y - (currentGravity * Time.fixedDeltaTime);
+            newVelocityY = Mathf.Max(newVelocityY, -maxFallSpeed);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, newVelocityY);
+        }
+    }
+
 
     private void stop() { rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y); }
 

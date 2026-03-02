@@ -133,6 +133,7 @@ public class WorldGenerator : NetworkBehaviour
 
     private System.Collections.IEnumerator ChunkCheckRoutine()
     {
+        float loadDistance = 20f; 
         while (true)
         {
             yield return new WaitForSeconds(chunkCheckInterval);
@@ -144,13 +145,10 @@ public class WorldGenerator : NetworkBehaviour
             foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
             {
                 if (client.PlayerObject == null) continue;
-
-                Transform playerTransform = client.PlayerObject.transform;
-                
-                int pX = Mathf.FloorToInt(playerTransform.position.x / chunkSize);
-                int pY = Mathf.RoundToInt(playerTransform.position.y / chunkSize);
-
-                Vector2Int playerGridPos = new Vector2Int(pX, pY);
+                Vector3 pPos = client.PlayerObject.transform.position;
+                int centerCX = Mathf.FloorToInt(pPos.x / chunkSize);
+                int centerCY = Mathf.RoundToInt(pPos.y / chunkSize);
+                Vector2Int playerGridPos = new Vector2Int(centerCX, centerCY);
 
                 if (bossArenaAnchors.TryGetValue(playerGridPos, out Vector2Int anchorPos))
                 {
@@ -158,13 +156,20 @@ public class WorldGenerator : NetworkBehaviour
                 }
                 else
                 {
-                    foreach (Vector2Int offset in ChunkOffsets)
+                    int minX = Mathf.FloorToInt((pPos.x - loadDistance) / chunkSize);
+                    int maxX = Mathf.FloorToInt((pPos.x + loadDistance) / chunkSize);
+                    int minY = Mathf.RoundToInt((pPos.y - loadDistance) / chunkSize);
+                    int maxY = Mathf.RoundToInt((pPos.y + loadDistance) / chunkSize);
+
+                    for (int x = minX; x <= maxX; x++)
                     {
-                        Vector2Int targetChunk = playerGridPos + offset;
-                        
-                        if (!noSpawnZones.Contains(targetChunk))
+                        for (int y = minY; y <= maxY; y++)
                         {
-                            chunksToKeep.Add(targetChunk);
+                            Vector2Int targetChunk = new Vector2Int(x, y);
+                            if (!noSpawnZones.Contains(targetChunk))
+                            {
+                                chunksToKeep.Add(targetChunk);
+                            }
                         }
                     }
                 }
@@ -175,6 +180,7 @@ public class WorldGenerator : NetworkBehaviour
                 if (!activeChunks.ContainsKey(coord))
                 {
                     SpawnChunkByCoord(coord);
+                    yield return null; 
                 }
             }
 
@@ -190,6 +196,7 @@ public class WorldGenerator : NetworkBehaviour
             foreach (Vector2Int coord in chunksToRemove)
             {
                 RemoveChunk(coord);
+                yield return null; 
             }
         }
     }

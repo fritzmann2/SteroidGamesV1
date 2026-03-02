@@ -9,7 +9,7 @@ public class WizardScript : BaseEnemy
 {
     [Header("Wizard Settings")]
     public GameObject projectilePrefab;
-    protected float fireballHightf = 4f;
+    protected float fireballHightf = 1f;
 
     public override void Reset()    
     {
@@ -28,7 +28,6 @@ public class WizardScript : BaseEnemy
             {
                 string path = AssetDatabase.GUIDToAssetPath(guids[0]);
                 projectilePrefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-//                Debug.Log($"WizardScript: Prefab '{projectilePrefab.name}' automatisch gefunden und zugewiesen!");
             }
             else
             {

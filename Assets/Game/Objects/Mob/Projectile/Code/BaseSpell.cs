@@ -9,6 +9,7 @@ public class BaseSpell : NetworkBehaviour
     protected float speed = 7f;
     protected float damage = 0;
     protected float despawnTime = 5f;
+    protected LayerMask groundLayerMask;
 
     public NetworkVariable<int> spelltype = new NetworkVariable<int>(
         0, 
@@ -31,6 +32,7 @@ public class BaseSpell : NetworkBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         animationTimer = baseAnimationTimer;
+        groundLayerMask = LayerMask.GetMask("Ground");
     }
     
     public virtual void Init(Vector2 targetPosition, float _damage)
@@ -148,9 +150,13 @@ public class BaseSpell : NetworkBehaviour
                 RequestDespawnServerRpc(); 
             }
         }
-        else if (IsServer && other.CompareTag("Obstacle"))
+        else if (IsServer)
         {
-            Despawn();
+            bool hitGroundLayer = ((1 << other.gameObject.layer) & groundLayerMask) != 0;
+            if (other.CompareTag("Obstacle") || hitGroundLayer)
+            {
+                Despawn();
+            }
         }
     }
 

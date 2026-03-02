@@ -91,7 +91,7 @@ public class ChunkData : MonoBehaviour
 
     public void SpawnPortal()
     {
-        Transform portalSpawnPoint = transform.parent.Find("PortalSpawnPoint");
+        Transform portalSpawnPoint = transform.Find("PortalSpawnPoint");
         if (portalSpawnPoint != null && bossPortalPrefab != null)
         {
             GameObject portalInstance = Instantiate(bossPortalPrefab, portalSpawnPoint.position, Quaternion.identity);
