@@ -11604,12 +11604,15 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e466124e4bca3d845bc3b7261362e974, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: '::'
+  m_EditorClassIdentifier: Assembly-CSharp::WorldGenerator
   ShowTopMostFoldoutHeaderGroup: 1
   allMapChunks:
+  - {fileID: 711102628329861249, guid: 81bb9d3cb8cb9e541af1f3102648387d, type: 3}
+  - {fileID: 5956055188182452263, guid: cd7b112c60bdcb641859fc45d51f5fef, type: 3}
+  - {fileID: 5522002897625258066, guid: c4911faef2b6e8a41953324dd89b6b7d, type: 3}
+  - {fileID: 5105195841852292044, guid: bc3017e3db16a0445aad879e05014cb2, type: 3}
   - {fileID: 9010883827131182753, guid: d5d9dc3e18a180147b9a8190c0d7ee18, type: 3}
   - {fileID: 6640263213549826177, guid: ee4cfb81cc0f9a24e9f303f899e91e0f, type: 3}
-  - {fileID: 5105195841852292044, guid: bc3017e3db16a0445aad879e05014cb2, type: 3}
   dummy: {fileID: 4964076883635186287, guid: b19c29f1fc9aa7040b895bb90835eca9, type: 3}
   PickUpItem: {fileID: 5033514447186220528, guid: 6d3ceba5535605045b96e6c248c77a1a, type: 3}
   DropItem: {fileID: 3250622825464117106, guid: a32e37b0b46c01e489f1a4df42b569c3, type: 3}
@@ -11617,7 +11620,7 @@ MonoBehaviour:
   bossArenaPrefabs:
   - {fileID: 5522002897625258066, guid: c4911faef2b6e8a41953324dd89b6b7d, type: 3}
   chunkSize: 50
-  defaultChunkPrefab: {fileID: 9010883827131182753, guid: d5d9dc3e18a180147b9a8190c0d7ee18, type: 3}
+  defaultChunkPrefab: {fileID: 5956055188182452263, guid: cd7b112c60bdcb641859fc45d51f5fef, type: 3}
   cam: {fileID: 519420033}
 --- !u!4 &1663998736
 Transform:

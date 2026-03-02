@@ -258,7 +258,7 @@ public class PlayerMovement : NetworkBehaviour
     {
         Vector2 origin = (Vector2)transform.position + new Vector2(0, groundCheckPosy);
         RaycastHit2D hit = Physics2D.BoxCast(origin, new Vector2(groundCheckLengthx, 0.1f), 0, Vector2.down, 0.05f, groundLayer);
-        isGrounded = hit.collider != null && hit.collider.CompareTag("Obstacle");
+        isGrounded = hit.collider != null;
         if (isGrounded)
         {
             coyoteTimeCounter = 0f;
@@ -286,14 +286,6 @@ public class PlayerMovement : NetworkBehaviour
         rb.linearVelocity = new Vector2(0f, 0f);
     }
 
-    private System.Collections.IEnumerator NoGravityRotine(float duration)
-    {
-        float tempCustomGravity = customGravity;
-        
-        customGravity = 0f;
-        yield return new WaitForSeconds(duration);
-        customGravity = tempCustomGravity;
-    }
 
     private void OnDrawGizmos()
     {

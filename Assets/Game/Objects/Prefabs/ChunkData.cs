@@ -16,7 +16,7 @@ public class ChunkData : MonoBehaviour
 
     public void SpawnMyMobs(WorldGenerator generator)
     {
-        MobSpawnPoint[] spawnPoints = transform.parent.GetComponentsInChildren<MobSpawnPoint>();
+        MobSpawnPoint[] spawnPoints = transform.GetComponentsInChildren<MobSpawnPoint>();
 
         foreach (MobSpawnPoint spawnPoint in spawnPoints)
         {
