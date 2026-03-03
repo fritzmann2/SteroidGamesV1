@@ -10,7 +10,7 @@ abstract public class BaseEntety : NetworkBehaviour
     );
 
     public int maxHealth;
-    Rigidbody2D rb;
+    public Rigidbody2D rb;
     virtual public void Awake()
     {
         health.OnValueChanged += OnHealthChanged;

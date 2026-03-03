@@ -158,7 +158,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 0
+  m_GravityScale: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -182,7 +182,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1554599064
+  GlobalObjectIdHash: 1199982190
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -219,12 +219,13 @@ MonoBehaviour:
   parentChunk: {fileID: 0}
   id: Wizard
   canSpawnItem: 1
-  customGravity: 35
-  maxFallSpeed: 25
+  activationDistance: 20
+  customGravity: 0
+  maxFallSpeed: 0
   groundCheckPos: -0.5
   groundCheckSize: {x: 0.8, y: 0.1}
   wallCheckDistance: 0.6
-  wallCheckHeight: -0.4
+  wallCheckHeight: -0.3
   voidCheckOffsetx: 0.6
   voidCheckStartY: -0.4
   voidCheckDistance: 1.5

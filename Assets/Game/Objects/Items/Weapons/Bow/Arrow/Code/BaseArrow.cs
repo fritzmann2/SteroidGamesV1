@@ -7,6 +7,7 @@ public class BaseArrow : NetworkBehaviour
     [SerializeField] private float movementspeed; 
     [SerializeField] private float gravity;
 
+    private LayerMask groundLayerMask;
     private float despawnTimer = 15f;
     private BoxCollider2D bx;
     private bool hasHitWall = false;
@@ -28,6 +29,7 @@ public class BaseArrow : NetworkBehaviour
         bx = GetComponent<BoxCollider2D>();
         bx.isTrigger = true;
         bx.enabled = true;
+        groundLayerMask = LayerMask.GetMask("Ground");
     }
 
     public void init(Vector3 _direction, Quaternion _rotation, Transform _owner)
@@ -83,7 +85,8 @@ public class BaseArrow : NetworkBehaviour
     {
         if (hasHit) return;
 
-        if (other.CompareTag("Obstacle"))
+        bool hitGroundLayer = ((1 << other.gameObject.layer) & groundLayerMask) != 0;
+        if (other.CompareTag("Obstacle") || hitGroundLayer)
         {
             hitWall();
             return;

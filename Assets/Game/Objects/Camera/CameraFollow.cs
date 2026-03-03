@@ -10,8 +10,8 @@ public class CameraFollow : NetworkBehaviour
     public float smoothTime = 0.1f; 
     
     [Header("Look Ahead Settings")]
-    public float lookAheadDistance = 2f; 
-    public float lookAheadSpeed = 2f;  
+    public float lookAheadDistance = 1f; 
+    public float lookAheadSpeed = 1f;  
     
     [Header("Zoom Settings")]
     public float zoomSmoothTime = 0.2f;

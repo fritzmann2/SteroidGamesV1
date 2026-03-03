@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.11.2" name="Rock Tile Set" tilewidth="16" tileheight="16" tilecount="100" columns="8">
+<tileset version="1.10" tiledversion="1.11.2" name="Rock Tile Set" tilewidth="16" tileheight="16" tilecount="100" columns="8" objectalignment="center">
  <image source="../../Sprites/TileSets/RockTiles/RockFloor.png" width="128" height="144"/>
  <tile id="0">
   <objectgroup draworder="index" id="2">
@@ -162,6 +162,7 @@
    <object id="1" x="0" y="0" width="16" height="16"/>
   </objectgroup>
  </tile>
+ <tile id="39" type="Mob_Spawner"/>
  <tile id="40">
   <objectgroup draworder="index" id="2">
    <object id="2" x="0.21875" y="0.21875">
@@ -211,6 +212,7 @@
    </object>
   </objectgroup>
  </tile>
+ <tile id="47" type="Boss_spawner"/>
  <tile id="48">
   <objectgroup draworder="index" id="2">
    <object id="1" x="0" y="0" width="16" height="16"/>

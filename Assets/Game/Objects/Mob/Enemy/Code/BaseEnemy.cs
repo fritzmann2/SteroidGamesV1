@@ -5,7 +5,6 @@ using Unity.Netcode;
 abstract public class BaseEnemy : BaseEntety
 {
     [Header("General Settings")]
-    public Rigidbody2D rb;
     public LevelManager levelManager;
     public GameObject hpbarfiller;
     public Transform targetPlayer;
@@ -27,7 +26,6 @@ abstract public class BaseEnemy : BaseEntety
         maxFallSpeed = 25f;
         baseXpReward = 50;
         
-        // Timer bei jedem Spawn/Reset wieder auf 0 setzen
         timeSinceSpawn = 0f;
     }
 
@@ -76,14 +74,22 @@ abstract public class BaseEnemy : BaseEntety
         base.Awake();
         worldgen = FindAnyObjectByType<WorldGenerator>();
         levelManager = FindAnyObjectByType<LevelManager>();
-        rb = GetComponent<Rigidbody2D>();
         levelManager.onPlayerRegistered += updatePlayerList;
         updatePlayerList();
         attackDistance = attackDistance + Random.Range(10, 0)*0.05f;
+        
         wallLayer = LayerMask.GetMask("Wall", "Ground");
         groundLayer = LayerMask.GetMask("Ground");
         attackCooldownTimer = attackCooldown;
+
+        if (rb != null)
+        {
+            rb.gravityScale = 0f; 
+            rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous; 
+        }
     }
+
+
     virtual public void Attack() {}
 
     public override void OnNetworkDespawn()
@@ -101,12 +107,12 @@ abstract public class BaseEnemy : BaseEntety
         if (timeSinceSpawn < 1f)
         {
             rb.linearVelocity = Vector2.zero;
-            rb.isKinematic = true;
+            rb.bodyType = RigidbodyType2D.Kinematic;
             return;
         }
-        else if (rb.isKinematic)
+        else if (rb.bodyType == RigidbodyType2D.Kinematic) 
         {
-            rb.isKinematic = false;
+            rb.bodyType = RigidbodyType2D.Dynamic;
         }
 
         targetPlayer = getNerestPlayer();
@@ -130,16 +136,19 @@ abstract public class BaseEnemy : BaseEntety
     {
         Vector2 boxCenter = (Vector2)transform.position + new Vector2(0, groundCheckPos);
         isGrounded = Physics2D.OverlapBox(boxCenter, groundCheckSize, 0, groundLayer);
+        
         if (isGrounded && canJump && rb.linearVelocity.y <= 0.1f)
         {
             float direction = transform.localScale.x > 0 ? 1 : -1;
-            Vector2 wallCheckOrigin = (Vector2)transform.position + new Vector2(0, 0f); 
+            Vector2 wallCheckOrigin = (Vector2)transform.position + new Vector2(0, wallCheckHeight); 
+            RaycastHit2D wallHit = Physics2D.Raycast(wallCheckOrigin, Vector2.right * direction, wallCheckDistance, wallLayer);
 
-            bool hitsWall = Physics2D.Raycast(wallCheckOrigin, Vector2.right * direction, wallCheckDistance, wallLayer);
-
-            if (hitsWall)
+            if (wallHit.collider != null)
             {
-                jump();
+                if (Mathf.Abs(wallHit.normal.x) > 0.7f) 
+                {
+                    jump();
+                }
             }
         }
     }
@@ -155,39 +164,33 @@ abstract public class BaseEnemy : BaseEntety
         {
             Vector3 direction = targetPlayer.position - transform.position;
             float facingDirection = direction.x > 0 ? 1f : -1f;
-
             if (direction.x != 0) transform.localScale = new Vector3(facingDirection, 1f, 1f);
 
             bool distanceCheck = Mathf.Abs(direction.x) > attackDistance && Mathf.Abs(direction.x) < maxdistance;
 
             if (distanceCheck)
             {
-                Vector2 voidOrigin = new Vector2(
-                    transform.position.x + (voidCheckOffsetx * facingDirection), 
-                    transform.position.y + voidCheckStartY
-                );
-                bool isGroundAhead = Physics2D.Raycast(voidOrigin, Vector2.down, voidCheckDistance, groundLayer);
-                if (isGrounded && !isGroundAhead)
+                Vector2 voidOrigin = new Vector2(transform.position.x + (voidCheckOffsetx * facingDirection), transform.position.y + voidCheckStartY);
+                bool isGroundAhead = Physics2D.Raycast(voidOrigin, Vector2.down, voidCheckDistance * 1.5f, groundLayer);
+                if (isGrounded && !isGroundAhead) { stop(); return; }
+                if (isGrounded)
                 {
-                    stop();
-                    return; 
-                }
-                if (isGrounded && rb.linearVelocity.y <= 0.1f) 
-                {
-                    RaycastHit2D groundHit = Physics2D.Raycast(transform.position, Vector2.down, 1.5f, groundLayer);
-                    
-                    if (groundHit.collider != null)
+                    Vector2 slopeCheckOrigin = (Vector2)transform.position + new Vector2(0, groundCheckPos + 0.2f);
+                    Vector2 slopeCheckDir = new Vector2(facingDirection, -1f).normalized;
+                    RaycastHit2D slopeHit = Physics2D.Raycast(slopeCheckOrigin, slopeCheckDir, 1f, groundLayer);
+                    if (slopeHit.collider != null)
                     {
-                        Vector2 groundNormal = groundHit.normal;
-                        Vector2 slopeDirection = new Vector2(groundNormal.y, -groundNormal.x);
-                        if (facingDirection < 0) slopeDirection = -slopeDirection;
-
-                        rb.linearVelocity = slopeDirection * movementSpeed;
+                        Vector2 normal = slopeHit.normal;
+                        if (normal.y < 0.99f)
+                        {
+                            Vector2 slopeDir = new Vector2(normal.y, -normal.x);
+                            if (facingDirection < 0) slopeDir = -slopeDir;
+                            
+                            rb.linearVelocity = slopeDir * movementSpeed;
+                            return;
+                        }
                     }
-                    else
-                    {
-                        rb.linearVelocity = new Vector2(facingDirection * movementSpeed, rb.linearVelocity.y);
-                    }
+                    rb.linearVelocity = new Vector2(facingDirection * movementSpeed, rb.linearVelocity.y);
                 }
                 else
                 {

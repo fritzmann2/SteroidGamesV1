@@ -17,6 +17,7 @@ public class WorldGenerator : NetworkBehaviour
     public GameObject[] bossArenaPrefabs;
     
     private Dictionary<Vector2Int, Vector2Int> bossArenaAnchors = new Dictionary<Vector2Int, Vector2Int>();
+    
     private HashSet<Vector2Int> knownBossCoordinates = new HashSet<Vector2Int>();
     
     private HashSet<Vector2Int> noSpawnZones = new HashSet<Vector2Int>();
@@ -29,6 +30,7 @@ public class WorldGenerator : NetworkBehaviour
 
     private Dictionary<Vector2Int, GameObject> mapLookup = new Dictionary<Vector2Int, GameObject>();
     private Dictionary<Vector2Int, GameObject> activeChunks = new Dictionary<Vector2Int, GameObject>();
+    private Dictionary<Vector2Int, GameObject> cachedChunks = new Dictionary<Vector2Int, GameObject>();
 
     private Vector2Int[] ChunkOffsets = new Vector2Int[]
     {
@@ -202,6 +204,16 @@ public class WorldGenerator : NetworkBehaviour
     }
 
     void SpawnChunkByCoord(Vector2Int coord)
+{
+    GameObject newChunk = null;
+
+    if (cachedChunks.TryGetValue(coord, out GameObject recycledChunk))
+    {
+        newChunk = recycledChunk;
+        newChunk.SetActive(true);
+        cachedChunks.Remove(coord);
+    }
+    else
     {
         GameObject prefabToSpawn = defaultChunkPrefab;
 
@@ -213,41 +225,45 @@ public class WorldGenerator : NetworkBehaviour
         if (prefabToSpawn == null) return;
 
         Vector3 spawnPos = new Vector3(coord.x * chunkSize, coord.y * chunkSize, 0);
-
-        GameObject newChunk = Instantiate(prefabToSpawn, spawnPos, Quaternion.identity);
+        newChunk = Instantiate(prefabToSpawn, spawnPos, Quaternion.identity);
         newChunk.name = $"WorldChunk_{coord.x}_{coord.y}";
-
-        NetworkObject netObj = newChunk.GetComponent<NetworkObject>();
-        if (netObj != null)
-        {
-            netObj.Spawn();
-        }
-
-        activeChunks.Add(coord, newChunk);
-
-        ChunkData chunkData = newChunk.GetComponentInChildren<ChunkData>();
-        if (chunkData != null)
-        {
-            chunkData.SpawnMyMobs(this);
-        }
     }
+    NetworkObject netObj = newChunk.GetComponent<NetworkObject>();
+    if (netObj != null && !netObj.IsSpawned)
+    {
+        netObj.Spawn();
+    }
+    activeChunks.Add(coord, newChunk);
+    ChunkData chunkData = newChunk.GetComponentInChildren<ChunkData>();
+    if (chunkData != null)
+    {
+        chunkData.SpawnMyMobs(this);
+    }
+}
 
     void RemoveChunk(Vector2Int coord)
+{
+    if (activeChunks.TryGetValue(coord, out GameObject chunkObj))
     {
-        if (activeChunks.TryGetValue(coord, out GameObject chunkObj))
+        if (chunkObj != null)
         {
-            if (chunkObj != null)
-            {
-                ChunkData chunkData = chunkObj.GetComponentInChildren<ChunkData>();
-                if(chunkData != null) chunkData.DespawnEveryThing();
+            ChunkData chunkData = chunkObj.GetComponentInChildren<ChunkData>();
+            if(chunkData != null) chunkData.DespawnEveryThing();
 
-                NetworkObject netObj = chunkObj.GetComponent<NetworkObject>();
-                if (netObj != null) netObj.Despawn();
-                Destroy(chunkObj);
+            NetworkObject netObj = chunkObj.GetComponent<NetworkObject>();
+            if (netObj != null && netObj.IsSpawned) 
+            {
+                netObj.Despawn(false); 
             }
-            activeChunks.Remove(coord);
+            chunkObj.SetActive(false);
+            if (!cachedChunks.ContainsKey(coord))
+            {
+                cachedChunks.Add(coord, chunkObj);
+            }
         }
+        activeChunks.Remove(coord);
     }
+}
 
     public void SpawnPickUpItem(string id, Vector3 spawnPosition)
     {

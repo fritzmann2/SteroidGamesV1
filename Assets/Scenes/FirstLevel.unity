@@ -692,6 +692,7 @@ GameObject:
   - component: {fileID: 165371689}
   - component: {fileID: 165371690}
   - component: {fileID: 165371688}
+  - component: {fileID: 165371691}
   m_Layer: 0
   m_Name: LevelManager
   m_TagString: Untagged
@@ -754,6 +755,20 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
+--- !u!114 &165371691
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 165371687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13fa4ad68d0c4464a85f955d0d3d4a5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  updateInterval: 0.5
+  frameBufferLength: 1000
 --- !u!1001 &206508818
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3208,8 +3223,8 @@ MonoBehaviour:
   target: {fileID: 5384933900342603, guid: e5dcf494629bcac4a80ac7b0306da440, type: 3}
   offset: {x: 0, y: 0, z: -10}
   smoothTime: 0.1
-  lookAheadDistance: 2
-  lookAheadSpeed: 2
+  lookAheadDistance: 1
+  lookAheadSpeed: 1
   zoomSmoothTime: 0.2
 --- !u!114 &519420034
 MonoBehaviour:
@@ -11613,6 +11628,7 @@ MonoBehaviour:
   - {fileID: 5105195841852292044, guid: bc3017e3db16a0445aad879e05014cb2, type: 3}
   - {fileID: 9010883827131182753, guid: d5d9dc3e18a180147b9a8190c0d7ee18, type: 3}
   - {fileID: 6640263213549826177, guid: ee4cfb81cc0f9a24e9f303f899e91e0f, type: 3}
+  - {fileID: 7444818372066316192, guid: 79244350bbcf8034683cdea79b97bf9b, type: 3}
   dummy: {fileID: 4964076883635186287, guid: b19c29f1fc9aa7040b895bb90835eca9, type: 3}
   PickUpItem: {fileID: 5033514447186220528, guid: 6d3ceba5535605045b96e6c248c77a1a, type: 3}
   DropItem: {fileID: 3250622825464117106, guid: a32e37b0b46c01e489f1a4df42b569c3, type: 3}

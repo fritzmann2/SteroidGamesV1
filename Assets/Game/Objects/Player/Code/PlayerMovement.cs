@@ -32,7 +32,7 @@ public class PlayerMovement : NetworkBehaviour
     [SerializeField] private const float BaseGravityScale = 3f;
 
     [Header("Jump Settings")]
-    [SerializeField] private const float jumpForce = 10f;
+    [SerializeField] private const float jumpForce = 11f;
     [SerializeField] private const float wallJumpMultiplier = 0.5f;
     private float coyoteTime = 0.2f;
     private float coyoteTimeCounter;
@@ -113,7 +113,12 @@ public class PlayerMovement : NetworkBehaviour
 
             if (isJumping && rb.linearVelocity.y > 0f && controls.Gameplay.jump.IsPressed())
             {
+
                 currentGravity *= 0.5f;
+            }
+            else if (isJumping &&rb.linearVelocity.y > 0f && !controls.Gameplay.jump.IsPressed())
+            {
+                currentGravity *= 3f;
             }
             float newVelocityY = rb.linearVelocity.y - (currentGravity * Time.fixedDeltaTime);
             newVelocityY = Mathf.Max(newVelocityY, -maxFallSpeed);
@@ -194,7 +199,7 @@ public class PlayerMovement : NetworkBehaviour
     {
         if (isWallJumpPossible && !didWallJump && !isGrounded && coyoteTimeCounter > coyoteTime)
         {
-            rb.linearVelocity = new Vector2(-transform.localScale.x * jumpForce * 3f, jumpForce * wallJumpMultiplier);
+            rb.linearVelocity = new Vector2(-transform.localScale.x * jumpForce * 2f, jumpForce * wallJumpMultiplier);
             Flip();
             didWallJump = true;
             return true;
