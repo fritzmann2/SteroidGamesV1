@@ -86,19 +86,23 @@ public class Inventory : NetworkBehaviour
 
 
     [ServerRpc]
-    public void tryAddItemServerRPC(string ID, int rarity, int amount, NetworkObjectReference itemObjectRef)
+    public void tryAddItemServerRPC(NetworkObjectReference itemObjectRef)
     {
         if (itemObjectRef.TryGet(out NetworkObject targetObject))
         {
-            targetObject.Despawn();
+            ItemPickUp itemPickUp = targetObject.GetComponent<ItemPickUp>();
             
-            tryAddItemClientRPC(ID, rarity, amount);
+            if (itemPickUp != null)
+            {
+                ItemPickUpData data = itemPickUp.getItemData();
+                targetObject.Despawn();
+                tryAddItemClientRPC(data.id, data.amount, data.isEquipment, data.serializedStats);
+            }
         }
     }
 
-
     [ClientRpc]
-    public void tryAddItemClientRPC(string ID,int rarity, int amount)
+    public void tryAddItemClientRPC(string ID, int amount, bool isEquipment = false, string serializedStats = "")
     {
         if (IsOwner || IsServer)
         {
@@ -111,32 +115,16 @@ public class Inventory : NetworkBehaviour
             {
                 itemDataToAdd = getItemByID(ID);
             }
-            if (itemDataToAdd == null)
-            {
-                return;
-            }
+            
+            if (itemDataToAdd == null) return;
 
             bool isAdded = false;
 
-            if (itemDataToAdd is EquipmentData eqData)
+            if (isEquipment && !string.IsNullOrEmpty(serializedStats))
             {
-                EquipmentInstance itemInstance = new EquipmentInstance(eqData);
-                Itemtype itemtype = itemInstance.itemtype;
-                EquipmentStats equipmentStats = new EquipmentStats();
-                if (itemtype == Itemtype.Weapon)
-                {
-                    equipmentStats = new WeaponStats();
-                }
-                else if (itemtype == Itemtype.Armor)
-                {
-                    equipmentStats = new ArmorStats();
-                }
-                else if (itemtype == Itemtype.Accessory)
-                {
-                    equipmentStats = new AccessoryStats();
-                }
-                itemInstance.SetEquipmentStats(additemstats(equipmentStats, rarity));
-                isAdded = itemInventory.addItem(itemInstance, amount);
+                EquipmentInstance equip = new EquipmentInstance((EquipmentData)itemDataToAdd);
+                JsonUtility.FromJsonOverwrite(serializedStats, equip);
+                isAdded = itemInventory.addItem(equip, amount);
             }
             else
             {
@@ -175,22 +163,6 @@ public class Inventory : NetworkBehaviour
         }
     }
 
-    [ServerRpc]
-    public void tryAddItemServerRPC(NetworkObjectReference itemObjectRef)
-    {
-        if (itemObjectRef.TryGet(out NetworkObject targetObject))
-        {
-            ItemPickUp itemPickUp = targetObject.GetComponent<ItemPickUp>();
-            
-            if (itemPickUp != null)
-            {
-                ItemPickUpData data = itemPickUp.getItemData();
-                targetObject.Despawn();
-                tryAddItemClientRPC(data.id, data.itemRarity, data.amount);
-            }
-        }
-    }
-
     private void trySwitchItem(int slot1, int slot2, bool eqfirst, bool eqsecond)
     {
         if (IsOwner)
@@ -215,18 +187,6 @@ public class Inventory : NetworkBehaviour
         itemInventory.switchItem(slot1, slot2, eqfirst, eqsecond);
     }
     
-    private EquipmentStats additemstats(EquipmentStats _equipmentStats, int rarity)
-    {
-        PlayerStats playerStats = GetComponent<PlayerStats>();
-        float adjustedRarity = rarity + playerStats.getLevel() * 0.1f;
-        if (adjustedRarity > 2.5f)
-        {
-            adjustedRarity = 2.5f;
-        }
-        _equipmentStats.generateStats(adjustedRarity);        
-        return _equipmentStats;
-    }
-        
     public void dropItem()
     {
         if (mouseItemData.hasitem)

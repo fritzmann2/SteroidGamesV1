@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.UI; // Wichtig für die Buttons!
+using UnityEngine.UI;
 
 public class ButtonThemeManager : MonoBehaviour
 {

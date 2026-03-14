@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.EventSystems; // WICHTIG: Das brauchen wir für die Controller-Navigation!
+using UnityEngine.EventSystems;
 
 public class Mainmenu : MonoBehaviour
 {
@@ -9,7 +9,6 @@ public class Mainmenu : MonoBehaviour
     public GameObject NetworkUIGO;
 
     [Header("First Selected Buttons")]
-    // Hier ziehst du im Inspector jeweils den obersten Button des jeweiligen Menüs rein
     public GameObject firstMainMenuButton;
     public GameObject firstHelpMenuButton;
     public GameObject firstNetworkMenuButton;
