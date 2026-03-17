@@ -217,6 +217,15 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""pickupitem"",
+                    ""type"": ""Button"",
+                    ""id"": ""00758c14-82e3-49d6-8da0-ee1474a6e1d0"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -582,6 +591,28 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
                     ""action"": ""RightMouse"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6a73c95b-ae79-4050-bae1-cd41d81dd8e5"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""pickupitem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""828dc5cb-d846-4282-b02c-385285d94df0"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""pickupitem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -604,6 +635,7 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
         m_Gameplay_Teleport = m_Gameplay.FindAction("Teleport", throwIfNotFound: true);
         m_Gameplay_LeftMouse = m_Gameplay.FindAction("LeftMouse", throwIfNotFound: true);
         m_Gameplay_RightMouse = m_Gameplay.FindAction("RightMouse", throwIfNotFound: true);
+        m_Gameplay_pickupitem = m_Gameplay.FindAction("pickupitem", throwIfNotFound: true);
     }
 
     ~@GameControls()
@@ -698,6 +730,7 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Gameplay_Teleport;
     private readonly InputAction m_Gameplay_LeftMouse;
     private readonly InputAction m_Gameplay_RightMouse;
+    private readonly InputAction m_Gameplay_pickupitem;
     /// <summary>
     /// Provides access to input actions defined in input action map "Gameplay".
     /// </summary>
@@ -766,6 +799,10 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @RightMouse => m_Wrapper.m_Gameplay_RightMouse;
         /// <summary>
+        /// Provides access to the underlying input action "Gameplay/pickupitem".
+        /// </summary>
+        public InputAction @pickupitem => m_Wrapper.m_Gameplay_pickupitem;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
@@ -833,6 +870,9 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
             @RightMouse.started += instance.OnRightMouse;
             @RightMouse.performed += instance.OnRightMouse;
             @RightMouse.canceled += instance.OnRightMouse;
+            @pickupitem.started += instance.OnPickupitem;
+            @pickupitem.performed += instance.OnPickupitem;
+            @pickupitem.canceled += instance.OnPickupitem;
         }
 
         /// <summary>
@@ -886,6 +926,9 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
             @RightMouse.started -= instance.OnRightMouse;
             @RightMouse.performed -= instance.OnRightMouse;
             @RightMouse.canceled -= instance.OnRightMouse;
+            @pickupitem.started -= instance.OnPickupitem;
+            @pickupitem.performed -= instance.OnPickupitem;
+            @pickupitem.canceled -= instance.OnPickupitem;
         }
 
         /// <summary>
@@ -1024,5 +1067,12 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnRightMouse(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "pickupitem" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnPickupitem(InputAction.CallbackContext context);
     }
 }

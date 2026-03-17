@@ -1,2 +1,2 @@
-Rules\ClearTerrain.tmx
-Rules\Rules_novertical.tmx
+C:\Users\fritz\SteroidGamesV1\Assets\Game\TileLevels\RockTiles\Rules\ClearTerrain.tmx
+C:\Users\fritz\SteroidGamesV1\Assets\Game\TileLevels\RockTiles\Rules\Rules_novertical.tmx

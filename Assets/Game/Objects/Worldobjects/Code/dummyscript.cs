@@ -16,7 +16,7 @@ public class dummyscript : BaseEntety
     {
         if (newValue <= 0)
         {
-           worldgen.SpawnPickUpItem(id, transform.position);
+           ItemManager.Instance.SpawnPickUpItem(id, transform.position);
         }
         base.OnHealthChanged(previousValue, newValue);
         if (hpbarfiller != null)

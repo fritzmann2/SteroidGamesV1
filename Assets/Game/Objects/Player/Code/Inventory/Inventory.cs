@@ -166,15 +166,34 @@ public class Inventory : NetworkBehaviour
         return itemDataToReturn;
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerStay2D(Collider2D other) 
     {
         if (!IsOwner) return;
-        if (bx.IsTouching(other) && other.CompareTag("ItemPickUp"))
+        if (bx.IsTouching(other) && other.CompareTag("ItemPickUp") && controls.Gameplay.pickupitem.WasPressedThisFrame())
         {
-            NetworkObject itemNetObj = other.GetComponent<NetworkObject>();
-            if (itemNetObj != null)
+            bool allowedToPickUp = false;
+            var currentDevice = controls.Gameplay.pickupitem.activeControl.device;
+            if (currentDevice is Mouse)
             {
-                tryAddItemServerRPC(itemNetObj);
+                Vector2 mouseWorldPos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+                if (other.OverlapPoint(mouseWorldPos))
+                {
+                    allowedToPickUp = true;
+                }
+            }
+            else
+            {
+                allowedToPickUp = true;
+            }
+
+
+            if (allowedToPickUp)
+            {
+                NetworkObject itemNetObj = other.GetComponent<NetworkObject>();
+                if (itemNetObj != null)
+                {
+                    tryAddItemServerRPC(itemNetObj);
+                }
             }
         }
     }
@@ -213,7 +232,7 @@ public class Inventory : NetworkBehaviour
             int amount = itemInventory.inventorySlots[index].StackSize;
             itemInventory.inventorySlots[index].clearSlot();
             itemInventory.inventorySlots[index].inventoryUI.updateSlot(index, false);
-            worldGenerator.dropItem(inventoryItemInstance, transform.position + new Vector3 (1f, 0f, 0f), amount);
+            ItemManager.Instance.dropItem(inventoryItemInstance, transform.position + new Vector3 (1f, 0f, 0f), amount);
         }
     }
 

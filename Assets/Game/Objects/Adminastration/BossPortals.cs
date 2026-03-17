@@ -86,7 +86,7 @@ public class BossPortals : NetworkBehaviour
             WorldGenerator worldGen = FindAnyObjectByType<WorldGenerator>();
             if (worldGen != null)
             {
-                worldGen.TeleportToBoss(destinationCoordinate, playerObj.transform);
+                //worldGen.TeleportToBoss(destinationCoordinate, playerObj.transform);
             }
             else
             {

@@ -1,506 +1,259 @@
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
 public class WorldGenerator : NetworkBehaviour
 {
-    [Header("Alle Prefabs hier reinziehen")]
-    public GameObject[] allMapChunks;
-    public GameObject dummy;
-    public GameObject PickUpItem;
-    public GameObject DropItem;
+    [Header("Einstellungen")]
+    public float chunkSize = 50f;
+    public float updateInterval = 0.5f;
+    [Header("Editor Setup Pfade")]
+    public string mobFolderPath = "Assets/Game/Objects/Mob/Prefabs";
+    public string chunkFolderPath = "Assets/Game/TileLevels/RockTiles";
 
-    [Header("Optimization")]
-    public float chunkCheckInterval = 0.5f;
-
-    [Header("Boss Arenen")]
-    public GameObject[] bossArenaPrefabs;
+    [Header("Prefabs")]
+    public GameObject baseNetworkChunkPrefab; 
+    public GameObject[] allMobPrefabs;
+    public GameObject[] allChunkPrefabs;
     
-    private Dictionary<Vector2Int, Vector2Int> bossArenaAnchors = new Dictionary<Vector2Int, Vector2Int>();
-    
-    private HashSet<Vector2Int> knownBossCoordinates = new HashSet<Vector2Int>();
-    
-    private HashSet<Vector2Int> noSpawnZones = new HashSet<Vector2Int>();
+    [Header("Chunk Loading Settings")]
+    private float loadDistance = 40f; 
+    private float despawnDelay = 10f;   
 
-    [Header("Settings")]
-    public int chunkSize = 50;
-    public GameObject defaultChunkPrefab; 
-    public CameraFollow cam;
-
-
-    private Dictionary<Vector2Int, GameObject> mapLookup = new Dictionary<Vector2Int, GameObject>();
+    private Dictionary<string, GameObject> mobDictionary = new Dictionary<string, GameObject>();
+    private Dictionary<Vector2Int, GameObject> chunkPrefabDictionary = new Dictionary<Vector2Int, GameObject>();
     private Dictionary<Vector2Int, GameObject> activeChunks = new Dictionary<Vector2Int, GameObject>();
-    private Dictionary<Vector2Int, GameObject> cachedChunks = new Dictionary<Vector2Int, GameObject>();
-
-
-    [Header("Mob Pooling System")]
-    public GameObject[] mobsToPreWarm; 
-    public int targetPoolSize = 100; 
-    public float refillInterval = 0.5f;
-    private Dictionary<string, Queue<GameObject>> mobPool = new Dictionary<string, Queue<GameObject>>();
-
-    private Vector2Int[] ChunkOffsets = new Vector2Int[]
-    {
-        new Vector2Int(0, 0), new Vector2Int(0, 1), new Vector2Int(0, -1), 
-        new Vector2Int(-1, 0), new Vector2Int(1, 0)
-    };
 
     public override void OnNetworkSpawn()
     {
-        if (!IsServer)
+        if (IsServer)
         {
-            this.enabled = false;
-            return;
+            InitializeDictionaries();
+            StartCoroutine(ChunkUpdateLoop());
         }
-        StartCoroutine(MobPoolMaintenanceRoutine());
-        foreach (GameObject prefab in allMapChunks)
+    }
+
+    private void InitializeDictionaries()
+    {
+        foreach (GameObject mob in allMobPrefabs)
         {
-            if (prefab == null) continue;
-
-            string prefabName = prefab.name;
-            string[] parts = prefabName.Split('_');
-
-            if (parts.Length >= 3)
-            {
-                if (int.TryParse(parts[parts.Length - 2], out int x) && 
-                    int.TryParse(parts[parts.Length - 1], out int y))
-                {
-                    Vector2Int coord = new Vector2Int(x, y);
-
-                    if (!mapLookup.ContainsKey(coord))
-                    {
-                        mapLookup.Add(coord, prefab);
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"Achtung: Koordinate {coord} ist doppelt belegt durch {prefabName}!");
-                    }
-                }
-            }
+            if (mob != null) mobDictionary[mob.name] = mob;
         }
-        
-        foreach (GameObject prefab in bossArenaPrefabs)
-        {
-            if (prefab == null) continue;
+        Debug.Log($"[WorldGen] {mobDictionary.Count} Mobs initialisiert.");
 
-            string[] parts = prefab.name.Split('_');
+        foreach (GameObject chunk in allChunkPrefabs)
+        {
+            if (chunk == null) continue;
+
+            string[] parts = chunk.name.Split('_'); 
             
-            int x = 0, y = 0, w = 1, h = 1;
-            bool parsed = false;
-
-            if (parts.Length >= 5 &&
-                int.TryParse(parts[parts.Length - 4], out x) &&
-                int.TryParse(parts[parts.Length - 3], out y) &&
-                int.TryParse(parts[parts.Length - 2], out w) &&
-                int.TryParse(parts[parts.Length - 1], out h))
+            if (parts.Length == 3 && int.TryParse(parts[1], out int x) && int.TryParse(parts[2], out int y))
             {
-                parsed = true;
-            }
-            else if (parts.Length >= 3 &&
-                int.TryParse(parts[parts.Length - 2], out x) &&
-                int.TryParse(parts[parts.Length - 1], out y))
-            {
-                parsed = true;
-            }
-
-            if (parsed)
-            {
-                Vector2Int anchorCoord = new Vector2Int(x, y);
-                if (!bossArenaAnchors.ContainsKey(anchorCoord))
-                {
-                    knownBossCoordinates.Add(anchorCoord);
-                    mapLookup.Add(anchorCoord, prefab); 
-
-                    int startX = x - w / 2;
-                    int endX = x + (w - 1) / 2;
-                    int startY = y - h / 2;
-                    int endY = y + (h - 1) / 2;
-
-                    for (int i = startX; i <= endX; i++)
-                    {
-                        for (int j = startY; j <= endY; j++)
-                        {
-                            Vector2Int occupiedCoord = new Vector2Int(i, j);
-                            bossArenaAnchors[occupiedCoord] = anchorCoord;
-                        }
-                    }
-
-                    int buffer = 2;
-                    for (int i = startX - buffer; i <= endX + buffer; i++)
-                    {
-                        for (int j = startY - buffer; j <= endY + buffer; j++)
-                        {
-                            Vector2Int bufferCoord = new Vector2Int(i, j);
-                            noSpawnZones.Add(bufferCoord);
-                        }
-                    }
-                }
-            }
-        }
-        StartCoroutine(ChunkCheckRoutine());
-    }
-
-    private System.Collections.IEnumerator ChunkCheckRoutine()
-    {
-        float loadDistance = 20f; 
-        while (true)
-        {
-            yield return new WaitForSeconds(chunkCheckInterval);
-
-            if (NetworkManager.Singleton == null || !NetworkManager.Singleton.IsListening) continue;
-
-            HashSet<Vector2Int> chunksToKeep = new HashSet<Vector2Int>();
-
-            foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
-            {
-                if (client.PlayerObject == null) continue;
-                Vector3 pPos = client.PlayerObject.transform.position;
-                int centerCX = Mathf.FloorToInt(pPos.x / chunkSize);
-                int centerCY = Mathf.RoundToInt(pPos.y / chunkSize);
-                Vector2Int playerGridPos = new Vector2Int(centerCX, centerCY);
-
-                if (bossArenaAnchors.TryGetValue(playerGridPos, out Vector2Int anchorPos))
-                {
-                    chunksToKeep.Add(anchorPos); 
-                }
-                else
-                {
-                    int minX = Mathf.FloorToInt((pPos.x - loadDistance) / chunkSize);
-                    int maxX = Mathf.FloorToInt((pPos.x + loadDistance) / chunkSize);
-                    int minY = Mathf.RoundToInt((pPos.y - loadDistance) / chunkSize);
-                    int maxY = Mathf.RoundToInt((pPos.y + loadDistance) / chunkSize);
-
-                    for (int x = minX; x <= maxX; x++)
-                    {
-                        for (int y = minY; y <= maxY; y++)
-                        {
-                            Vector2Int targetChunk = new Vector2Int(x, y);
-                            if (!noSpawnZones.Contains(targetChunk))
-                            {
-                                chunksToKeep.Add(targetChunk);
-                            }
-                        }
-                    }
-                }
-            }
-
-            foreach (Vector2Int coord in chunksToKeep)
-            {
-                if (!activeChunks.ContainsKey(coord))
-                {
-                    SpawnChunkByCoord(coord);
-                    yield return null; 
-                }
-            }
-
-            List<Vector2Int> chunksToRemove = new List<Vector2Int>();
-            foreach (var kvp in activeChunks)
-            {
-                if (!chunksToKeep.Contains(kvp.Key))
-                {
-                    chunksToRemove.Add(kvp.Key);
-                }
-            }
-
-            foreach (Vector2Int coord in chunksToRemove)
-            {
-                RemoveChunk(coord);
-                yield return null; 
-            }
-        }
-    }
-
-    void SpawnChunkByCoord(Vector2Int coord)
-{
-    GameObject newChunk = null;
-
-    if (cachedChunks.TryGetValue(coord, out GameObject recycledChunk))
-    {
-        newChunk = recycledChunk;
-        newChunk.SetActive(true);
-        cachedChunks.Remove(coord);
-    }
-    else
-    {
-        GameObject prefabToSpawn = defaultChunkPrefab;
-
-        if (mapLookup.TryGetValue(coord, out GameObject specificPrefab))
-        {
-            prefabToSpawn = specificPrefab;
-        }
-
-        if (prefabToSpawn == null) return;
-
-        Vector3 spawnPos = new Vector3(coord.x * chunkSize, coord.y * chunkSize, 0);
-        newChunk = Instantiate(prefabToSpawn, spawnPos, Quaternion.identity);
-        newChunk.name = $"WorldChunk_{coord.x}_{coord.y}";
-    }
-    NetworkObject netObj = newChunk.GetComponent<NetworkObject>();
-    if (netObj != null && !netObj.IsSpawned)
-    {
-        netObj.Spawn();
-    }
-    activeChunks.Add(coord, newChunk);
-    ChunkData chunkData = newChunk.GetComponentInChildren<ChunkData>();
-    if (chunkData != null)
-    {
-        chunkData.SpawnMyMobs(this);
-    }
-}
-
-    void RemoveChunk(Vector2Int coord)
-{
-    if (activeChunks.TryGetValue(coord, out GameObject chunkObj))
-    {
-        if (chunkObj != null)
-        {
-            ChunkData chunkData = chunkObj.GetComponentInChildren<ChunkData>();
-            if(chunkData != null) chunkData.DespawnEveryThing();
-
-            NetworkObject netObj = chunkObj.GetComponent<NetworkObject>();
-            if (netObj != null && netObj.IsSpawned) 
-            {
-                netObj.Despawn(false); 
-            }
-            chunkObj.SetActive(false);
-            if (!cachedChunks.ContainsKey(coord))
-            {
-                cachedChunks.Add(coord, chunkObj);
-            }
-        }
-        activeChunks.Remove(coord);
-    }
-}
-
-    public void SpawnPickUpItem(string id, Vector3 spawnPosition)
-    {
-        GameObject pickupitem = Instantiate(PickUpItem, spawnPosition, Quaternion.identity);
-        pickupitem.name = id;
-        ItemPickUp itemPickUp = pickupitem.GetComponent<ItemPickUp>();
-        int itemRarity = 1;
-        if (id == "WizardBoss")
-        {
-            itemRarity = 2;
-        }
-        if (itemPickUp != null) itemPickUp.setitem(itemRarity, 1, null);
-        
-        var netObj = pickupitem.GetComponent<NetworkObject>();
-        if (netObj != null)
-        {
-            netObj.Spawn();
-        }
-    }
-
-    public void TeleportToBoss(Vector3 _bossArenaCords, Transform PlayerToTeleport)
-    {
-        if (!IsServer) return;
-        NetworkObject playerNetObj = PlayerToTeleport.GetComponent<NetworkObject>();
-        if (playerNetObj != null)
-        {
-            ulong clientId = playerNetObj.OwnerClientId;
-            ClientRpcParams clientRpcParams = new ClientRpcParams
-            {
-                Send = new ClientRpcSendParams
-                {
-                    TargetClientIds = new ulong[] { clientId }
-                }
-            };
-            TeleportSinglePlayerClientRpc(_bossArenaCords, clientRpcParams);
-        }
-    }
-
-    [ClientRpc]
-    private void TeleportSinglePlayerClientRpc(Vector3 destination, ClientRpcParams rpcParams = default)
-    {
-        if (NetworkManager.Singleton.LocalClient != null && NetworkManager.Singleton.LocalClient.PlayerObject != null)
-        {
-            GameObject localPlayer = NetworkManager.Singleton.LocalClient.PlayerObject.gameObject;
-            Rigidbody2D rb = localPlayer.GetComponent<Rigidbody2D>();
-            if (rb != null) rb.linearVelocity = Vector2.zero;
-            localPlayer.transform.position = destination;
-            localPlayer.GetComponent<PlayerMovement>().pauseGravity();
-
-            if (cam != null)
-            {
-                cam.SetZoom(7f);
+                chunkPrefabDictionary[new Vector2Int(x, y)] = chunk;
             }
             else
             {
-                Debug.LogWarning("camera not found");
+                Debug.LogWarning($"[WorldGen] Chunk-Name '{chunk.name}' hat nicht das Format 'Chunk_X_Y'. Er wird ignoriert.");
             }
         }
+        Debug.Log($"[WorldGen] {chunkPrefabDictionary.Count} Chunks initialisiert.");
     }
+ 
+    
+    private Dictionary<Vector2Int, float> chunkLastSeenTimes = new Dictionary<Vector2Int, float>();
 
-    public void dropItem(InventoryItemInstance _item, Vector3 _spawnPosition, int _amount)
+    private IEnumerator ChunkUpdateLoop()
     {
-        string itemID = _item.itemData.ID; 
-        bool isEquipment = _item is EquipmentInstance;
-        string serializedStats = "";
-
-        if (isEquipment)
-        {
-            serializedStats = JsonUtility.ToJson((EquipmentInstance)_item);
-        }
-        if (IsServer)
-        {
-            SpawnDropItemOnServer(itemID, isEquipment, serializedStats, _spawnPosition, _amount);
-        }
-        else
-        {
-            RequestDropItemServerRpc(itemID, isEquipment, serializedStats, _spawnPosition, _amount);
-        }
-    }
-
-    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-    private void RequestDropItemServerRpc(string itemID, bool isEquipment, string serializedStats, Vector3 spawnPosition, int amount)
-    {
-        SpawnDropItemOnServer(itemID, isEquipment, serializedStats, spawnPosition, amount);
-    }
-
-    private void SpawnDropItemOnServer(string itemID, bool isEquipment, string serializedStats, Vector3 _spawnPosition, int _amount)
-    {
-        ItemData baseItemData = GetItemDataByID(itemID); 
-        if (baseItemData == null)
-        {
-            Debug.LogError($"ItemData für ID {itemID} nicht gefunden!");
-            return;
-        }
-
-        GameObject dropItemObj = Instantiate(PickUpItem, _spawnPosition, Quaternion.identity); 
-        ItemPickUp pickUpComp = dropItemObj.GetComponent<ItemPickUp>();
-        
-        if (pickUpComp != null)
-        {
-            pickUpComp.id = itemID;
-            pickUpComp.amount = _amount;
-            pickUpComp.isEquipment = isEquipment;
-            pickUpComp.serializedStats = serializedStats;
-            
-            pickUpComp.itemRarity = 1; 
-        }
-        
-        var netObj = dropItemObj.GetComponent<NetworkObject>();
-        if (netObj != null)
-        {
-            netObj.Spawn();
-        }
-    }
-
-    [ClientRpc]
-    private void TeleportMobClientRpc(NetworkObjectReference mobRef, Vector3 newPosition)
-    {
-        if (mobRef.TryGet(out NetworkObject mobNetObj))
-        {
-            mobNetObj.transform.position = newPosition;
-        }
-    }
-
-    private System.Collections.IEnumerator MobPoolMaintenanceRoutine()
-    {
-        foreach (GameObject prefab in mobsToPreWarm)
-        {
-            BaseEnemy enemyScript = prefab.GetComponent<BaseEnemy>();
-            if (enemyScript == null) continue;
-            string id = enemyScript.id;
-
-            if (!mobPool.ContainsKey(id)) mobPool[id] = new Queue<GameObject>();
-
-            while (mobPool[id].Count < targetPoolSize)
-            {
-                GameObject newMob = Instantiate(prefab, new Vector3(0, -10000, 0), Quaternion.identity);
-                
-                NetworkObject netObj = newMob.GetComponent<NetworkObject>();
-                if (netObj != null) netObj.Spawn(); 
-                
-                newMob.SetActive(false); 
-                mobPool[id].Enqueue(newMob);
-
-                yield return null; 
-            }
-        }
-
         while (true)
         {
-            bool instantiatedThisFrame = false;
-            foreach (GameObject prefab in mobsToPreWarm)
+            UpdateChunks();
+            yield return new WaitForSeconds(updateInterval);
+        }
+    }
+
+    private void UpdateChunks()
+    {
+        GameObject[] allPlayers = GameObject.FindGameObjectsWithTag("Player");
+        if (allPlayers.Length == 0) return;
+
+        HashSet<Vector2Int> currentlyVisibleChunks = new HashSet<Vector2Int>();
+        foreach (Vector2Int chunkCoord in chunkPrefabDictionary.Keys)
+        {
+            Vector2 chunkCenterPos = new Vector2(chunkCoord.x * chunkSize, chunkCoord.y * chunkSize);
+            
+            bool isAnyPlayerNear = false;
+
+            foreach (GameObject player in allPlayers)
             {
-                BaseEnemy enemyScript = prefab.GetComponent<BaseEnemy>();
-                if (enemyScript == null) continue;
-                string id = enemyScript.id;
-
-                if (mobPool.ContainsKey(id) && mobPool[id].Count < targetPoolSize)
+                float distance = Vector2.Distance(player.transform.position, chunkCenterPos);
+                if (distance <= loadDistance)
                 {
-                    GameObject newMob = Instantiate(prefab, new Vector3(0, -10000, 0), Quaternion.identity);
-                    
-                    NetworkObject netObj = newMob.GetComponent<NetworkObject>();
-                    if (netObj != null) netObj.Spawn();
-
-                    newMob.SetActive(false);
-                    mobPool[id].Enqueue(newMob);
-                    
-                    instantiatedThisFrame = true;
+                    isAnyPlayerNear = true;
                     break; 
                 }
             }
 
-            if (instantiatedThisFrame) yield return new WaitForSeconds(refillInterval); 
-            else yield return new WaitForSeconds(1f); 
+            if (isAnyPlayerNear)
+            {
+                currentlyVisibleChunks.Add(chunkCoord);
+                chunkLastSeenTimes[chunkCoord] = Time.time;
+                if (!activeChunks.ContainsKey(chunkCoord))
+                {
+                    SpawnChunk(chunkCoord);
+                }
+            }
         }
-    }
 
-    public GameObject GetOrCreateMob(string mobId, GameObject prefab, Vector3 position)
-    {
-        if (!mobPool.ContainsKey(mobId)) mobPool[mobId] = new Queue<GameObject>();
-
-        if (mobPool[mobId].Count > 0)
+        List<Vector2Int> chunksToDespawn = new List<Vector2Int>();
+        foreach (Vector2Int activeCoord in activeChunks.Keys)
         {
-            GameObject recycledMob = mobPool[mobId].Dequeue();
-            recycledMob.transform.position = position;
-            recycledMob.SetActive(true);
-
-            // Clients anweisen, den Mob hochzuholen
-            NetworkObject netObj = recycledMob.GetComponent<NetworkObject>();
-            if (netObj != null) TeleportMobClientRpc(netObj, position);
-
-            BaseEnemy enemyScript = recycledMob.GetComponent<BaseEnemy>();
-            if (enemyScript != null) enemyScript.Reset();
-
-            Rigidbody2D rb = recycledMob.GetComponent<Rigidbody2D>();
-            if (rb != null) rb.linearVelocity = Vector2.zero;
-
-            return recycledMob;
+            if (!currentlyVisibleChunks.Contains(activeCoord))
+            {
+                if (chunkLastSeenTimes.TryGetValue(activeCoord, out float lastSeenTime))
+                {
+                    if (Time.time >= lastSeenTime + despawnDelay)
+                    {
+                        chunksToDespawn.Add(activeCoord);
+                    }
+                }
+                else
+                {
+                    chunksToDespawn.Add(activeCoord);
+                }
+            }
         }
-        else
+
+        foreach (Vector2Int coord in chunksToDespawn)
         {
-            GameObject emergencyMob = Instantiate(prefab, position, Quaternion.identity);
-            NetworkObject netObj = emergencyMob.GetComponent<NetworkObject>();
-            if (netObj != null && !netObj.IsSpawned) netObj.Spawn();
-            return emergencyMob;
+            DespawnChunk(coord);
+            chunkLastSeenTimes.Remove(coord);
         }
     }
 
-    public void ReturnMobToPool(string mobId, GameObject mob)
+    private void SpawnChunk(Vector2Int coord)
     {
-        mob.SetActive(false); 
-        
-        Vector3 parkingLot = new Vector3(0, -10000, 0);
-        mob.transform.position = parkingLot;
-        
-        NetworkObject netObj = mob.GetComponent<NetworkObject>();
-        if (netObj != null) TeleportMobClientRpc(netObj, parkingLot);
-
-        if (!mobPool.ContainsKey(mobId)) mobPool[mobId] = new Queue<GameObject>();
-        mobPool[mobId].Enqueue(mob);
-    }
-
-    private ItemData GetItemDataByID(string id)
-    {
-        Inventory playerInventory = FindAnyObjectByType<Inventory>();
-        
-        if (playerInventory != null)
+        if (chunkPrefabDictionary.TryGetValue(coord, out GameObject chunkVisualPrefab))
         {
-            return playerInventory.getItemByID(id);
+            float offsetX = chunkSize / 2f;
+            float offsetY = chunkSize / 2f;
+            Vector3 spawnPos = new Vector3(
+                (coord.x * chunkSize) - offsetX, 
+                (coord.y * chunkSize) + offsetY, 
+                0
+            );
+            GameObject networkChunk = Instantiate(baseNetworkChunkPrefab, spawnPos, Quaternion.identity);
+            networkChunk.name = $"Chunk_{coord.x}_{coord.y}";
+            GameObject visualContainer = new GameObject("VisualContainer");
+            visualContainer.transform.SetParent(networkChunk.transform);
+            visualContainer.transform.localPosition = Vector3.zero; 
+            visualContainer.transform.localScale = new Vector3(6.25f, 6.25f, 1f); 
+
+            Instantiate(chunkVisualPrefab, visualContainer.transform);
+
+            GameObject mobContainer = new GameObject("MobContainer");
+            mobContainer.transform.SetParent(networkChunk.transform);
+            mobContainer.transform.localPosition = Vector3.zero;
+
+            networkChunk.GetComponent<NetworkObject>().Spawn();
+
+            activeChunks.Add(coord, networkChunk);
+            
+            SpawnMobsInChunk(networkChunk);
         }
-        return null; 
     }
+
+    private void SpawnMobsInChunk(GameObject chunk)
+    {
+        ChunkData chunkData = chunk.GetComponentInChildren<ChunkData>();
+        
+        if (chunkData == null) return; 
+
+        MobSpawnPoint[] spawners = chunkData.GetSpawnPoints();
+        Transform mobContainer = chunk.transform.Find("MobContainer");
+
+        foreach (MobSpawnPoint spawner in spawners)
+        {
+            if (mobDictionary.TryGetValue(spawner.getMobName(), out GameObject mobPrefab))
+            {
+                GameObject newMob = Instantiate(mobPrefab, spawner.transform.position, Quaternion.identity);
+                NetworkObject mobNetObj = newMob.GetComponent<NetworkObject>();
+                
+                mobNetObj.Spawn();
+
+                if (mobContainer != null)
+                {
+                    mobNetObj.TrySetParent(mobContainer);
+                }
+                else
+                {
+                    mobNetObj.TrySetParent(chunk.transform);
+                }
+
+                chunkData.RegisterMob(mobNetObj);
+                BaseEnemy enemyScript = newMob.GetComponent<BaseEnemy>();
+                if (enemyScript != null)
+                {
+                    enemyScript.parentChunk = chunkData;
+                }
+            }
+            else
+            {
+                Debug.LogError($"[WorldGen] Mob '{spawner.getMobName()}' nicht im Inspector zugewiesen!");
+            }
+        }
+    }
+
+    private void DespawnChunk(Vector2Int coord)
+    {
+        if (activeChunks.TryGetValue(coord, out GameObject chunkToDestroy))
+        {
+            ChunkData chunkData = chunkToDestroy.GetComponentInChildren<ChunkData>();
+            if (chunkData != null)
+            {
+                chunkData.DespawnAllMobs();
+            }
+
+            if (chunkToDestroy.TryGetComponent(out NetworkObject netObj))
+            {
+                netObj.Despawn(true);
+            }
+            else
+            {
+                Destroy(chunkToDestroy);
+            }
+            
+            activeChunks.Remove(coord);
+        }
+    }
+
+    #if UNITY_EDITOR
+    [ContextMenu("Lade Prefabs aus Ordnern")]
+    public void LoadPrefabsFromFolders()
+    {
+        allMobPrefabs = LoadPrefabsAtPath(mobFolderPath);
+        allChunkPrefabs = LoadPrefabsAtPath(chunkFolderPath, "Chunk");
+        UnityEditor.EditorUtility.SetDirty(this); 
+        Debug.Log($"[WorldGen Editor] Erfolgreich {allMobPrefabs.Length} Mobs und {allChunkPrefabs.Length} Chunks geladen!");
+    }
+
+    private GameObject[] LoadPrefabsAtPath(string path, string namePrefix = "")
+    {
+        string[] guids = UnityEditor.AssetDatabase.FindAssets("t:GameObject", new[] { path });
+        List<GameObject> loadedPrefabs = new List<GameObject>();
+        foreach (string guid in guids)
+        {
+            string assetPath = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+            GameObject prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
+            if (prefab != null)
+            {
+                if (string.IsNullOrEmpty(namePrefix) || prefab.name.StartsWith(namePrefix))
+                {
+                    loadedPrefabs.Add(prefab);
+                }
+            }
+        }
+        return loadedPrefabs.ToArray();
+    }
+    #endif
 }

@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 5790571874507603881}
   - component: {fileID: -1910519168772419617}
   - component: {fileID: -9184955974766294214}
-  - component: {fileID: 550586952482326352}
+  - component: {fileID: 2852125869350799951}
   m_Layer: 0
   m_Name: MageBoss
   m_TagString: Mob
@@ -257,7 +257,7 @@ MonoBehaviour:
   UseRigidBodyForMotion: 0
   AutoUpdateKinematicState: 1
   AutoSetKinematicOnDespawn: 1
---- !u!114 &550586952482326352
+--- !u!114 &2852125869350799951
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -266,7 +266,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4603273018276043992}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 46b3def8367bf5549916ba4c9b87c166, type: 3}
+  m_Script: {fileID: 11500000, guid: 7fe3dcd639788a44a819afb75e1edaa8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WizardBoss
   ShowTopMostFoldoutHeaderGroup: 1
@@ -308,5 +308,5 @@ MonoBehaviour:
   teleportTimer: 15
   obstacleCheckRadius: 1.5
   obstacleCheckDistance: 1.5
-  idealDistanceMax: 12
+  idealDistanceMax: 10
   projectilePrefab: {fileID: 7554478117150871380, guid: 8406425a5eb305c48af0cfa9c65e7783, type: 3}

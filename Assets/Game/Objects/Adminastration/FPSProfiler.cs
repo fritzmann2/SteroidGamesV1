@@ -1,18 +1,16 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 
 public class FPSProfiler : MonoBehaviour
 {
     [Header("Settings")]
     public float updateInterval = 0.5f; 
     public int frameBufferLength = 1000; 
-
     private float currentFps;
     private float averageFps;
     private float onePercentLowFps;
     private float absoluteLowestFps = float.MaxValue;
-
     private float timeSinceLastUpdate = 0f;
     private int framesSinceLastUpdate = 0;
     
@@ -20,6 +18,12 @@ public class FPSProfiler : MonoBehaviour
     private int totalFramesForAvg = 0;
 
     private Queue<float> frameTimes = new Queue<float>();
+    private float[] frameTimeArray;
+
+    void Start()
+    {
+        frameTimeArray = new float[frameBufferLength];
+    }
 
     void Update()
     {
@@ -29,17 +33,20 @@ public class FPSProfiler : MonoBehaviour
         {
             frameTimes.Dequeue();
         }
+        
         timeSinceLastUpdate += dt;
         framesSinceLastUpdate++;
         
         totalTimeForAvg += dt;
         totalFramesForAvg++;
+        
         if (timeSinceLastUpdate >= updateInterval)
         {
             currentFps = framesSinceLastUpdate / timeSinceLastUpdate;
             averageFps = totalFramesForAvg / totalTimeForAvg;
             
             CalculateOnePercentLow();
+            
             if (Time.timeSinceLevelLoad > 2f && currentFps < absoluteLowestFps)
             {
                 absoluteLowestFps = currentFps;
@@ -51,17 +58,14 @@ public class FPSProfiler : MonoBehaviour
 
     private void CalculateOnePercentLow()
     {
-        if (frameTimes.Count < 100) return; 
-        var sortedTimes = frameTimes.OrderByDescending(t => t).ToList();
-        int onePercentCount = Mathf.Max(1, sortedTimes.Count / 100);
-        float sumWorstTimes = 0f;
-        
-        for (int i = 0; i < onePercentCount; i++)
-        {
-            sumWorstTimes += sortedTimes[i];
-        }
-        float avgWorstTime = sumWorstTimes / onePercentCount;
-        onePercentLowFps = 1.0f / avgWorstTime;
+        int count = frameTimes.Count;
+        if (count < 100) return; 
+        frameTimes.CopyTo(frameTimeArray, 0);
+        Array.Sort(frameTimeArray, 0, count);
+        int onePercentCount = Mathf.Max(1, count / 100);
+        float onePercentLowTime = frameTimeArray[count - onePercentCount];
+
+        onePercentLowFps = 1.0f / onePercentLowTime;
     }
 
     void OnGUI()

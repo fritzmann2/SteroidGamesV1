@@ -5,7 +5,7 @@ public class MobSpawnPoint : MonoBehaviour
 {
     [Header("Debug Ansicht")]
     public Color gizmoColor = Color.red;
-    public List<string> possibleMobsNames = new List<string>();
+    public string possibleMobName;
     public bool isBossSpawner = false;
 
     private void OnDrawGizmos()
@@ -15,12 +15,9 @@ public class MobSpawnPoint : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, 0.5f);
     }
 
-    public string getRandomMobName()
+    public string getMobName()
     {
-        if (possibleMobsNames.Count == 0) return null;
-
-        int randomIndex = Random.Range(0, possibleMobsNames.Count);
-        return possibleMobsNames[randomIndex];
+        return possibleMobName;
     }
 }
 

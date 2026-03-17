@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.Netcode;
+using System.Collections.Generic;
 
 public abstract class BaseBoss : BaseEnemy
 {
@@ -8,6 +9,10 @@ public abstract class BaseBoss : BaseEnemy
     private float imunity = 5f;
     private int healthState = 1;
     private bool canTakeDamage = true;
+
+    public GameObject[] summonings = new GameObject[0];
+    private List<GameObject> spawnedMobs = new List<GameObject>();
+
 
     private Coroutine immunityCoroutine; 
     public Vector3 itemSpawnPosition = new Vector3(0, 0, 0);
@@ -47,7 +52,7 @@ public abstract class BaseBoss : BaseEnemy
             int nextPhase = 2; 
             TriggerImmunityClientRpc(imunity, nextPhase);
             
-            parentChunk.SpawnMyMobs(worldgen);
+            spawnMyMobs(1);
         }
         else if (health.Value > maxHealth * 1/3 && newValue <= maxHealth * 1 / 3)
         {
@@ -56,7 +61,7 @@ public abstract class BaseBoss : BaseEnemy
             
             TriggerImmunityClientRpc(imunity * 1.5f, nextPhase);
             
-            parentChunk.SpawnMyMobs(worldgen);
+            spawnMyMobs(2);
         }
         else
         {
@@ -70,10 +75,10 @@ public abstract class BaseBoss : BaseEnemy
         {
             if (IsServer)
             {
-                worldgen.SpawnPickUpItem(id, itemSpawnPosition);
+                ItemManager.Instance.SpawnPickUpItem(id, transform.position);
                 DistributeXP();
-                parentChunk.SpawnPortal();
-                parentChunk.DespawnAllMobs();
+                //parentChunk.SpawnPortal();
+                //parentChunk.DespawnAllMobs();
             }  
         }
         if (BossUIController.Instance != null)
@@ -114,5 +119,19 @@ public abstract class BaseBoss : BaseEnemy
         }
 
         immunityCoroutine = null;
+    }
+
+    private void spawnMyMobs(int phase)
+    {
+        if (summonings.Length == 0) return;
+        int ammount = phase * 2 + 2;
+        for (int i = 0; i < ammount; i++)
+        {
+            if (summonings.Length == 1)
+            {
+                
+            }
+        }
+
     }
 }

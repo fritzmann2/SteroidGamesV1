@@ -20,7 +20,10 @@ abstract public class BaseEnemy : BaseEntety
 
     public virtual void Reset()    
     {
-        health.Value = maxHealth;
+        if (IsSpawned && IsServer)
+        {
+            health.Value = maxHealth;
+        }
         hpbarfiller = transform.GetChild(0).GetChild(0).gameObject;
         customGravity = 35f; 
         maxFallSpeed = 25f;
@@ -236,6 +239,7 @@ abstract public class BaseEnemy : BaseEntety
     }
     public override void OnHealthChanged(float previousValue, float newValue)
     {
+        if (!IsServer) return;
         if (newValue <= 0)
         {
             if (canSpawnItem)
@@ -243,11 +247,15 @@ abstract public class BaseEnemy : BaseEntety
                 int randomnum = Random.Range(0, 2);
                 if (randomnum == 0)
                 {
-                    worldgen.SpawnPickUpItem(id, transform.position);
+                    ItemManager.Instance.SpawnPickUpItem(id, transform.position);
                 }
             }
-            parentChunk.DespawnMob(this.GetComponent<NetworkObject>());
+            if (parentChunk != null)
+            {
+                parentChunk.myMobs.Remove(GetComponent<NetworkObject>());
+            }
             DistributeXP();
+            GetComponent<NetworkObject>().Despawn();
         }
         base.OnHealthChanged(previousValue, newValue);
         if (hpbarfiller != null)
@@ -361,6 +369,6 @@ abstract public class BaseEnemy : BaseEntety
 
     public void Kill()
     {
-        parentChunk.DespawnMob(this.GetComponent<NetworkObject>());
+        //parentChunk.DespawnMob(this.GetComponent<NetworkObject>());
     }
 }
