@@ -32,6 +32,13 @@ public class WorldGenerator : NetworkBehaviour
     private Dictionary<Vector2Int, GameObject> activeChunks = new Dictionary<Vector2Int, GameObject>();
     private Dictionary<Vector2Int, GameObject> cachedChunks = new Dictionary<Vector2Int, GameObject>();
 
+
+    [Header("Mob Pooling System")]
+    public GameObject[] mobsToPreWarm; 
+    public int targetPoolSize = 100; 
+    public float refillInterval = 0.5f;
+    private Dictionary<string, Queue<GameObject>> mobPool = new Dictionary<string, Queue<GameObject>>();
+
     private Vector2Int[] ChunkOffsets = new Vector2Int[]
     {
         new Vector2Int(0, 0), new Vector2Int(0, 1), new Vector2Int(0, -1), 
@@ -45,7 +52,7 @@ public class WorldGenerator : NetworkBehaviour
             this.enabled = false;
             return;
         }
-
+        StartCoroutine(MobPoolMaintenanceRoutine());
         foreach (GameObject prefab in allMapChunks)
         {
             if (prefab == null) continue;
@@ -352,36 +359,138 @@ public class WorldGenerator : NetworkBehaviour
 
     private void SpawnDropItemOnServer(string itemID, bool isEquipment, string serializedStats, Vector3 _spawnPosition, int _amount)
     {
-
         ItemData baseItemData = GetItemDataByID(itemID); 
-
         if (baseItemData == null)
         {
             Debug.LogError($"ItemData für ID {itemID} nicht gefunden!");
             return;
         }
 
-        InventoryItemInstance reconstructedItem;
-
-        if (isEquipment)
+        GameObject dropItemObj = Instantiate(PickUpItem, _spawnPosition, Quaternion.identity); 
+        ItemPickUp pickUpComp = dropItemObj.GetComponent<ItemPickUp>();
+        
+        if (pickUpComp != null)
         {
-            EquipmentInstance equip = new EquipmentInstance((EquipmentData)baseItemData);
-            JsonUtility.FromJsonOverwrite(serializedStats, equip);
-            reconstructedItem = equip;
+            pickUpComp.id = itemID;
+            pickUpComp.amount = _amount;
+            pickUpComp.isEquipment = isEquipment;
+            pickUpComp.serializedStats = serializedStats;
+            
+            pickUpComp.itemRarity = 1; 
         }
-        else
-        {
-            reconstructedItem = new InventoryItemInstance(baseItemData);
-        }
-
-        GameObject dropItemObj = Instantiate(DropItem, _spawnPosition, Quaternion.identity); 
-        dropItemObj.GetComponent<DropItem>().init(reconstructedItem, _amount);
         
         var netObj = dropItemObj.GetComponent<NetworkObject>();
         if (netObj != null)
         {
             netObj.Spawn();
         }
+    }
+
+    [ClientRpc]
+    private void TeleportMobClientRpc(NetworkObjectReference mobRef, Vector3 newPosition)
+    {
+        if (mobRef.TryGet(out NetworkObject mobNetObj))
+        {
+            mobNetObj.transform.position = newPosition;
+        }
+    }
+
+    private System.Collections.IEnumerator MobPoolMaintenanceRoutine()
+    {
+        foreach (GameObject prefab in mobsToPreWarm)
+        {
+            BaseEnemy enemyScript = prefab.GetComponent<BaseEnemy>();
+            if (enemyScript == null) continue;
+            string id = enemyScript.id;
+
+            if (!mobPool.ContainsKey(id)) mobPool[id] = new Queue<GameObject>();
+
+            while (mobPool[id].Count < targetPoolSize)
+            {
+                GameObject newMob = Instantiate(prefab, new Vector3(0, -10000, 0), Quaternion.identity);
+                
+                NetworkObject netObj = newMob.GetComponent<NetworkObject>();
+                if (netObj != null) netObj.Spawn(); 
+                
+                newMob.SetActive(false); 
+                mobPool[id].Enqueue(newMob);
+
+                yield return null; 
+            }
+        }
+
+        while (true)
+        {
+            bool instantiatedThisFrame = false;
+            foreach (GameObject prefab in mobsToPreWarm)
+            {
+                BaseEnemy enemyScript = prefab.GetComponent<BaseEnemy>();
+                if (enemyScript == null) continue;
+                string id = enemyScript.id;
+
+                if (mobPool.ContainsKey(id) && mobPool[id].Count < targetPoolSize)
+                {
+                    GameObject newMob = Instantiate(prefab, new Vector3(0, -10000, 0), Quaternion.identity);
+                    
+                    NetworkObject netObj = newMob.GetComponent<NetworkObject>();
+                    if (netObj != null) netObj.Spawn();
+
+                    newMob.SetActive(false);
+                    mobPool[id].Enqueue(newMob);
+                    
+                    instantiatedThisFrame = true;
+                    break; 
+                }
+            }
+
+            if (instantiatedThisFrame) yield return new WaitForSeconds(refillInterval); 
+            else yield return new WaitForSeconds(1f); 
+        }
+    }
+
+    public GameObject GetOrCreateMob(string mobId, GameObject prefab, Vector3 position)
+    {
+        if (!mobPool.ContainsKey(mobId)) mobPool[mobId] = new Queue<GameObject>();
+
+        if (mobPool[mobId].Count > 0)
+        {
+            GameObject recycledMob = mobPool[mobId].Dequeue();
+            recycledMob.transform.position = position;
+            recycledMob.SetActive(true);
+
+            // Clients anweisen, den Mob hochzuholen
+            NetworkObject netObj = recycledMob.GetComponent<NetworkObject>();
+            if (netObj != null) TeleportMobClientRpc(netObj, position);
+
+            BaseEnemy enemyScript = recycledMob.GetComponent<BaseEnemy>();
+            if (enemyScript != null) enemyScript.Reset();
+
+            Rigidbody2D rb = recycledMob.GetComponent<Rigidbody2D>();
+            if (rb != null) rb.linearVelocity = Vector2.zero;
+
+            return recycledMob;
+        }
+        else
+        {
+            GameObject emergencyMob = Instantiate(prefab, position, Quaternion.identity);
+            NetworkObject netObj = emergencyMob.GetComponent<NetworkObject>();
+            if (netObj != null && !netObj.IsSpawned) netObj.Spawn();
+            return emergencyMob;
+        }
+    }
+
+    public void ReturnMobToPool(string mobId, GameObject mob)
+    {
+        mob.SetActive(false); 
+        
+        Vector3 parkingLot = new Vector3(0, -10000, 0);
+        mob.transform.position = parkingLot;
+        
+        NetworkObject netObj = mob.GetComponent<NetworkObject>();
+        if (netObj != null) TeleportMobClientRpc(netObj, parkingLot);
+
+        if (!mobPool.ContainsKey(mobId)) mobPool[mobId] = new Queue<GameObject>();
+        mobPool[mobId].Enqueue(mob);
     }
 
     private ItemData GetItemDataByID(string id)

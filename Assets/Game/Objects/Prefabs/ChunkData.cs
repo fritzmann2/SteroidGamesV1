@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using System.Collections;
 
 public class ChunkData : MonoBehaviour
 {
@@ -13,54 +14,73 @@ public class ChunkData : MonoBehaviour
     [Header("Portal Settings")]
     public GameObject bossPortalPrefab;
 
+    private WorldGenerator myGenerator;
+    private MobSpawnPoint[] cachedSpawnPoints;
+
+    private Dictionary<string, GameObject> mobPrefabLookup = new Dictionary<string, GameObject>();
+    private List<string> fallbackMobIds = new List<string>();
+
+    private void Awake()
+    {
+        cachedSpawnPoints = transform.GetComponentsInChildren<MobSpawnPoint>(true);
+
+        foreach (GameObject prefab in posibleMobs)
+        {
+            if (prefab == null) continue;
+            
+            BaseEnemy enemyScript = prefab.GetComponent<BaseEnemy>();
+            if (enemyScript != null)
+            {
+                if (!mobPrefabLookup.ContainsKey(enemyScript.id))
+                {
+                    mobPrefabLookup.Add(enemyScript.id, prefab);
+                    fallbackMobIds.Add(enemyScript.id); 
+                }
+            }
+        }
+    }
 
     public void SpawnMyMobs(WorldGenerator generator)
     {
         if (!NetworkManager.Singleton.IsServer) return;
-        MobSpawnPoint[] spawnPoints = transform.GetComponentsInChildren<MobSpawnPoint>();
-        foreach (MobSpawnPoint spawnPoint in spawnPoints)
+        myGenerator = generator;
+        StartCoroutine(SpawnMobsRoutine(generator));
+    }
+
+    private IEnumerator SpawnMobsRoutine(WorldGenerator generator)
+    {
+        foreach (MobSpawnPoint spawnPoint in cachedSpawnPoints)
         {
-            if (isBossArena)
+            if (isBossArena && spawnPoint.isBossSpawner)
             {
-                if (spawnPoint.isBossSpawner)
-                {
-                    if (boosSpawned) continue;
-                    else boosSpawned = true;
-                }
+                if (boosSpawned) continue;
+                else boosSpawned = true;
             }
+            
             Transform spawnPos = spawnPoint.transform;
             GameObject mobToSpawn = null;
+            
             if (spawnPoint.possibleMobsNames != null && spawnPoint.possibleMobsNames.Count > 0)
             {
                 string mobName = spawnPoint.getRandomMobName();
                 
-                foreach (GameObject mobPrefab in posibleMobs)
+                if (mobPrefabLookup.TryGetValue(mobName, out GameObject matchedPrefab))
                 {
-                    BaseEnemy enemyScript = mobPrefab.GetComponent<BaseEnemy>();
-                    if (enemyScript != null && enemyScript.id == mobName)
-                    {
-                        mobToSpawn = Instantiate(mobPrefab, spawnPos.position, Quaternion.identity);
-                        break; 
-                    }
-                }
-                
-                if (mobToSpawn == null) 
-                {
-                    Debug.LogWarning($"[ChunkData] Fehler: Mob mit der ID '{mobName}' wurde nicht in der 'posibleMobs' Liste gefunden!");
-                }
-            }
-            if (mobToSpawn == null)
-            {
-                if (posibleMobs != null && posibleMobs.Count > 0)
-                {
-                    int randomIndex = Random.Range(0, posibleMobs.Count);
-                    mobToSpawn = Instantiate(posibleMobs[randomIndex], spawnPos.position, Quaternion.identity);
+                    mobToSpawn = generator.GetOrCreateMob(mobName, matchedPrefab, spawnPos.position);
                 }
                 else
                 {
-                    Debug.LogWarning("[ChunkData] ACHTUNG: Der SpawnPoint hat keine Namen UND die ChunkData hat keine 'posibleMobs'. Es kann nichts gespawnt werden!");
-                    continue; 
+                    Debug.LogWarning($"[ChunkData] Fehler: Mob '{mobName}' nicht in 'posibleMobs'!");
                 }
+            }
+            
+            if (mobToSpawn == null && fallbackMobIds.Count > 0)
+            {
+                int randomIndex = Random.Range(0, fallbackMobIds.Count);
+                string randomId = fallbackMobIds[randomIndex];
+                GameObject fallbackPrefab = mobPrefabLookup[randomId];
+                
+                mobToSpawn = generator.GetOrCreateMob(randomId, fallbackPrefab, spawnPos.position);
             }
 
             if (mobToSpawn != null)
@@ -68,7 +88,6 @@ public class ChunkData : MonoBehaviour
                 NetworkObject netObj = mobToSpawn.GetComponent<NetworkObject>();
                 if (netObj != null)
                 {
-                    netObj.Spawn(); 
                     RegisterMob(netObj);
                     
                     BaseEnemy enemyScript = mobToSpawn.GetComponent<BaseEnemy>();
@@ -76,29 +95,20 @@ public class ChunkData : MonoBehaviour
                     {
                         enemyScript.SetParentChunk(this);
                         enemyScript.Setparrent(generator);
-                        if (isBossArena)
-                        {
-                            enemyScript.canSpawnItem = false;
-                        }
+                        if (isBossArena) enemyScript.canSpawnItem = false;
                     }
                 }
-                else
-                {
-                    Debug.LogError($"[ChunkData] Das Prefab {mobToSpawn.name} hat keine NetworkObject Komponente!");
-                    Destroy(mobToSpawn);
-                }
             }
+
+            yield return null; 
         }
-        if (!isBossArena)
-        {
-            SpawnPortal();
-        }
+
+        if (!isBossArena) SpawnPortal();
     }
 
     public void SpawnPortal()
     {
         Transform portalSpawnPoint = transform.Find("PortalSpawnPoint");
-        
         if (portalSpawnPoint != null && bossPortalPrefab != null)
         {
             GameObject portalInstance = Instantiate(bossPortalPrefab, portalSpawnPoint.position, Quaternion.identity);
@@ -117,10 +127,7 @@ public class ChunkData : MonoBehaviour
         }
     }
 
-    public void RegisterMob(NetworkObject mob)
-    {
-        myMobs.Add(mob);
-    }
+    public void RegisterMob(NetworkObject mob) { myMobs.Add(mob); }
 
     public void DespawnEveryThing()
     {
@@ -133,25 +140,16 @@ public class ChunkData : MonoBehaviour
         for (int i = myMobs.Count - 1; i >= 0; i--)
         {
             NetworkObject mob = myMobs[i];
-            if (mob != null && mob.IsSpawned)
+            if (mob != null)
             {
-                mob.Despawn();
+                BaseEnemy enemy = mob.GetComponent<BaseEnemy>();
+                if (enemy != null && myGenerator != null)
+                {
+                    myGenerator.ReturnMobToPool(enemy.id, mob.gameObject);
+                }
             }
         }
         myMobs.Clear();
-    }
-
-    public void DespawnAllPortals()
-    {
-        for (int i = myPortals.Count - 1; i >= 0; i--)
-        {
-            NetworkObject portal = myPortals[i];
-            if (portal != null && portal.IsSpawned)
-            {
-                portal.Despawn();
-            }
-        }
-        myPortals.Clear();
     }
 
     public void DespawnMob(NetworkObject mob)
@@ -159,10 +157,24 @@ public class ChunkData : MonoBehaviour
         if (myMobs.Contains(mob))
         {
             myMobs.Remove(mob);
-            if (mob != null && mob.IsSpawned)
+            if (mob != null)
             {
-                mob.Despawn();
+                BaseEnemy enemy = mob.GetComponent<BaseEnemy>();
+                if (enemy != null && myGenerator != null)
+                {
+                    myGenerator.ReturnMobToPool(enemy.id, mob.gameObject);
+                }
             }
         }
+    }
+
+    public void DespawnAllPortals()
+    {
+        for (int i = myPortals.Count - 1; i >= 0; i--)
+        {
+            NetworkObject portal = myPortals[i];
+            if (portal != null && portal.IsSpawned) portal.Despawn();
+        }
+        myPortals.Clear();
     }
 }

@@ -11638,6 +11638,11 @@ MonoBehaviour:
   chunkSize: 50
   defaultChunkPrefab: {fileID: 5956055188182452263, guid: cd7b112c60bdcb641859fc45d51f5fef, type: 3}
   cam: {fileID: 519420033}
+  mobsToPreWarm:
+  - {fileID: 410988861812181967, guid: a00d3834792150446b1ec1667c21aaf0, type: 3}
+  - {fileID: 4431091490125630633, guid: e4386f937de2f3143a23318caa7263cb, type: 3}
+  targetPoolSize: 100
+  refillInterval: 0.5
 --- !u!4 &1663998736
 Transform:
   m_ObjectHideFlags: 0

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="16" tileheight="16" infinite="0" nextlayerid="8" nextobjectid="11">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="16" tileheight="16" infinite="0" nextlayerid="8" nextobjectid="21">
  <tileset firstgid="1" source="Rock Tile Set.tsx"/>
  <layer id="1" name="prototype" width="50" height="50" visible="0">
   <data encoding="base64">
@@ -7,16 +7,16 @@
   </data>
  </layer>
  <objectgroup id="7" name="SpawnLayer">
-  <object id="1" gid="40" x="264" y="120" width="16" height="16"/>
-  <object id="2" gid="40" x="552" y="136" width="16" height="16"/>
-  <object id="3" gid="40" x="264" y="264" width="16" height="16"/>
-  <object id="4" gid="40" x="440" y="376" width="16" height="16"/>
-  <object id="5" gid="40" x="632" y="408" width="16" height="16"/>
-  <object id="6" gid="40" x="264" y="552" width="16" height="16"/>
-  <object id="7" gid="40" x="536" y="552" width="16" height="16"/>
-  <object id="8" gid="40" x="312" y="648" width="16" height="16"/>
-  <object id="9" gid="40" x="184" y="760" width="16" height="16"/>
-  <object id="10" gid="40" x="600" y="760" width="16" height="16"/>
+  <object id="11" gid="40" x="264" y="120" width="16" height="16"/>
+  <object id="12" gid="40" x="552" y="136" width="16" height="16"/>
+  <object id="13" gid="40" x="264" y="264" width="16" height="16"/>
+  <object id="14" gid="40" x="440" y="376" width="16" height="16"/>
+  <object id="15" gid="40" x="632" y="408" width="16" height="16"/>
+  <object id="16" gid="40" x="264" y="552" width="16" height="16"/>
+  <object id="17" gid="40" x="536" y="552" width="16" height="16"/>
+  <object id="18" gid="40" x="312" y="648" width="16" height="16"/>
+  <object id="19" gid="40" x="184" y="760" width="16" height="16"/>
+  <object id="20" gid="40" x="600" y="760" width="16" height="16"/>
  </objectgroup>
  <layer id="3" name="terrain" width="50" height="50">
   <properties>

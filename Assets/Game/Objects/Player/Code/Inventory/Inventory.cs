@@ -2,9 +2,8 @@ using Unity.Netcode;
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-
-
 
 
 #if UNITY_EDITOR
@@ -22,12 +21,14 @@ public class Inventory : NetworkBehaviour
     [SerializeField] public ItemInventory itemInventory;
     public UnityEvent<bool> addedsuccess;
     public UnityAction changesuccess;
+    private GameControls controls;
     private BoxCollider2D bx;
     public MouseItemData mouseItemData;
     public WorldGenerator worldGenerator;
 
     private void Awake()
     {
+        
         Transform childTransform = transform.Find("ItemPickupRange");
         bx = childTransform.GetComponent<BoxCollider2D>();
         bx.isTrigger = true;
@@ -37,6 +38,8 @@ public class Inventory : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         if (!IsOwner) return;
+        controls = new GameControls();
+        controls.Enable();
         if(!IsOwner) Debug.LogWarning("safety fail");
         InventoryUI inventoryUI = FindAnyObjectByType<InventoryUI>(FindObjectsInactive.Include);
         if (inventoryUI != null)
@@ -61,13 +64,26 @@ public class Inventory : NetworkBehaviour
         {
             mouseItemData.ItemChange -= trySwitchItem;
         }
+        controls.Disable();
     }
-
+    
     public override void OnDestroy()
     {
         if (mouseItemData != null)
         {
             mouseItemData.ItemChange -= trySwitchItem;
+        }
+    }
+
+    private void Update()
+    {
+        if (!IsOwner) return;
+        if (mouseItemData != null && mouseItemData.hasitem && controls.Gameplay.LeftMouse.WasPressedThisFrame())
+        {
+            if (!EventSystem.current.IsPointerOverGameObject())
+            {
+                dropItem();
+            }
         }
     }
 
