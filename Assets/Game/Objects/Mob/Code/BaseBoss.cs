@@ -77,8 +77,11 @@ public abstract class BaseBoss : BaseEnemy
             {
                 ItemManager.Instance.SpawnPickUpItem(id, transform.position);
                 DistributeXP();
-                //parentChunk.SpawnPortal();
-                //parentChunk.DespawnAllMobs();
+                if (parentChunk != null)
+                {
+                    parentChunk.BossDead();
+                }
+                GetComponent<NetworkObject>().Despawn();
             }  
         }
         if (BossUIController.Instance != null)

@@ -14,16 +14,20 @@ public class WorldGenerator : NetworkBehaviour
 
     [Header("Prefabs")]
     public GameObject baseNetworkChunkPrefab; 
+    public GameObject bossPortalPrefab;
     public GameObject[] allMobPrefabs;
     public GameObject[] allChunkPrefabs;
+    public GameObject[] allBossArenaPrefabs;
     
     [Header("Chunk Loading Settings")]
-    private float loadDistance = 40f; 
+    private float loadDistance = 60f; 
     private float despawnDelay = 10f;   
 
     private Dictionary<string, GameObject> mobDictionary = new Dictionary<string, GameObject>();
     private Dictionary<Vector2Int, GameObject> chunkPrefabDictionary = new Dictionary<Vector2Int, GameObject>();
     private Dictionary<Vector2Int, GameObject> activeChunks = new Dictionary<Vector2Int, GameObject>();
+    private Dictionary<Vector2Int, float> chunkLastSeenTimes = new Dictionary<Vector2Int, float>();
+
 
     public override void OnNetworkSpawn()
     {
@@ -57,12 +61,35 @@ public class WorldGenerator : NetworkBehaviour
                 Debug.LogWarning($"[WorldGen] Chunk-Name '{chunk.name}' hat nicht das Format 'Chunk_X_Y'. Er wird ignoriert.");
             }
         }
-        Debug.Log($"[WorldGen] {chunkPrefabDictionary.Count} Chunks initialisiert.");
+
+        foreach (GameObject arena in allBossArenaPrefabs)
+        {
+            if (arena == null) continue;
+
+            string numberString = string.Empty;
+            foreach (char c in arena.name)
+            {
+                if (char.IsDigit(c)) numberString += c;
+            }
+            if (int.TryParse(numberString, out int arenaNumber))
+            {
+                int index = arenaNumber - 1; 
+                int worldX = index * 200;
+                int xCoord = Mathf.RoundToInt(worldX / chunkSize); 
+                int worldY = 1000;
+                int yCoord = Mathf.RoundToInt(worldY / chunkSize);
+                chunkPrefabDictionary[new Vector2Int(xCoord, yCoord)] = arena;
+                Debug.Log($"[WorldGen] {arena.name} erfolgreich auf Chunk-Koordinate {xCoord}_{yCoord} (Welt: {worldX}|{worldY}) registriert!");
+            }
+            else
+            {
+                Debug.LogWarning($"[WorldGen] Konnte keine Zahl im Namen von '{arena.name}' finden. Sie wird ignoriert.");
+            }
+        }
+        
+        Debug.Log($"[WorldGen] {chunkPrefabDictionary.Count} Chunks (inklusive Arenen) initialisiert.");
     }
  
-    
-    private Dictionary<Vector2Int, float> chunkLastSeenTimes = new Dictionary<Vector2Int, float>();
-
     private IEnumerator ChunkUpdateLoop()
     {
         while (true)
@@ -78,16 +105,18 @@ public class WorldGenerator : NetworkBehaviour
         if (allPlayers.Length == 0) return;
 
         HashSet<Vector2Int> currentlyVisibleChunks = new HashSet<Vector2Int>();
+        
         foreach (Vector2Int chunkCoord in chunkPrefabDictionary.Keys)
         {
-            Vector2 chunkCenterPos = new Vector2(chunkCoord.x * chunkSize, chunkCoord.y * chunkSize);
+            Vector2 trueCenterPos = new Vector2(
+                chunkCoord.x * chunkSize, 
+                chunkCoord.y * chunkSize 
+            );
             
             bool isAnyPlayerNear = false;
-
             foreach (GameObject player in allPlayers)
             {
-                float distance = Vector2.Distance(player.transform.position, chunkCenterPos);
-                if (distance <= loadDistance)
+                if (Vector2.Distance(player.transform.position, trueCenterPos) <= loadDistance)
                 {
                     isAnyPlayerNear = true;
                     break; 
@@ -97,11 +126,32 @@ public class WorldGenerator : NetworkBehaviour
             if (isAnyPlayerNear)
             {
                 currentlyVisibleChunks.Add(chunkCoord);
-                chunkLastSeenTimes[chunkCoord] = Time.time;
-                if (!activeChunks.ContainsKey(chunkCoord))
+            }
+        }
+
+        HashSet<Vector2Int> linkedChunksToLoad = new HashSet<Vector2Int>();
+        foreach (Vector2Int visibleCoord in currentlyVisibleChunks)
+        {
+            if (activeChunks.TryGetValue(visibleCoord, out GameObject chunkObj))
+            {
+                ChunkData cd = chunkObj.GetComponentInChildren<ChunkData>();
+                if (cd != null)
                 {
-                    SpawnChunk(chunkCoord);
+                    foreach (Vector2Int linkedCoord in cd.linkedChunks)
+                    {
+                        linkedChunksToLoad.Add(linkedCoord);
+                    }
                 }
+            }
+        }
+        currentlyVisibleChunks.UnionWith(linkedChunksToLoad);
+
+        foreach (Vector2Int coord in currentlyVisibleChunks)
+        {
+            chunkLastSeenTimes[coord] = Time.time;
+            if (!activeChunks.ContainsKey(coord))
+            {
+                SpawnChunk(coord);
             }
         }
 
@@ -160,6 +210,39 @@ public class WorldGenerator : NetworkBehaviour
             activeChunks.Add(coord, networkChunk);
             
             SpawnMobsInChunk(networkChunk);
+            SpawnPortalsInChunk(networkChunk);
+        }
+    }
+
+    private void SpawnPortalsInChunk(GameObject chunk)
+    {
+        ChunkData chunkData = chunk.GetComponentInChildren<ChunkData>();
+        if (chunkData == null) return;
+
+        PortalSpawner[] spawners = chunk.GetComponentsInChildren<PortalSpawner>();
+
+        foreach (PortalSpawner spawner in spawners)
+        {
+            spawner.Reset();
+
+            if (bossPortalPrefab != null)
+            {
+                GameObject portalObj = Instantiate(bossPortalPrefab, spawner.transform.position, Quaternion.identity);
+                NetworkObject portalNetObj = portalObj.GetComponent<NetworkObject>();
+                portalNetObj.Spawn();
+                portalNetObj.TrySetParent(chunk.transform);
+
+                BossPortals bossPortalScript = portalObj.GetComponent<BossPortals>();
+                if (bossPortalScript != null)
+                {
+                    bossPortalScript.destinationCoordinate = spawner.teleportDestination;
+                }
+                int targetX = Mathf.RoundToInt(spawner.teleportDestination.x / chunkSize);
+                int targetY = Mathf.RoundToInt(spawner.teleportDestination.y / chunkSize);
+                
+                chunkData.linkedChunks.Add(new Vector2Int(targetX, targetY));
+                chunkData.RegisterPortal(portalNetObj);
+            }
         }
     }
 
@@ -212,6 +295,7 @@ public class WorldGenerator : NetworkBehaviour
             if (chunkData != null)
             {
                 chunkData.DespawnAllMobs();
+                chunkData.DespawnAllPortals();
             }
 
             if (chunkToDestroy.TryGetComponent(out NetworkObject netObj))
@@ -227,12 +311,28 @@ public class WorldGenerator : NetworkBehaviour
         }
     }
 
+    public void TeleportToBoss(Vector2 destinationCoordinate, Transform player)
+    {
+        if (!IsServer) return;
+
+        player.position = new Vector3(destinationCoordinate.x, destinationCoordinate.y, 0);
+
+        Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+        }
+        
+        Debug.Log($"[WorldGen] Spieler zu Boss-Arena {destinationCoordinate} teleportiert!");
+    }
+
     #if UNITY_EDITOR
     [ContextMenu("Lade Prefabs aus Ordnern")]
     public void LoadPrefabsFromFolders()
     {
         allMobPrefabs = LoadPrefabsAtPath(mobFolderPath);
         allChunkPrefabs = LoadPrefabsAtPath(chunkFolderPath, "Chunk");
+        allBossArenaPrefabs = LoadPrefabsAtPath(chunkFolderPath, "BossArena");
         UnityEditor.EditorUtility.SetDirty(this); 
         Debug.Log($"[WorldGen Editor] Erfolgreich {allMobPrefabs.Length} Mobs und {allChunkPrefabs.Length} Chunks geladen!");
     }

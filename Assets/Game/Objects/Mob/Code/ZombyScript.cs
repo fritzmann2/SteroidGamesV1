@@ -11,10 +11,6 @@ public class ZombyScript : BaseEnemy
         base.Reset();
     }
 
-    public override void Awake()
-    {
-        base.Awake();
-    }
     override public void Attack()
     {
         if (!IsServer) return;

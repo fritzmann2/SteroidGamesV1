@@ -18,20 +18,6 @@ abstract public class BaseEnemy : BaseEntety
     public float activationDistance = 20f;
     private float timeSinceSpawn = 0f;
 
-    public virtual void Reset()    
-    {
-        if (IsSpawned && IsServer)
-        {
-            health.Value = maxHealth;
-        }
-        hpbarfiller = transform.GetChild(0).GetChild(0).gameObject;
-        customGravity = 35f; 
-        maxFallSpeed = 25f;
-        baseXpReward = 50;
-        
-        timeSinceSpawn = 0f;
-    }
-
     [Header("Custom Gravity")]
     [SerializeField] private float customGravity; 
     [SerializeField] private float maxFallSpeed;
@@ -52,9 +38,11 @@ abstract public class BaseEnemy : BaseEntety
 
     [Header("Movement")]
     protected float movementSpeed = 6f;
-    public float jumpforce = 5f;
-    private bool canJump = true;
-    private bool isGrounded;
+    public float jumpforce = 10f;
+    [SerializeField] private bool canJump = true;
+    [SerializeField] private bool isGrounded;
+    [SerializeField] private bool isWallAhed;
+    [SerializeField] private bool isVoidAhed;
     [SerializeField] protected float mindistance = 1f;
     [SerializeField] protected float attackDistance = 8f;
     [SerializeField] protected float maxdistance = 20f;
@@ -70,11 +58,26 @@ abstract public class BaseEnemy : BaseEntety
     public float sharedXpPercentage = 0.5f;
     private Transform lastAttacker;
 
-
-    override public void Awake()
+    public virtual void Reset()    
     {
+        if (IsSpawned && IsServer)
+        {
+            health.Value = maxHealth;
+        }
+        hpbarfiller = transform.GetChild(0).GetChild(0).gameObject;
+        customGravity = 35f; 
+        maxFallSpeed = 25f;
+        baseXpReward = 50;
+        
+        timeSinceSpawn = 0f;
+    }
+
+
+    override public void OnNetworkSpawn()
+    {
+        if (!IsServer) return;
+        base.OnNetworkSpawn();
         Reset();
-        base.Awake();
         worldgen = FindAnyObjectByType<WorldGenerator>();
         levelManager = FindAnyObjectByType<LevelManager>();
         levelManager.onPlayerRegistered += updatePlayerList;
@@ -98,7 +101,10 @@ abstract public class BaseEnemy : BaseEntety
     public override void OnNetworkDespawn()
     {
         base.OnNetworkDespawn();
-        levelManager.onPlayerRegistered -= updatePlayerList;
+        if (levelManager != null)
+        {
+            levelManager.onPlayerRegistered -= updatePlayerList;
+        }
     }
 
     virtual public void FixedUpdate()
@@ -129,81 +135,117 @@ abstract public class BaseEnemy : BaseEntety
             }
 
             checkCollisions();
-            move();
             checkGravity();
+            if (canJump)
+            {
+                jumpCheck();
+            }
+            move();
             checkAttack();
         }
     }
 
     private void checkCollisions()
     {
-        Vector2 boxCenter = (Vector2)transform.position + new Vector2(0, groundCheckPos);
-        isGrounded = Physics2D.OverlapBox(boxCenter, groundCheckSize, 0, groundLayer);
-        
-        if (isGrounded && canJump && rb.linearVelocity.y <= 0.1f)
-        {
-            float direction = transform.localScale.x > 0 ? 1 : -1;
-            Vector2 wallCheckOrigin = (Vector2)transform.position + new Vector2(0, wallCheckHeight); 
-            RaycastHit2D wallHit = Physics2D.Raycast(wallCheckOrigin, Vector2.right * direction, wallCheckDistance, wallLayer);
+        groundCheck();
+        isWallAhed = wallCheck(wallCheckHeight);
+        voidCheck();
+    }
 
-            if (wallHit.collider != null)
+    private bool wallCheck(float _wallCheckHeight)
+    {
+        int facingDirection = transform.localScale.x > 0 ? 1 : -1;
+
+        Vector3 origin = new Vector3(0f, _wallCheckHeight, 0f);
+        Vector2 direction = Vector2.right * facingDirection; 
+        RaycastHit2D hit = Physics2D.Raycast(transform.position + origin, direction, wallCheckDistance, wallLayer);
+        if (hit.collider != null)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private void voidCheck()
+    {
+        int facingDirection = transform.localScale.x > 0 ? 1 : -1;
+
+        Vector3 origin = new Vector3 (voidCheckOffsetx * facingDirection, voidCheckStartY, 0f);
+        RaycastHit2D hit = Physics2D.Raycast(transform.position + origin, Vector2.down, voidCheckDistance, groundLayer);
+        if (hit.collider != null)
+        {
+            isVoidAhed = false;
+        }
+        else
+        {
+            isVoidAhed = true;
+        }
+    }
+
+    private void groundCheck()
+    {
+        Vector2 boxCenter = (Vector2)transform.position + new Vector2(0, groundCheckPos);
+        Collider2D hit = Physics2D.OverlapBox(boxCenter, groundCheckSize, 0f, groundLayer);
+        if (hit != null)
+        {
+            isGrounded = true;
+        }
+        else
+        {
+            isGrounded = false;
+        }
+    }
+
+    private void jumpCheck()
+    {
+        if (isGrounded && !isVoidAhed && isWallAhed)
+        {
+            if (!wallCheck(1)) 
             {
-                if (Mathf.Abs(wallHit.normal.x) > 0.7f) 
-                {
-                    jump();
-                }
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpforce);
             }
         }
     }
 
-    private void jump()
-    {
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpforce);
-    }
+    
 
     private void move()
     {
         if (activePlayers.Count > 0 && targetPlayer != null)
         {
             Vector3 direction = targetPlayer.position - transform.position;
-            float facingDirection = direction.x > 0 ? 1f : -1f;
-            if (direction.x != 0) transform.localScale = new Vector3(facingDirection, 1f, 1f);
-
-            bool distanceCheck = Mathf.Abs(direction.x) > attackDistance && Mathf.Abs(direction.x) < maxdistance;
-
-            if (distanceCheck)
+            
+            float distanceX = Mathf.Abs(direction.x);
+            
+            if (distanceX > 0.1f) 
             {
-                Vector2 voidOrigin = new Vector2(transform.position.x + (voidCheckOffsetx * facingDirection), transform.position.y + voidCheckStartY);
-                bool isGroundAhead = Physics2D.Raycast(voidOrigin, Vector2.down, voidCheckDistance * 1.5f, groundLayer);
-                if (isGrounded && !isGroundAhead) { stop(); return; }
-                if (isGrounded)
+                float facingDirection = direction.x > 0 ? 1f : -1f;
+                transform.localScale = new Vector3(facingDirection, 1f, 1f);
+                
+                if (!isWallAhed && !isVoidAhed)
                 {
-                    Vector2 slopeCheckOrigin = (Vector2)transform.position + new Vector2(0, groundCheckPos + 0.2f);
-                    Vector2 slopeCheckDir = new Vector2(facingDirection, -1f).normalized;
-                    RaycastHit2D slopeHit = Physics2D.Raycast(slopeCheckOrigin, slopeCheckDir, 1f, groundLayer);
-                    if (slopeHit.collider != null)
+                    float distance = Vector3.Distance(transform.position, targetPlayer.position);
+                    if (distance < maxdistance && distance > attackDistance)
                     {
-                        Vector2 normal = slopeHit.normal;
-                        if (normal.y < 0.99f)
-                        {
-                            Vector2 slopeDir = new Vector2(normal.y, -normal.x);
-                            if (facingDirection < 0) slopeDir = -slopeDir;
-                            
-                            rb.linearVelocity = slopeDir * movementSpeed;
-                            return;
-                        }
+                        rb.linearVelocity = new Vector2(facingDirection * movementSpeed, rb.linearVelocity.y);
                     }
-                    rb.linearVelocity = new Vector2(facingDirection * movementSpeed, rb.linearVelocity.y);
                 }
                 else
                 {
-                    rb.linearVelocity = new Vector2(facingDirection * movementSpeed, rb.linearVelocity.y);
+                    stop();
                 }
             }
             else
             {
                 stop();
             }
+        }
+        else
+        {
+            stop();
         }
     }
 
@@ -257,7 +299,6 @@ abstract public class BaseEnemy : BaseEntety
             DistributeXP();
             GetComponent<NetworkObject>().Despawn();
         }
-        base.OnHealthChanged(previousValue, newValue);
         if (hpbarfiller != null)
         {
             hpbarfiller.transform.localScale = new Vector3 (newValue / maxHealth, 1f, 1f);
@@ -367,8 +408,4 @@ abstract public class BaseEnemy : BaseEntety
         Gizmos.DrawWireCube(boxCenter, new Vector3(groundCheckSize.x, groundCheckSize.y, 1));
     }
 
-    public void Kill()
-    {
-        //parentChunk.DespawnMob(this.GetComponent<NetworkObject>());
-    }
 }

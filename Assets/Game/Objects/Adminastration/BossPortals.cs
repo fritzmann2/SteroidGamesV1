@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 public class BossPortals : NetworkBehaviour
 {
     [Header("Teleport Ziel")]
-    public Vector3 destinationCoordinate; 
+    public Vector2 destinationCoordinate; 
     private bool isLocalPlayerInZone = false;
     private NetworkObject localPlayerNetObj;
     private GameControls controls;
@@ -54,15 +54,20 @@ public class BossPortals : NetworkBehaviour
 
         bool teleportTriggered = false;
 
-        if (Mouse.current != null && controls.Gameplay.RightMouse .IsPressed())
+        if (Mouse.current != null && controls.Gameplay.RightMouse.WasPressedThisFrame())
         {
+            Debug.Log("teleport Player");
             Vector2 mousePosition = Mouse.current.position.ReadValue();
             Vector2 worldPosition = Camera.main.ScreenToWorldPoint(mousePosition);
             Collider2D hit = Physics2D.OverlapPoint(worldPosition);
             
-            if (hit != null && hit.gameObject == gameObject)
+            if (hit != null)
             {
                 teleportTriggered = true;
+            }
+            else
+            {
+                Debug.Log("Cant teleport Player hit is null or hit.gameObject != gameObject");
             }
         }
 
@@ -86,12 +91,16 @@ public class BossPortals : NetworkBehaviour
             WorldGenerator worldGen = FindAnyObjectByType<WorldGenerator>();
             if (worldGen != null)
             {
-                //worldGen.TeleportToBoss(destinationCoordinate, playerObj.transform);
+                worldGen.TeleportToBoss(destinationCoordinate, playerObj.transform);
             }
             else
             {
                 Debug.LogError("BossPortal: WorldGenerator nicht in der Szene gefunden!");
             }
+        }
+        else
+        {
+            Debug.LogError("BossPortal: Spieler nicht gefunden!");
         }
     }
 }

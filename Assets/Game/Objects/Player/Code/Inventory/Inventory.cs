@@ -25,6 +25,7 @@ public class Inventory : NetworkBehaviour
     private BoxCollider2D bx;
     public MouseItemData mouseItemData;
     public WorldGenerator worldGenerator;
+    private PlayerStats playerStats;
 
     private void Awake()
     {
@@ -33,6 +34,7 @@ public class Inventory : NetworkBehaviour
         bx = childTransform.GetComponent<BoxCollider2D>();
         bx.isTrigger = true;
         worldGenerator = FindAnyObjectByType<WorldGenerator>();
+        playerStats = GetComponent<PlayerStats>();
     }
 
     public override void OnNetworkSpawn()
@@ -110,7 +112,7 @@ public class Inventory : NetworkBehaviour
             
             if (itemPickUp != null)
             {
-                ItemPickUpData data = itemPickUp.getItemData();
+                ItemPickUpData data = itemPickUp.getItemData(playerStats.playerLevel);
                 targetObject.Despawn();
                 tryAddItemClientRPC(data.id, data.amount, data.isEquipment, data.serializedStats);
             }
@@ -160,7 +162,7 @@ public class Inventory : NetworkBehaviour
         }
         return null;
     }
-    private ItemData getRandomID()
+    public ItemData getRandomID()
     {
         ItemData itemDataToReturn = itemDatabase[(int)Random.Range(0, itemDatabase.Count)];
         return itemDataToReturn;
@@ -169,7 +171,7 @@ public class Inventory : NetworkBehaviour
     private void OnTriggerStay2D(Collider2D other) 
     {
         if (!IsOwner) return;
-        if (bx.IsTouching(other) && other.CompareTag("ItemPickUp") && controls.Gameplay.pickupitem.WasPressedThisFrame())
+        if (bx.IsTouching(other) && other.CompareTag("ItemPickUp") && controls.Gameplay.pickupitem.IsPressed())
         {
             bool allowedToPickUp = false;
             var currentDevice = controls.Gameplay.pickupitem.activeControl.device;

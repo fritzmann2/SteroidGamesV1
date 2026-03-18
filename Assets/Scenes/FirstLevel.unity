@@ -11703,6 +11703,7 @@ MonoBehaviour:
   mobFolderPath: Assets/Game/Objects/Mob/Prefabs
   chunkFolderPath: Assets/Game/TileLevels/RockTiles
   baseNetworkChunkPrefab: {fileID: 6653131205622226679, guid: b55e7b6d60bc79f4085aa6b0901d070c, type: 3}
+  bossPortalPrefab: {fileID: 7223908082352180176, guid: 6d0f98f22165b4946bb1f73e754b723e, type: 3}
   allMobPrefabs:
   - {fileID: 4603273018276043992, guid: b57cd3bfcf3a5a344912ace5240d7b3a, type: 3}
   - {fileID: 4431091490125630633, guid: e4386f937de2f3143a23318caa7263cb, type: 3}
@@ -11712,6 +11713,8 @@ MonoBehaviour:
   - {fileID: 8646692393345835934, guid: 6b6eb42633ebe2a40a1688158c551809, type: 3}
   - {fileID: -8368543777875415141, guid: a2438e958ab31524a84316ec8395c1f4, type: 3}
   - {fileID: 4579226649699265985, guid: c60daf9531796784c8e24eec62120c92, type: 3}
+  allBossArenaPrefabs:
+  - {fileID: -7382703648701513726, guid: 6c6892fb247a1984ba1d5d3459d4b1e6, type: 3}
 --- !u!4 &1663998736
 Transform:
   m_ObjectHideFlags: 0

@@ -35,11 +35,6 @@ public class WizardScript : BaseEnemy
             }
         #endif
     } 
-    public override void Awake()
-    {
-        base.Awake();
-        
-    }
 
     public override void Attack()
     {

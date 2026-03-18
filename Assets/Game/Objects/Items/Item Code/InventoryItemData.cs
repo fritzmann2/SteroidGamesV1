@@ -1,6 +1,4 @@
 using UnityEngine;
-using Unity.Netcode;
-using Unity.VisualScripting.Antlr3.Runtime.Misc;
 
 
 [CreateAssetMenu(fileName = "New Item", menuName = "Inventory/Item")]

@@ -94,6 +94,12 @@
    <object id="1" x="0" y="0" width="16" height="16"/>
   </objectgroup>
  </tile>
+ <tile id="23" type="Portal_Spawner">
+  <properties>
+   <property name="xCoordinate" type="int" value="0"/>
+   <property name="yCoordinate" type="int" value="1000"/>
+  </properties>
+ </tile>
  <tile id="24">
   <objectgroup draworder="index" id="2">
    <object id="1" x="0" y="0" width="16" height="16"/>
@@ -216,7 +222,11 @@
    </object>
   </objectgroup>
  </tile>
- <tile id="47" type="Boss_spawner"/>
+ <tile id="47" type="Boss_Spawner">
+  <properties>
+   <property name="possibleMobName" value="MageBoss"/>
+  </properties>
+ </tile>
  <tile id="48">
   <objectgroup draworder="index" id="2">
    <object id="1" x="0" y="0" width="16" height="16"/>

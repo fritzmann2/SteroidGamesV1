@@ -59,3 +59,5 @@ MonoBehaviour:
     m_Prefab: {fileID: 7523621337541228274, guid: 40b22d51f39b09a40be97585fbe0a66b, type: 3}
   - m_TypeName: Boss_Spawner
     m_Prefab: {fileID: 7523621337541228274, guid: 40b22d51f39b09a40be97585fbe0a66b, type: 3}
+  - m_TypeName: Portal_Spawner
+    m_Prefab: {fileID: 1641483919785807043, guid: 4bdcf5f0ce7a3124fa2294302c8579fe, type: 3}

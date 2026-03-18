@@ -229,7 +229,11 @@ MonoBehaviour:
   voidCheckOffsetx: 0.6
   voidCheckStartY: -0.4
   voidCheckDistance: 1.5
-  jumpforce: 5
+  jumpforce: 10
+  canJump: 1
+  isGrounded: 0
+  isWallAhed: 0
+  isVoidAhed: 0
   mindistance: 1
   attackDistance: 8
   maxdistance: 20

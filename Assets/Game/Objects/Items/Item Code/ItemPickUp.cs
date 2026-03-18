@@ -8,6 +8,7 @@ public class ItemPickUp : NetworkBehaviour
     public int itemRarity = 0;
     public int amount = 1;
     public string id;
+    private string tempid;
     
     public string serializedStats = "";
     public bool isEquipment = false;
@@ -30,10 +31,28 @@ public class ItemPickUp : NetworkBehaviour
         id = _id;
 
         Inventory anyInventory = FindAnyObjectByType<Inventory>();
-        if (anyInventory == null) return;
+        if (anyInventory == null) 
+        {
+            Debug.Log("anyInventory is null");
+            return;
+        }
+        ItemData baseItemData;
+        if (id == null)
+        {
+            baseItemData = anyInventory.getRandomID();
+            id = baseItemData.ID;
+            tempid = null;
+        }
+        else
+        {
+            baseItemData = anyInventory.getItemByID(id);
+        }
 
-        ItemData baseItemData = anyInventory.getItemByID(id);
-        if (baseItemData == null) return;
+        if (baseItemData == null)
+        {
+            Debug.Log("baseItemData is null");
+            return;
+        }
 
         if (sr != null) 
         {
@@ -62,6 +81,7 @@ public class ItemPickUp : NetworkBehaviour
 
     public void setitem(string _itemID, int _amount, bool _isEquipment, string _serializedStats)
     {
+        tempid = "not null";
         Inventory anyInventory = FindAnyObjectByType<Inventory>();
         if (anyInventory == null) return;
 
@@ -78,8 +98,31 @@ public class ItemPickUp : NetworkBehaviour
         serializedStats = _serializedStats;
     }
 
-    public ItemPickUpData getItemData()
+    public ItemPickUpData getItemData(int playerLevel)
     {
+        if (tempid == null)
+        {
+            Inventory anyInventory = FindAnyObjectByType<Inventory>();
+            ItemData baseItemData = anyInventory.getItemByID(id);
+            if (baseItemData is EquipmentData eqData)
+            {
+                isEquipment = true;
+                EquipmentInstance itemInstance = new EquipmentInstance(eqData);
+                Itemtype itemtype = itemInstance.itemtype;
+                EquipmentStats stats = null;
+                
+                if (itemtype == Itemtype.Weapon) stats = new WeaponStats();
+                else if (itemtype == Itemtype.Armor) stats = new ArmorStats();
+                else if (itemtype == Itemtype.Accessory) stats = new AccessoryStats();
+                
+                float adjustedRarity = itemRarity + (playerLevel * 0.1f);
+                if (adjustedRarity > 2.5f) adjustedRarity = 2.5f;
+                stats.generateStats(adjustedRarity);
+                
+                itemInstance.SetEquipmentStats(stats);
+                serializedStats = JsonUtility.ToJson(itemInstance);
+            }
+        } 
         return new ItemPickUpData
         {
             itemRarity = itemRarity,

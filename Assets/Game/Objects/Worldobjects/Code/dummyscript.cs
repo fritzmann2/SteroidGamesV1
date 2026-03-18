@@ -6,9 +6,9 @@ public class dummyscript : BaseEntety
     public WorldGenerator worldgen;
     private string id = "Testsubject";
 
-    override public void Awake()
+    override public void OnNetworkSpawn()
     {
-        base.Awake();
+        base.OnNetworkSpawn();
         maxHealth = 20;
         health.Value = maxHealth;
     }

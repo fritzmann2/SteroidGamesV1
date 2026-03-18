@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
-
 public class LevelManager : NetworkBehaviour
 {
     public static LevelManager Instance { get; private set; }
@@ -14,6 +13,7 @@ public class LevelManager : NetworkBehaviour
     private Dictionary<string, Transform> activePlayers = new Dictionary<string, Transform>();
     public event Action onPlayerRegistered;
 
+    private HashSet<ulong> spawnedClients = new HashSet<ulong>();
 
     private void Awake()
     {
@@ -30,7 +30,7 @@ public class LevelManager : NetworkBehaviour
             return;
         }
 
-        NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
+        NetworkManager.Singleton.SceneManager.OnSceneEvent += OnSceneEvent;
 
         foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
         {
@@ -42,21 +42,24 @@ public class LevelManager : NetworkBehaviour
     {
         if (NetworkManager.Singleton != null && IsServer)
         {
-            NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
+            NetworkManager.Singleton.SceneManager.OnSceneEvent -= OnSceneEvent;
         }
     }
 
-    private void OnClientConnected(ulong clientId)
+    private void OnSceneEvent(SceneEvent sceneEvent)
     {
-        Debug.Log($">>> Client {clientId} verbunden. Starte Verzögerung... <<<");
-        StartCoroutine(SpawnPlayerWithDelay(clientId));
+        if (sceneEvent.SceneEventType == SceneEventType.LoadComplete)
+        {
+            Debug.Log($">>> Client {sceneEvent.ClientId} hat die Szene geladen. Starte Verzögerung... <<<");
+            StartCoroutine(SpawnPlayerWithDelay(sceneEvent.ClientId));
+        }
     }
 
     private IEnumerator SpawnPlayerWithDelay(ulong clientId)
     {
-        // 1. Warten
+        if (spawnedClients.Contains(clientId)) yield break;
+        spawnedClients.Add(clientId); 
         yield return new WaitForSeconds(clientSpawnDelay);
-
         if (NetworkManager.Singleton.ConnectedClients.ContainsKey(clientId))
         {
             SpawnPlayer(clientId);
@@ -64,6 +67,7 @@ public class LevelManager : NetworkBehaviour
         else
         {
             Debug.LogWarning($"Client {clientId} hat während des Delays die Verbindung verloren.");
+            spawnedClients.Remove(clientId); 
         }
     }
 

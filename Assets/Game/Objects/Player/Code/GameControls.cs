@@ -341,6 +341,17 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""c444676a-4f54-4130-929a-21f9c055f2af"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""dash"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""f12e75f6-fd60-419a-91d6-954194635702"",
                     ""path"": ""<Keyboard>/leftShift"",
                     ""interactions"": """",

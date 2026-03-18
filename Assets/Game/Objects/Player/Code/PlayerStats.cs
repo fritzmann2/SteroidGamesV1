@@ -16,7 +16,7 @@ public class PlayerStats : BaseMobClass
     [SerializeField] protected PlayerStatsUI statsUI;
     private ItemInventory itemInventory;
     private bool isCrit;
-    [SerializeField] private int playerLevel = 1;
+    [SerializeField] public int playerLevel = 1;
     [SerializeField] private int playerXP = 0;
     public NetworkVariable<float> mana = new NetworkVariable<float>(
         100f, 

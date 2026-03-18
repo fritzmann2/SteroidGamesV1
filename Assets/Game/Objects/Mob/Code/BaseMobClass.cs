@@ -11,16 +11,13 @@ abstract public class BaseEntety : NetworkBehaviour
 
     public int maxHealth;
     public Rigidbody2D rb;
-    virtual public void Awake()
-    {
-        health.OnValueChanged += OnHealthChanged;
-    }
 
     override public void OnNetworkSpawn()
     {
         if (IsServer)
         {
             health.Value = maxHealth;
+            health.OnValueChanged += OnHealthChanged;
         }
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0f;
@@ -54,15 +51,7 @@ abstract public class BaseEntety : NetworkBehaviour
         health.Value -= finalDamage;
     }
 
-    virtual public void OnHealthChanged(float previousValue, float newValue)
-    {
-        if(newValue <= 0)
-        {
-            if (this.tag == "mob")
-            {
-            }
-        }
-    }
+    virtual public void OnHealthChanged(float previousValue, float newValue) {}
 }
 
 abstract public class BaseMobClass : BaseEntety
