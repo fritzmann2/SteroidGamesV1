@@ -42,15 +42,20 @@ public class Scythe : Weapon
         if (isThrown) return;
         attackmulti = 0.7f;
         Vector3 direction = GetAimDirection().normalized;
-        
+        float currentSpeed = 1f;
+        if (playerStats != null)
+        {
+            currentSpeed = playerStats.getTotalStats().attackSpeed;
+            if (currentSpeed < 1f) currentSpeed = 1f;
+        }
         if (IsServer)
         {
-            ThrowClientRpc(direction);
+            ThrowClientRpc(direction, currentSpeed);
         }
         else
         {
             Debug.Log("try Throwing");
-            ThrowServerRpc(direction);
+            ThrowServerRpc(direction, currentSpeed);
         }
     }
 
@@ -118,16 +123,17 @@ public class Scythe : Weapon
         }
         return nearest;
     }
-
+    
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-    private void ThrowServerRpc(Vector3 direction)
+    private void ThrowServerRpc(Vector3 direction, float currentSpeed)
     {
-        ThrowClientRpc(direction);
+        ThrowClientRpc(direction, currentSpeed);
     }
 
     [ClientRpc]
-    private void ThrowClientRpc(Vector3 direction)
+    private void ThrowClientRpc(Vector3 direction, float currentSpeed)
     {
+        attackspeed = currentSpeed;
         anim.enabled = false;
         
         EnableHitbox();
@@ -140,19 +146,23 @@ public class Scythe : Weapon
         isReturning = false;
         transform.parent = null;
     }
+
     private void HandleMovement()
     {
         HandleRotation();
         throwTime += Time.deltaTime;
-        if (throwTime >= maxDistance / throwSpeed)
+
+        float currentThrowSpeed = throwSpeed * attackspeed;
+        float currentReturnSpeed = returnSpeed * attackspeed;
+        if (throwTime >= maxDistance / currentThrowSpeed)
         {
             isReturning = true;
         }
-        if (!groundcheck.IsTouchingLayers(groundLayer) && throwTime < maxDistance/throwSpeed)
+        if (!groundcheck.IsTouchingLayers(groundLayer) && throwTime < maxDistance / currentThrowSpeed)
         {
             if (!isReturning)
             {
-                transform.position += throwDirection * throwSpeed * Time.deltaTime;
+                transform.position += throwDirection * currentThrowSpeed * Time.deltaTime;
             }
         }
         else if (isReturning)
@@ -161,7 +171,7 @@ public class Scythe : Weapon
             {
                 Debug.LogWarning("Player not found");
             }
-            transform.position = Vector3.MoveTowards(transform.position, player.position, returnSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, player.position, currentReturnSpeed * Time.deltaTime);
 
             if (Vector3.Distance(transform.position, player.position) < 0.1f)
             {
@@ -172,15 +182,18 @@ public class Scythe : Weapon
 
     public void HandleRotation()
     {
+        float currentRotationSpeed = rotationSpeed * attackspeed;
+
         if (!isReturning)
         {
-            transform.Rotate(0, 0, -rotationSpeed * Time.deltaTime * viewdir);
+            transform.Rotate(0, 0, -currentRotationSpeed * Time.deltaTime * viewdir);
         }
         else
         {
-            transform.Rotate(0, 0, rotationSpeed * Time.deltaTime * viewdir);
+            transform.Rotate(0, 0, currentRotationSpeed * Time.deltaTime * viewdir);
         }
     }
+    
     void Catch()
     {
         isThrown = false;
@@ -202,6 +215,7 @@ public class Scythe : Weapon
     {
         BoxCollider2D[] hitboxes = GetComponentsInChildren<BoxCollider2D>();
         hittedTargets = new List<Transform>();
+        Debug.Log("Hitbox disabled");
         foreach (BoxCollider2D bx in hitboxes)
         {
             bx.enabled = false;

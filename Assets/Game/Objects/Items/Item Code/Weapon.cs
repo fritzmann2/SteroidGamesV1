@@ -80,7 +80,7 @@ abstract public class Weapon : InventoryItem
         if(anim != null) 
         {   
             float currentSpeed = playerStats.getTotalStats().attackSpeed;
-            if (currentSpeed < 0.1f) currentSpeed = 1f; 
+            if (currentSpeed < 1f) currentSpeed = 1f; 
             
             PlayAnimationClientsAndHostRpc(_attacktype, currentSpeed);
         }
@@ -91,6 +91,7 @@ abstract public class Weapon : InventoryItem
     {
         if (anim != null)
         {
+            attackspeed = currentSpeed;
             anim.SetFloat("AttackSpeedMultiplier", currentSpeed);
             anim.ResetTrigger(attacktype.ToString()); 
             anim.SetTrigger(attacktype.ToString());

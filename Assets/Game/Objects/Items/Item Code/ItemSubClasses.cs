@@ -72,7 +72,7 @@ public class WeaponStats : EquipmentStats, INetworkSerializable
         strength = (calcRandomNum() + 5) * rarity;
         critChance = calcRandomNum() * rarity;
         critDamage = calcRandomNum() * 5 * rarity;
-        attackSpeed = calcRandomNum() * 0.1f * rarity;
+        attackSpeed = calcRandomNum() * 0.02f * rarity;
     }
     public WeaponStats Clone()
     {

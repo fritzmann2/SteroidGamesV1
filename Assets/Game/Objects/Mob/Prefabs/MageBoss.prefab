@@ -300,6 +300,7 @@ MonoBehaviour:
   attackDistance: 20
   maxdistance: 60
   attackCooldown: 2
+  damage: 40
   baseXpReward: 500
   sharedXpRadius: 15
   sharedXpPercentage: 0.5

@@ -50,7 +50,7 @@ abstract public class BaseEnemy : BaseEntety
     [Header("Attack Settings")]
     public float attackCooldown = 2f;
     protected float attackCooldownTimer = 0f;
-    protected float damage = 5f;
+    [SerializeField] protected float damage = 5f;
 
     [Header("XP System")]
     public int baseXpReward = 50;
