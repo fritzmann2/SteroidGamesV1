@@ -34,6 +34,9 @@ public class PlayerMovement : NetworkBehaviour
     [Header("Jump Settings")]
     [SerializeField] private const float jumpForce = 11f;
     [SerializeField] private const float wallJumpMultiplier = 0.5f;
+    private int possiblejumps = 2;
+    private int jumpcounter = 0;
+
     private float coyoteTime = 0.2f;
     private float coyoteTimeCounter;
 
@@ -57,8 +60,8 @@ public class PlayerMovement : NetworkBehaviour
         [SerializeField] private bool isGrounded;
         [SerializeField] private bool isWallJumpPossible;
         private bool isJumping;
+        private bool pressedjump = false;
         private bool canDash;
-        private bool canDashJump;
         public bool isDashing;
         private bool didWallJump;
 
@@ -100,7 +103,6 @@ public class PlayerMovement : NetworkBehaviour
         move();
         checkJump();
         checkDash();
-        checkSlide();
     }
 
     private void ApplyCustomGravity()
@@ -122,7 +124,7 @@ public class PlayerMovement : NetworkBehaviour
             }
             float newVelocityY = rb.linearVelocity.y - (currentGravity * Time.fixedDeltaTime);
             newVelocityY = Mathf.Max(newVelocityY, -maxFallSpeed);
-            if (isWallJumpPossible && newVelocityY < 0)
+            if (isWallJumpPossible && newVelocityY < 0 && controls.Gameplay.WallSlide.IsPressed())
             {
                 newVelocityY = Mathf.Max(newVelocityY, -wallSlideSpeed);
             }
@@ -155,7 +157,7 @@ public class PlayerMovement : NetworkBehaviour
     }
     private void checkJump()
     {
-        if (controls.Gameplay.jump.IsPressed())
+        if (controls.Gameplay.jump.IsPressed() && pressedjump == false)
         {
             if (NormalJump())
             {
@@ -166,10 +168,12 @@ public class PlayerMovement : NetworkBehaviour
             {
                 isJumping = true;
             }
+            pressedjump = true;
         }
         else
         {
             didWallJump = false;
+            pressedjump = false;
         }
 
         if (!isGrounded)
@@ -179,17 +183,16 @@ public class PlayerMovement : NetworkBehaviour
         else
         {
             isJumping = false;
-            canDashJump = false;
             coyoteTimeCounter = 0f;
         }
     }
 
     private bool NormalJump()
     {
-        if (coyoteTimeCounter < coyoteTime && !isJumping || canDashJump)
+        if (coyoteTimeCounter < coyoteTime && !isJumping || isJumping && jumpcounter < possiblejumps)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-            if(canDashJump) canDashJump = false;
+            ++jumpcounter;
             return true;
         }
         return false;
@@ -251,12 +254,6 @@ public class PlayerMovement : NetworkBehaviour
 
         rb.linearVelocity = new Vector2(dashforce * 4f * dashside, dashforce * dashup);
         canDash = false;
-        canDashJump = true;
-    }
-
-    private void checkSlide()
-    {
-        //if ()
     }
 
     private void checkColliders()
@@ -268,6 +265,7 @@ public class PlayerMovement : NetworkBehaviour
         {
             coyoteTimeCounter = 0f;
             isJumping = false;
+            jumpcounter = 0;
             canDash = true;
         }
         else

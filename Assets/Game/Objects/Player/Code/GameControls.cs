@@ -120,15 +120,6 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""slide"",
-                    ""type"": ""Button"",
-                    ""id"": ""23ae3832-b334-4489-9e3a-6c409c4d78e5"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""escape"",
                     ""type"": ""Button"",
                     ""id"": ""eff646b1-1c56-46bf-8039-64da49a419ea"",
@@ -222,6 +213,15 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
                     ""name"": ""pickupitem"",
                     ""type"": ""Button"",
                     ""id"": ""00758c14-82e3-49d6-8da0-ee1474a6e1d0"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""WallSlide"",
+                    ""type"": ""Button"",
+                    ""id"": ""5ce20363-31a7-4a83-a0ff-8591e0d613de"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -347,28 +347,6 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""dash"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""f12e75f6-fd60-419a-91d6-954194635702"",
-                    ""path"": ""<Keyboard>/leftShift"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""slide"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""24e401cb-9b5a-49e2-bf81-76e0e2538daf"",
-                    ""path"": ""<Gamepad>/rightShoulder"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""slide"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -617,11 +595,33 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""828dc5cb-d846-4282-b02c-385285d94df0"",
-                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""path"": ""<Gamepad>/buttonEast"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""pickupitem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""51eb6111-e826-443e-855b-ad970c2822b3"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""WallSlide"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""77f6154f-a67e-40be-ae61-ed4701369543"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""WallSlide"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -635,7 +635,6 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
         m_Gameplay_Move = m_Gameplay.FindAction("Move", throwIfNotFound: true);
         m_Gameplay_jump = m_Gameplay.FindAction("jump", throwIfNotFound: true);
         m_Gameplay_dash = m_Gameplay.FindAction("dash", throwIfNotFound: true);
-        m_Gameplay_slide = m_Gameplay.FindAction("slide", throwIfNotFound: true);
         m_Gameplay_escape = m_Gameplay.FindAction("escape", throwIfNotFound: true);
         m_Gameplay_OpenInventory = m_Gameplay.FindAction("OpenInventory", throwIfNotFound: true);
         m_Gameplay_SummonWeapon = m_Gameplay.FindAction("SummonWeapon", throwIfNotFound: true);
@@ -647,6 +646,7 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
         m_Gameplay_LeftMouse = m_Gameplay.FindAction("LeftMouse", throwIfNotFound: true);
         m_Gameplay_RightMouse = m_Gameplay.FindAction("RightMouse", throwIfNotFound: true);
         m_Gameplay_pickupitem = m_Gameplay.FindAction("pickupitem", throwIfNotFound: true);
+        m_Gameplay_WallSlide = m_Gameplay.FindAction("WallSlide", throwIfNotFound: true);
     }
 
     ~@GameControls()
@@ -730,7 +730,6 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Gameplay_Move;
     private readonly InputAction m_Gameplay_jump;
     private readonly InputAction m_Gameplay_dash;
-    private readonly InputAction m_Gameplay_slide;
     private readonly InputAction m_Gameplay_escape;
     private readonly InputAction m_Gameplay_OpenInventory;
     private readonly InputAction m_Gameplay_SummonWeapon;
@@ -742,6 +741,7 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Gameplay_LeftMouse;
     private readonly InputAction m_Gameplay_RightMouse;
     private readonly InputAction m_Gameplay_pickupitem;
+    private readonly InputAction m_Gameplay_WallSlide;
     /// <summary>
     /// Provides access to input actions defined in input action map "Gameplay".
     /// </summary>
@@ -765,10 +765,6 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Gameplay/dash".
         /// </summary>
         public InputAction @dash => m_Wrapper.m_Gameplay_dash;
-        /// <summary>
-        /// Provides access to the underlying input action "Gameplay/slide".
-        /// </summary>
-        public InputAction @slide => m_Wrapper.m_Gameplay_slide;
         /// <summary>
         /// Provides access to the underlying input action "Gameplay/escape".
         /// </summary>
@@ -814,6 +810,10 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @pickupitem => m_Wrapper.m_Gameplay_pickupitem;
         /// <summary>
+        /// Provides access to the underlying input action "Gameplay/WallSlide".
+        /// </summary>
+        public InputAction @WallSlide => m_Wrapper.m_Gameplay_WallSlide;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
@@ -848,9 +848,6 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
             @dash.started += instance.OnDash;
             @dash.performed += instance.OnDash;
             @dash.canceled += instance.OnDash;
-            @slide.started += instance.OnSlide;
-            @slide.performed += instance.OnSlide;
-            @slide.canceled += instance.OnSlide;
             @escape.started += instance.OnEscape;
             @escape.performed += instance.OnEscape;
             @escape.canceled += instance.OnEscape;
@@ -884,6 +881,9 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
             @pickupitem.started += instance.OnPickupitem;
             @pickupitem.performed += instance.OnPickupitem;
             @pickupitem.canceled += instance.OnPickupitem;
+            @WallSlide.started += instance.OnWallSlide;
+            @WallSlide.performed += instance.OnWallSlide;
+            @WallSlide.canceled += instance.OnWallSlide;
         }
 
         /// <summary>
@@ -904,9 +904,6 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
             @dash.started -= instance.OnDash;
             @dash.performed -= instance.OnDash;
             @dash.canceled -= instance.OnDash;
-            @slide.started -= instance.OnSlide;
-            @slide.performed -= instance.OnSlide;
-            @slide.canceled -= instance.OnSlide;
             @escape.started -= instance.OnEscape;
             @escape.performed -= instance.OnEscape;
             @escape.canceled -= instance.OnEscape;
@@ -940,6 +937,9 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
             @pickupitem.started -= instance.OnPickupitem;
             @pickupitem.performed -= instance.OnPickupitem;
             @pickupitem.canceled -= instance.OnPickupitem;
+            @WallSlide.started -= instance.OnWallSlide;
+            @WallSlide.performed -= instance.OnWallSlide;
+            @WallSlide.canceled -= instance.OnWallSlide;
         }
 
         /// <summary>
@@ -1001,13 +1001,6 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnDash(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "slide" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnSlide(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "escape" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
@@ -1085,5 +1078,12 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnPickupitem(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "WallSlide" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnWallSlide(InputAction.CallbackContext context);
     }
 }

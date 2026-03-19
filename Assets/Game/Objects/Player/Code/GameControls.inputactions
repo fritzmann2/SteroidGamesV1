@@ -34,15 +34,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "slide",
-                    "type": "Button",
-                    "id": "23ae3832-b334-4489-9e3a-6c409c4d78e5",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "escape",
                     "type": "Button",
                     "id": "eff646b1-1c56-46bf-8039-64da49a419ea",
@@ -136,6 +127,15 @@
                     "name": "pickupitem",
                     "type": "Button",
                     "id": "00758c14-82e3-49d6-8da0-ee1474a6e1d0",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "WallSlide",
+                    "type": "Button",
+                    "id": "5ce20363-31a7-4a83-a0ff-8591e0d613de",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -261,28 +261,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "dash",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "f12e75f6-fd60-419a-91d6-954194635702",
-                    "path": "<Keyboard>/leftShift",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "slide",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "24e401cb-9b5a-49e2-bf81-76e0e2538daf",
-                    "path": "<Gamepad>/rightShoulder",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "slide",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -531,11 +509,33 @@
                 {
                     "name": "",
                     "id": "828dc5cb-d846-4282-b02c-385285d94df0",
-                    "path": "<Gamepad>/buttonSouth",
+                    "path": "<Gamepad>/buttonEast",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "pickupitem",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "51eb6111-e826-443e-855b-ad970c2822b3",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "WallSlide",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "77f6154f-a67e-40be-ae61-ed4701369543",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "WallSlide",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

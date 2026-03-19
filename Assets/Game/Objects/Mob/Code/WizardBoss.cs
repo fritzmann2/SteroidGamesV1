@@ -47,7 +47,7 @@ public class WizardBoss : BaseBoss
         teleportTimer = 15f;
         baseXpReward = 500;
         health.Value = maxHealth;
-
+        
 
         #if UNITY_EDITOR
             string[] guids = AssetDatabase.FindAssets("Projectile t:GameObject");
@@ -66,7 +66,6 @@ public class WizardBoss : BaseBoss
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
-        Reset();
     }
 
     public override void FixedUpdate()

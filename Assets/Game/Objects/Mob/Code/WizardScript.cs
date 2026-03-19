@@ -16,7 +16,7 @@ public class WizardScript : BaseEnemy
         id = "Wizard";
         maxHealth = 100;
         maxdistance = 20f; 
-        mindistance = 10f;
+        attackDistance = 10f;
         attackCooldown = 1f;
         damage = 20f;
         movementSpeed = 3f;

@@ -210,18 +210,18 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   health:
     m_InternalValue: 100
-  maxHealth: 0
+  maxHealth: 100
   rb: {fileID: 0}
   levelManager: {fileID: 0}
-  hpbarfiller: {fileID: 0}
+  hpbarfiller: {fileID: 5453053679062184462}
   targetPlayer: {fileID: 0}
   worldgen: {fileID: 0}
   parentChunk: {fileID: 0}
-  id: Testsubject
+  id: Wizard
   canSpawnItem: 1
   activationDistance: 20
-  customGravity: 0
-  maxFallSpeed: 0
+  customGravity: 35
+  maxFallSpeed: 25
   groundCheckPos: -0.5
   groundCheckSize: {x: 0.8, y: 0.1}
   wallCheckDistance: 0.6
@@ -235,13 +235,13 @@ MonoBehaviour:
   isWallAhed: 0
   isVoidAhed: 0
   mindistance: 1
-  attackDistance: 8
+  attackDistance: 10
   maxdistance: 20
-  attackCooldown: 2
+  attackCooldown: 1
   baseXpReward: 50
   sharedXpRadius: 15
   sharedXpPercentage: 0.5
-  projectilePrefab: {fileID: 0}
+  projectilePrefab: {fileID: 7554478117150871380, guid: 8406425a5eb305c48af0cfa9c65e7783, type: 3}
 --- !u!114 &-3471625493196022435
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -377,5 +377,10 @@ PrefabInstance:
 --- !u!4 &753832986694247083 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7773062809821015769, guid: 28fb25b68071bf042a43eb498e302d41, type: 3}
+  m_PrefabInstance: {fileID: 7037244310345976946}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &5453053679062184462 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3027671326261051004, guid: 28fb25b68071bf042a43eb498e302d41, type: 3}
   m_PrefabInstance: {fileID: 7037244310345976946}
   m_PrefabAsset: {fileID: 0}

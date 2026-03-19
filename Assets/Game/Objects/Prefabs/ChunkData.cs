@@ -2,11 +2,31 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class ChunkData : MonoBehaviour
+public class ChunkData : NetworkBehaviour
 {
+    [Header("Network Sync")]
+    public NetworkVariable<Vector2Int> gridCoordinate = new NetworkVariable<Vector2Int>(
+        new Vector2Int(9999, 9999), 
+        NetworkVariableReadPermission.Everyone, 
+        NetworkVariableWritePermission.Server
+    );
+
+    [Header("Chunk Content")]
     public List<NetworkObject> myMobs = new List<NetworkObject>();
     public List<NetworkObject> myPortals = new List<NetworkObject>();
     public List<Vector2Int> linkedChunks = new List<Vector2Int>();
+
+    public override void OnNetworkSpawn()
+    {
+        if (IsClient && !IsServer) 
+        {
+            WorldGenerator wg = FindAnyObjectByType<WorldGenerator>();
+            if (wg != null)
+            {
+                wg.SpawnVisualForClient(gameObject, gridCoordinate.Value);
+            }
+        }
+    }
 
     public MobSpawnPoint[] GetSpawnPoints()
     {
@@ -40,7 +60,6 @@ public class ChunkData : MonoBehaviour
 
     private void SpawnPortal()
     {
-        
     }
 
     public void DespawnAllPortals()

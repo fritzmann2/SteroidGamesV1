@@ -15,6 +15,11 @@ public class ItemManager : NetworkBehaviour
     {
         GameObject pickupitem = Instantiate(PickUpItem, spawnPosition, Quaternion.identity);
         pickupitem.name = id;
+        var netObj = pickupitem.GetComponent<NetworkObject>();
+        if (netObj != null)
+        {
+            netObj.Spawn();
+        }
         ItemPickUp itemPickUp = pickupitem.GetComponent<ItemPickUp>();
         int itemRarity = 1;
         if (id == "WizardBoss")
@@ -22,17 +27,17 @@ public class ItemManager : NetworkBehaviour
             itemRarity = 2;
         }
         if (itemPickUp != null) itemPickUp.setitem(itemRarity, 1, null);
-        
-        var netObj = pickupitem.GetComponent<NetworkObject>();
-        if (netObj != null)
-        {
-            netObj.Spawn();
-        }
     }
+
     public void SpawnPickUpItem(InventoryItemInstance _item, Vector3 _spawnPosition, int _amount, string id)
     {
         GameObject pickupitem = Instantiate(PickUpItem, _spawnPosition, Quaternion.identity);
         pickupitem.name = id;
+        var netObj = pickupitem.GetComponent<NetworkObject>();
+        if (netObj != null)
+        {
+            netObj.Spawn();
+        }
         ItemPickUp itemPickUp = pickupitem.GetComponent<ItemPickUp>();
         int itemRarity = 1;
         if (id == "WizardBoss")
@@ -40,12 +45,6 @@ public class ItemManager : NetworkBehaviour
             itemRarity = 2;
         }
         if (itemPickUp != null) itemPickUp.setitem(itemRarity, 1, null);
-        
-        var netObj = pickupitem.GetComponent<NetworkObject>();
-        if (netObj != null)
-        {
-            netObj.Spawn();
-        }
     }
 
 
@@ -83,21 +82,17 @@ public class ItemManager : NetworkBehaviour
             Debug.LogError($"ItemData für ID {itemID} nicht gefunden!");
             return;
         }
-
         GameObject dropItemObj = Instantiate(PickUpItem, _spawnPosition, Quaternion.identity); 
-        ItemPickUp pickUpComp = dropItemObj.GetComponent<ItemPickUp>();
-        
-        if (pickUpComp != null)
-        {
-            pickUpComp.setitem(itemID, _amount, isEquipment, serializedStats);
-            
-            pickUpComp.itemRarity = 1; 
-        }
-        
         var netObj = dropItemObj.GetComponent<NetworkObject>();
         if (netObj != null)
         {
             netObj.Spawn();
+        }
+        ItemPickUp pickUpComp = dropItemObj.GetComponent<ItemPickUp>();
+        if (pickUpComp != null)
+        {
+            pickUpComp.setitem(itemID, _amount, isEquipment, serializedStats);
+            pickUpComp.itemRarity = 1; 
         }
     } 
 

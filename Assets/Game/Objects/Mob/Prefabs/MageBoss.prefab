@@ -291,7 +291,11 @@ MonoBehaviour:
   voidCheckOffsetx: 0.6
   voidCheckStartY: -0.4
   voidCheckDistance: 1.5
-  jumpforce: 5
+  jumpforce: 10
+  canJump: 1
+  isGrounded: 0
+  isWallAhed: 0
+  isVoidAhed: 0
   mindistance: 7
   attackDistance: 20
   maxdistance: 60
@@ -300,6 +304,7 @@ MonoBehaviour:
   sharedXpRadius: 15
   sharedXpPercentage: 0.5
   bossName: Death Wizard
+  summonings: []
   itemSpawnPosition: {x: -5, y: 981, z: 0}
   teleportRadius: 8
   minTeleportDistanceToPlayer: 6

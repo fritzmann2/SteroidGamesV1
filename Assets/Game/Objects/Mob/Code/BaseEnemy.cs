@@ -60,11 +60,11 @@ abstract public class BaseEnemy : BaseEntety
 
     public virtual void Reset()    
     {
+        hpbarfiller = transform.GetChild(0).GetChild(0).gameObject;
         if (IsSpawned && IsServer)
         {
             health.Value = maxHealth;
         }
-        hpbarfiller = transform.GetChild(0).GetChild(0).gameObject;
         customGravity = 35f; 
         maxFallSpeed = 25f;
         baseXpReward = 50;
@@ -75,9 +75,8 @@ abstract public class BaseEnemy : BaseEntety
 
     override public void OnNetworkSpawn()
     {
-        if (!IsServer) return;
         base.OnNetworkSpawn();
-        Reset();
+        if (!IsServer) return;
         worldgen = FindAnyObjectByType<WorldGenerator>();
         levelManager = FindAnyObjectByType<LevelManager>();
         levelManager.onPlayerRegistered += updatePlayerList;
@@ -281,8 +280,7 @@ abstract public class BaseEnemy : BaseEntety
     }
     public override void OnHealthChanged(float previousValue, float newValue)
     {
-        if (!IsServer) return;
-        if (newValue <= 0)
+        if (newValue <= 0 && IsServer)
         {
             if (canSpawnItem)
             {
@@ -340,6 +338,7 @@ abstract public class BaseEnemy : BaseEntety
 
     public void SetLastAttacker(Transform attacker)
     {
+        if (transform.tag == "Player") return;
         lastAttacker = attacker;
     }
 

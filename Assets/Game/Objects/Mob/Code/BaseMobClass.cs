@@ -17,8 +17,8 @@ abstract public class BaseEntety : NetworkBehaviour
         if (IsServer)
         {
             health.Value = maxHealth;
-            health.OnValueChanged += OnHealthChanged;
         }
+        health.OnValueChanged += OnHealthChanged;
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0f;
     }

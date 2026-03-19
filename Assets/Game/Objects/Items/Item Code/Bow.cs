@@ -61,7 +61,11 @@ public class Bow : Weapon
 
     void FixedUpdate()
     {
-        if (playerStats == null) return;
+        if (playerStats == null) 
+        {
+            Debug.Log("PlayerStats is null bow");
+            return;
+        }
         if (!playerStats.IsOwner) return;
         if (transform.parent != null)
         {

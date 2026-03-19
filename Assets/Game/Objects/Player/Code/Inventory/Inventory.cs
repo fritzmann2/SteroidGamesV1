@@ -61,8 +61,9 @@ public class Inventory : NetworkBehaviour
     }
 
     public override void OnNetworkDespawn() 
-    {        
-        if (IsOwner && mouseItemData != null)
+    {      
+        if (!IsOwner) return;
+        if (mouseItemData != null)
         {
             mouseItemData.ItemChange -= trySwitchItem;
         }
@@ -140,8 +141,13 @@ public class Inventory : NetworkBehaviour
 
             if (isEquipment && !string.IsNullOrEmpty(serializedStats))
             {
-                EquipmentInstance equip = new EquipmentInstance((EquipmentData)itemDataToAdd);
+                EquipmentData equipData = (EquipmentData)itemDataToAdd;
+                EquipmentInstance equip = new EquipmentInstance(equipData);
+                
                 JsonUtility.FromJsonOverwrite(serializedStats, equip);
+                equip.itemData = equipData;
+                equip.itemtype = equipData.Type;
+
                 isAdded = itemInventory.addItem(equip, amount);
             }
             else

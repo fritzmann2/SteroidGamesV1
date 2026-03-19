@@ -21,7 +21,7 @@ public class PlayerStats : BaseMobClass
     public NetworkVariable<float> mana = new NetworkVariable<float>(
         100f, 
         NetworkVariableReadPermission.Everyone, 
-        NetworkVariableWritePermission.Server
+        NetworkVariableWritePermission.Owner
     );
     protected float maxMana = 0;
     private float regenInterval = 1f;
@@ -35,8 +35,8 @@ public class PlayerStats : BaseMobClass
         base.OnNetworkSpawn(); 
         if (!IsOwner) return;
         StartCoroutine(HealthRegenerationRoutine());
-        playerSaveHandler = GetComponent<PlayerSaveHandler>(); 
-        itemInventory = GetComponentInParent<Inventory>().itemInventory;
+        playerSaveHandler = transform.GetComponent<PlayerSaveHandler>(); 
+        itemInventory = transform.GetComponentInParent<Inventory>().itemInventory;
         statsUI = FindAnyObjectByType<PlayerStatsUI>();
         playerSaveHandler.dataLoaded += Init;
         itemInventory.OnEquipmentChanged += Initbase;
@@ -87,8 +87,10 @@ public class PlayerStats : BaseMobClass
     private void Init()
     {
         Initbase();
-
         calculateLevel(baseStats);
+        calculateBaseStats();
+        RecalculateTotalStats();
+
         statsUI.UpdateHealthUI((int)health.Value, maxHealth);
         statsUI.UpdateXPUI(playerXP, GetRequiredXP(), playerLevel);
     }
@@ -103,8 +105,7 @@ public class PlayerStats : BaseMobClass
             
             equipmentDatas.Add(slot.EquipInstance);
         }
-        calculateBaseStats();
-        RecalculateTotalStats();
+        
     }
 
 
@@ -121,7 +122,8 @@ public class PlayerStats : BaseMobClass
     {
         Debug.Log("updating slot nummer: " + slotIndex);
         equipmentDatas[slotIndex] = itemInventory.equipmentSlots[slotIndex].EquipInstance;
-        RecalculateTotalStats();
+        
+        RecalculateTotalStats(); 
     }
 
     private void RecalculateTotalStats()
@@ -177,6 +179,23 @@ public class PlayerStats : BaseMobClass
         }
         maxHealth = (int)totalStats.health;
         maxMana = totalStats.mana;
+
+        if (IsOwner && !IsServer)
+        {
+            string statsJson = JsonUtility.ToJson(totalStats);
+            SyncStatsServerRpc(statsJson, playerLevel);
+        }
+    }
+    [ServerRpc]
+    private void SyncStatsServerRpc(string statsJson, int level)
+    {
+        totalStats = JsonUtility.FromJson<Playerstats>(statsJson);
+        
+        playerLevel = level;
+        maxHealth = (int)totalStats.health;
+        maxMana = totalStats.mana;
+        
+        Debug.Log($"[Server] Stats von {gameObject.name} synchronisiert! Level: {playerLevel}, Defense: {totalStats.defense}");
     }
 
     public override void TakeDamage(float _damage, bool isCrit)
@@ -187,17 +206,34 @@ public class PlayerStats : BaseMobClass
             return;
         }
 
-        int damage = (int)(_damage / (1 + totalStats.defense / 100f));
+        float currentDefense = (totalStats != null) ? totalStats.defense : 0f;
+        int damage = (int)(_damage / (1 + currentDefense / 100f));
+        Debug.Log($"[Damage] Original: {_damage}, Nach Rüstung ({currentDefense}): {damage}");
 
-        TakeDamageServerRpc((int)damage, isCrit);
+        if (IsServer)
+        {
+            ApplyDamageServer(damage, isCrit);
+        }
+        else
+        {
+            TakeDamageServerRpc(damage, isCrit);
+        }
     }
 
     public void DealotherDamage(BaseEntety mob, float attackmulti)
     {
         int damage = calculateDamage(attackmulti);
-        if (damage <= 0) damage = 40; 
+        Debug.Log("Damage: " + damage);
+        if (damage <= 0)
+        { 
+            damage = 40; 
+            Debug.Log("Damage was 0"); 
+        }
         mob.TakeDamage(damage, isCrit);
-        mob.GetComponent<BaseEnemy>().SetLastAttacker(this.transform);
+        if (mob.TryGetComponent(out BaseEnemy enemyScript))
+        {
+            enemyScript.SetLastAttacker(this.transform);
+        }
     }
 
     public int calculateDamage(float attackmulti)
@@ -298,10 +334,13 @@ public class PlayerStats : BaseMobClass
 
     public override void OnHealthChanged(float previousValue, float newValue)
     {
-        base.OnHealthChanged(previousValue, newValue);
         if (IsOwner && statsUI != null)
         {
             statsUI.UpdateHealthUI((int)newValue, maxHealth);
+        }
+        else if (IsOwner && statsUI == null)
+        {
+            Debug.Log("statsUI is null");
         }
         if (newValue <= 0)
         {

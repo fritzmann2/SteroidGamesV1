@@ -28,12 +28,15 @@ public class WorldGenerator : NetworkBehaviour
     private Dictionary<Vector2Int, GameObject> activeChunks = new Dictionary<Vector2Int, GameObject>();
     private Dictionary<Vector2Int, float> chunkLastSeenTimes = new Dictionary<Vector2Int, float>();
 
+    public void Awake()
+    {
+        InitializeDictionaries(); 
+    }
 
     public override void OnNetworkSpawn()
     {
         if (IsServer)
         {
-            InitializeDictionaries();
             StartCoroutine(ChunkUpdateLoop());
         }
     }
@@ -194,6 +197,13 @@ public class WorldGenerator : NetworkBehaviour
             );
             GameObject networkChunk = Instantiate(baseNetworkChunkPrefab, spawnPos, Quaternion.identity);
             networkChunk.name = $"Chunk_{coord.x}_{coord.y}";
+            
+            ChunkData chunkDataScript = networkChunk.GetComponent<ChunkData>();
+            if (chunkDataScript != null)
+            {
+                chunkDataScript.gridCoordinate.Value = coord;
+            }
+
             GameObject visualContainer = new GameObject("VisualContainer");
             visualContainer.transform.SetParent(networkChunk.transform);
             visualContainer.transform.localPosition = Vector3.zero; 
@@ -311,6 +321,19 @@ public class WorldGenerator : NetworkBehaviour
         }
     }
 
+    public void SpawnVisualForClient(GameObject networkChunk, Vector2Int coord)
+    {
+        if (chunkPrefabDictionary.TryGetValue(coord, out GameObject chunkVisualPrefab))
+        {
+            networkChunk.name = $"Chunk_{coord.x}_{coord.y}"; 
+            GameObject visualContainer = new GameObject("VisualContainer");
+            visualContainer.transform.SetParent(networkChunk.transform);
+            visualContainer.transform.localPosition = Vector3.zero; 
+            visualContainer.transform.localScale = new Vector3(6.25f, 6.25f, 1f); 
+
+            Instantiate(chunkVisualPrefab, visualContainer.transform);
+        }
+    }
     public void TeleportToBoss(Vector2 destinationCoordinate, Transform player)
     {
         if (!IsServer) return;
