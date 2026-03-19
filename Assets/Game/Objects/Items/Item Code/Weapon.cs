@@ -21,6 +21,7 @@ abstract public class Weapon : InventoryItem
     protected float LastmoveInput = 1;
     public EquipmentType type;
     public bool isAttacking = false; 
+    [SerializeField] protected float attackspeed = 1f;
     virtual public void Attack1()
     {}
     virtual public void Attack2()
@@ -76,17 +77,22 @@ abstract public class Weapon : InventoryItem
     public void performattack(string _attacktype)
     {        
         anim.enabled = true;
-        if(anim != null && !isAttacking)
+        if(anim != null) 
         {   
-            PlayAnimationClientsAndHostRpc(_attacktype);
+            float currentSpeed = playerStats.getTotalStats().attackSpeed;
+            if (currentSpeed < 0.1f) currentSpeed = 1f; 
+            
+            PlayAnimationClientsAndHostRpc(_attacktype, currentSpeed);
         }
     }
+
     [Rpc(SendTo.ClientsAndHost)]
-    public void PlayAnimationClientsAndHostRpc(string attacktype)
+    public void PlayAnimationClientsAndHostRpc(string attacktype, float currentSpeed)
     {
-        
         if (anim != null)
         {
+            anim.SetFloat("AttackSpeedMultiplier", currentSpeed);
+            anim.ResetTrigger(attacktype.ToString()); 
             anim.SetTrigger(attacktype.ToString());
         }
     }

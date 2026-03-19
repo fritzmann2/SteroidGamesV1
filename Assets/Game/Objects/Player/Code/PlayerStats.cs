@@ -268,6 +268,11 @@ public class PlayerStats : BaseMobClass
         return playerLevel;
     }
 
+    public Playerstats getTotalStats()
+    {
+        return totalStats;
+    }
+
     private void calculateLevel(Playerstats stats)
     {
         playerXP = stats.totalexperience;

@@ -21,18 +21,20 @@ public class Bow : Weapon
         {
             canshoot = false;
 
-            if (playerStats != null && playerStats.IsOwner)
+            if (playerStats != null)
             {
-                isAiming = true;
-                
-                Vector3 direction = GetAimDirection();
-                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-                if (transform.parent != null && transform.parent.localScale.x == -1)
+                if (playerStats.IsOwner)
                 {
-                    angle += 180;
-                    if (angle > 360) angle -= 360;
+                    isAiming = true;
+                    Vector3 direction = GetAimDirection();
+                    float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+                    if (transform.parent != null && transform.parent.localScale.x == -1)
+                    {
+                        angle += 180;
+                        if (angle > 360) angle -= 360;
+                    }
+                    SyncBowRotationServerRpc(angle);
                 }
-                SyncBowRotationServerRpc(angle);
             }
 
             performattack(AttackTypeBow.normal_shot.ToString());    
@@ -184,7 +186,6 @@ public class Bow : Weapon
         {
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             Quaternion arrowRotation = Quaternion.Euler(0, 0, angle);
-
             arrowObj.GetComponent<BaseArrow>().init(direction, arrowRotation, player);
         }
     }
@@ -193,7 +194,7 @@ public class Bow : Weapon
     {
         canshoot = true;
         isAiming = false;
-        
+        isAttacking = false; 
         transform.localRotation = Quaternion.Euler(0, 0, 0); 
     }
 

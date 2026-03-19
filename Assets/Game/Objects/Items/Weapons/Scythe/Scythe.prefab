@@ -264,7 +264,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 2981623194
+  GlobalObjectIdHash: 2613993887
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -313,14 +313,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   ShowTopMostFoldoutHeaderGroup: 1
   itemData: {fileID: 0}
+  playerStats: {fileID: 0}
   weaponstats:
     count: 1
+    compleatValue: 0
     weapondamage: 0
     strength: 0
     critChance: 0
     critDamage: 0
     attackSpeed: 0
-  playerStats: {fileID: 0}
   attackmulti: 1
   anim: {fileID: 0}
   bx: {fileID: 0}
@@ -331,6 +332,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   groundcheck: {fileID: 2245187314660460344}
+  autoAimRadius: 20
 --- !u!61 &4396972836529513985
 BoxCollider2D:
   m_ObjectHideFlags: 0

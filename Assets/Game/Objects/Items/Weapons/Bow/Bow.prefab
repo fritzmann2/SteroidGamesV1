@@ -326,6 +326,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Bow
   ShowTopMostFoldoutHeaderGroup: 1
   itemData: {fileID: 0}
+  playerStats: {fileID: 0}
   weaponstats:
     count: 1
     compleatValue: 0
@@ -334,13 +335,13 @@ MonoBehaviour:
     critChance: 0
     critDamage: 0
     attackSpeed: 0
-  playerStats: {fileID: 0}
   attackmulti: 1
   anim: {fileID: 0}
   bx: {fileID: 0}
   animOffset: {x: 0, y: 0, z: 0}
   type: 0
   isAttacking: 0
+  attackspeed: 1
   bowTransform: {x: 0.3, y: 0, z: 0}
   Arrow: {fileID: 183354625355044798, guid: 7506e2c3984d63e4381177c3c56c83c4, type: 3}
   autoAimRadius: 20
