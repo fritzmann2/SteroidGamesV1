@@ -118,7 +118,7 @@ public class PlayerMovement : NetworkBehaviour
 
                 currentGravity *= 0.5f;
             }
-            else if (isJumping &&rb.linearVelocity.y > 0f && !controls.Gameplay.jump.IsPressed())
+            else if (isJumping && rb.linearVelocity.y > 0f && !controls.Gameplay.jump.IsPressed())
             {
                 currentGravity *= 3f;
             }
@@ -157,45 +157,48 @@ public class PlayerMovement : NetworkBehaviour
     }
     private void checkJump()
     {
-        if (controls.Gameplay.jump.IsPressed() && pressedjump == false)
+        if (controls.Gameplay.jump.IsPressed())
         {
-            if (NormalJump())
+            if (pressedjump == false)
             {
-                didWallJump = true;
-                isJumping = true;
+                if (NormalJump())
+                {
+                    didWallJump = false;
+                    isJumping = true;
+                }
+                else if (WallJump())
+                {
+                    isJumping = true;
+                }
+                pressedjump = true;
             }
-            else if (WallJump())
-            {
-                isJumping = true;
-            }
-            pressedjump = true;
         }
         else
         {
-            didWallJump = false;
             pressedjump = false;
-        }
-
-        if (!isGrounded)
-        {
-            coyoteTimeCounter += Time.fixedDeltaTime;
-        }
-        else
-        {
-            isJumping = false;
-            coyoteTimeCounter = 0f;
         }
     }
 
     private bool NormalJump()
     {
-        if (coyoteTimeCounter < coyoteTime && !isJumping || isJumping && jumpcounter < possiblejumps)
+        if (coyoteTimeCounter <= coyoteTime)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-            ++jumpcounter;
+            
+            jumpcounter = 1; 
+            coyoteTimeCounter = 100f; 
+            
             return true;
         }
-        return false;
+        else if (jumpcounter < possiblejumps)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            jumpcounter = (jumpcounter == 0) ? 2 : jumpcounter + 1;
+            
+            return true;
+        }
+
+        return false; 
     }
 
     private bool WallJump()
