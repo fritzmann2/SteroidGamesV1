@@ -23,6 +23,7 @@ public class FPSProfiler : MonoBehaviour
     void Start()
     {
         frameTimeArray = new float[frameBufferLength];
+        Application.targetFrameRate = 200;
     }
 
     void Update()

@@ -5,18 +5,17 @@ public class Mainmenu : MonoBehaviour
 {
     [Header("Menu Panels")]
     public GameObject MainMenuUI;
-    public GameObject HelpMenuUI;
+    public GameObject SettingsMenuUI;
     public GameObject NetworkUIGO;
 
     [Header("First Selected Buttons")]
     public GameObject firstMainMenuButton;
-    public GameObject firstHelpMenuButton;
     public GameObject firstNetworkMenuButton;
 
     public void Start()
     {
         MainMenuUI.SetActive(true);
-        HelpMenuUI.SetActive(false);
+        SettingsMenuUI.SetActive(false);
         NetworkUIGO.SetActive(false);
 
         SetFirstSelected(firstMainMenuButton);
@@ -25,14 +24,12 @@ public class Mainmenu : MonoBehaviour
     public void OpenHelpMenu()
     {
         MainMenuUI.SetActive(false);
-        HelpMenuUI.SetActive(true);
-
-        SetFirstSelected(firstHelpMenuButton);
+        SettingsMenuUI.SetActive(true);
     }
     
     public void CloseHelpMenu()
     {
-        HelpMenuUI.SetActive(false);
+        SettingsMenuUI.SetActive(false);
         MainMenuUI.SetActive(true);
 
         SetFirstSelected(firstMainMenuButton);

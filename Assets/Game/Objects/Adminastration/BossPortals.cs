@@ -54,7 +54,7 @@ public class BossPortals : NetworkBehaviour
 
         bool teleportTriggered = false;
 
-        if (Mouse.current != null && controls.Gameplay.RightMouse.WasPressedThisFrame())
+        if (Mouse.current != null && controls.Gameplay.Teleport.WasPressedThisFrame())
         {
             Debug.Log("teleport Player");
             Vector2 mousePosition = Mouse.current.position.ReadValue();

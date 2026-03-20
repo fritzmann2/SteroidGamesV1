@@ -692,7 +692,6 @@ GameObject:
   - component: {fileID: 165371689}
   - component: {fileID: 165371690}
   - component: {fileID: 165371688}
-  - component: {fileID: 165371691}
   m_Layer: 0
   m_Name: LevelManager
   m_TagString: Untagged
@@ -755,20 +754,6 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
---- !u!114 &165371691
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 165371687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13fa4ad68d0c4464a85f955d0d3d4a5b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
-  updateInterval: 0.5
-  frameBufferLength: 1000
 --- !u!1001 &206508818
 PrefabInstance:
   m_ObjectHideFlags: 0

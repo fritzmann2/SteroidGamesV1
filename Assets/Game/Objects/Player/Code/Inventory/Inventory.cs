@@ -81,7 +81,7 @@ public class Inventory : NetworkBehaviour
     private void Update()
     {
         if (!IsOwner) return;
-        if (mouseItemData != null && mouseItemData.hasitem && controls.Gameplay.LeftMouse.WasPressedThisFrame())
+        if (mouseItemData != null && mouseItemData.hasitem && controls.Gameplay.Teleport.WasPressedThisFrame())
         {
             if (!EventSystem.current.IsPointerOverGameObject())
             {

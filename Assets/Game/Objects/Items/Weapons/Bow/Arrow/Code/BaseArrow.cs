@@ -4,29 +4,25 @@ using Unity.Netcode;
 public class BaseArrow : NetworkBehaviour
 {
     [Header("Settings")]
-    [SerializeField] private float movementspeed; 
-    [SerializeField] private float gravity;
+    [SerializeField] private float movementspeed = 20f; 
+    [SerializeField] private float gravity = 7f;
 
     private LayerMask groundLayerMask;
     private float despawnTimer = 15f;
     private BoxCollider2D bx;
+    private SpriteRenderer sr;
     private bool hasHitWall = false;
     private Transform owner;
     private Vector3 velocity;
     private bool hasHit = false;
 
-
     private bool isInitialized = false; 
-
-    void Reset()
-    {
-        movementspeed = 20f;
-        gravity = 7f;
-    }
 
     void Awake()
     {
         bx = GetComponent<BoxCollider2D>();
+        sr = GetComponentInChildren<SpriteRenderer>();
+        
         bx.isTrigger = true;
         bx.enabled = true;
         groundLayerMask = LayerMask.GetMask("Ground");
@@ -42,39 +38,39 @@ public class BaseArrow : NetworkBehaviour
 
     void FixedUpdate()
     {
-        if (isInitialized)
+        if (isInitialized && !hasHitWall && !hasHit)
         {
-            if (!hasHitWall)
+            velocity.y -= gravity * Time.fixedDeltaTime;
+            transform.position += velocity * Time.fixedDeltaTime;
+            
+            float angle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0, 0, angle); 
+        }
+        
+        if (IsServer)
+        {
+            despawnTimer -= Time.fixedDeltaTime;
+            if (despawnTimer <= 0)
             {
-                velocity.y -= gravity * Time.fixedDeltaTime;
-                transform.position += velocity * Time.fixedDeltaTime;
-                
-                float angle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg;
-                transform.rotation = Quaternion.Euler(0, 0, angle); 
+                if (NetworkObject != null && NetworkObject.IsSpawned)
+                    NetworkObject.Despawn();
             }
             
-            if (IsServer)
+            if (owner != null && Vector3.Distance(owner.position, transform.position) > 60f)
             {
-                despawnTimer -= Time.fixedDeltaTime;
-                if (despawnTimer <= 0)
-                {
-                    GetComponent<NetworkObject>().Despawn();
-                }
-                
-                if (owner != null && Vector3.Distance(owner.position, transform.position) > 60f)
-                {
-                    GetComponent<NetworkObject>().Despawn();
-                }
+                if (NetworkObject != null && NetworkObject.IsSpawned)
+                    NetworkObject.Despawn();
             }
         }
     }
-
 
     private void hitWall()
     {
         hasHitWall = true;
         hasHit = true;
         bx.enabled = false;
+        velocity = Vector3.zero;
+
         if (despawnTimer > 3f)
         {
             despawnTimer = 3f;
@@ -95,6 +91,7 @@ public class BaseArrow : NetworkBehaviour
         if (owner == null) return; 
         
         NetworkObject ownerNetObj = owner.GetComponent<NetworkObject>();
+        
         if (ownerNetObj != null && ownerNetObj.IsOwner)
         {
             if (other.TryGetComponent<BaseEntety>(out BaseEntety mob))
@@ -102,7 +99,11 @@ public class BaseArrow : NetworkBehaviour
                 if (other.transform != owner)
                 {
                     hasHit = true;
+                    
                     owner.GetComponent<PlayerStats>().DealotherDamage(mob, 0.6f);
+                    velocity = Vector3.zero; 
+                    if (sr != null) sr.enabled = false;
+                    bx.enabled = false;
                     RequestDespawnServerRpc();
                 }
             }

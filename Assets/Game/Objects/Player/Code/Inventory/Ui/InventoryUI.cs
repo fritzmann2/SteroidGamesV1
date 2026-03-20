@@ -25,7 +25,7 @@ public class InventoryUI : MonoBehaviour
     
     void Update()
     {
-        if (controls.Gameplay.Teleport.triggered || controls.Gameplay.RightMouse.triggered) 
+        if (controls.Gameplay.Teleport.triggered) 
         {
             if (!statsPanel.activeSelf)
             {

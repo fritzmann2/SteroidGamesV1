@@ -36,8 +36,17 @@ public class NetworkUI : MonoBehaviour
     public GameObject firstNetworkMenuButton; 
     public GameObject firstClientButton; 
 
+
+    [Header("Virtual Keyboard")]
+    public GameObject virtualKeyboardUI; 
+
+
     void Start()
     {
+        if (virtualKeyboardUI != null)
+        {
+            virtualKeyboardUI.SetActive(false);
+        }
         lobbyPanel.SetActive(false);
         hostArea.SetActive(false);
         clientArea.SetActive(false);
@@ -164,6 +173,35 @@ public class NetworkUI : MonoBehaviour
         {
             EventSystem.current.SetSelectedGameObject(null);
             EventSystem.current.SetSelectedGameObject(firstButton);
+        }
+    }
+
+    public void OpenKeyboardForPlayerName()
+    {
+        if (virtualKeyboardUI != null)
+        {
+            virtualKeyboardUI.SetActive(true);
+            VirtualKeyboard vk = virtualKeyboardUI.GetComponent<VirtualKeyboard>();
+            if (vk != null)
+            {
+                vk.targetInputField = playernameInput; 
+                
+                vk.OpenKeyboard();
+            }
+        }
+    }
+
+    public void OpenKeyboardForJoinCode()
+    {
+        if (virtualKeyboardUI != null)
+        {
+            virtualKeyboardUI.SetActive(true);
+            VirtualKeyboard vk = virtualKeyboardUI.GetComponent<VirtualKeyboard>();
+            if (vk != null)
+            {
+                vk.targetInputField = joinCodeInput;
+                vk.OpenKeyboard();
+            }
         }
     }
 }

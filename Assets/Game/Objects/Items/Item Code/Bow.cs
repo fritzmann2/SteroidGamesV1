@@ -14,6 +14,18 @@ public class Bow : Weapon
     
     [Header("Aiming Settings")]
     [SerializeField] private float dropCompensationFactor = 0.005f;
+    private Camera mainCamera;
+    private Collider2D[] autoAimResults = new Collider2D[30]; 
+    private ContactFilter2D mobFilter; 
+
+    protected override void Awake()
+    {
+        type = EquipmentType.Bow;
+        base.Awake();
+        mainCamera = Camera.main; 
+        mobFilter = new ContactFilter2D();
+        mobFilter.useTriggers = true; 
+    }
 
     override public void Attack1()
     {
@@ -51,11 +63,6 @@ public class Bow : Weapon
         performattack(AttackTypeBow.Charge.ToString());
     }
 
-    protected override void Awake()
-    {
-        type = EquipmentType.Bow;
-        base.Awake();
-    }
     protected override void Start()
     {
         base.Start();
@@ -91,7 +98,8 @@ public class Bow : Weapon
     private Vector3 GetAimDirection()
     {
         Vector3 aimDir = Vector3.zero;
-        if (Gamepad.current != null)
+        if (mainCamera == null) mainCamera = Camera.main;
+        if (Gamepad.current != null && Gamepad.current.rightStick.ReadValue().sqrMagnitude > 0.05f)
         {
             Transform nearestEnemy = GetNearestEnemy();
             if (nearestEnemy != null)
@@ -108,10 +116,11 @@ public class Bow : Weapon
         else
         {
             Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
-            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
+            Vector3 mouseWorldPos = mainCamera.ScreenToWorldPoint(mouseScreenPos);
             mouseWorldPos.z = 0f;
             aimDir = mouseWorldPos - transform.position;
         }
+
         float distanceX = Mathf.Abs(aimDir.x);
         aimDir.y += distanceX * distanceX * dropCompensationFactor;
 
@@ -120,12 +129,14 @@ public class Bow : Weapon
 
     private Transform GetNearestEnemy()
     {
-        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, autoAimRadius);
+        int hitCount = Physics2D.OverlapCircle(transform.position, autoAimRadius, mobFilter, autoAimResults);
         Transform nearest = null;
         float minDistance = Mathf.Infinity;
 
-        foreach (var hit in hits)
+        for (int i = 0; i < hitCount; i++)
         {
+            Collider2D hit = autoAimResults[i];
+            
             if (hit.CompareTag("Mob"))
             {
                 float dist = Vector2.Distance(transform.position, hit.transform.position);
