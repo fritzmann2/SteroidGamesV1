@@ -99,9 +99,11 @@ public class Bow : Weapon
     {
         Vector3 aimDir = Vector3.zero;
         if (mainCamera == null) mainCamera = Camera.main;
-        if (Gamepad.current != null && Gamepad.current.rightStick.ReadValue().sqrMagnitude > 0.05f)
+
+        if (Gamepad.current != null)
         {
             Transform nearestEnemy = GetNearestEnemy();
+            
             if (nearestEnemy != null)
             {
                 aimDir = nearestEnemy.position - transform.position;
@@ -109,8 +111,16 @@ public class Bow : Weapon
             }
             else
             {
-                float facingDir = transform.parent != null ? transform.parent.localScale.x : 1f;
-                aimDir = new Vector3(facingDir, 0f, 0f);
+                Vector2 stickInput = Gamepad.current.rightStick.ReadValue();
+                if (stickInput.sqrMagnitude > 0.05f)
+                {
+                    aimDir = new Vector3(stickInput.x, stickInput.y, 0f);
+                }
+                else
+                {
+                    float facingDir = transform.parent != null ? transform.parent.localScale.x : 1f;
+                    aimDir = new Vector3(facingDir, 0f, 0f);
+                }
             }
         }
         else

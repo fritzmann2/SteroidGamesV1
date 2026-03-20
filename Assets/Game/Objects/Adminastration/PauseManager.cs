@@ -114,6 +114,7 @@ public class PauseManager : MonoBehaviour
         WhilePlayingObj.SetActive(false);
         pauseMenuUI.SetActive(true);
         isMenuOpen = true;
+        SetFirstSelectedSlot();
     }
     public void CloseMenu()
     {
