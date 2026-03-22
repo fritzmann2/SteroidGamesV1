@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42df35897175da24bbe2f60ac87485c8, type: 3}
+  m_Name: BaseRing
+  m_EditorClassIdentifier: Assembly-CSharp::EquipmentData
+  ID: item_ring_base
+  ItemName: BaseRing
+  Icon: {fileID: 2851361964339501749, guid: 988718bc9a2b5b849beccd1198a6d09f, type: 3}
+  Type: 2
+  itemObject: {fileID: 6522123189414939979, guid: fdd26d9b67fb88743847e5053c80fd46, type: 3}
+  _maxStackSize: 1
+  equipmentType: 7

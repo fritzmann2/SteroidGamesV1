@@ -351,6 +351,7 @@ MonoBehaviour:
   health:
     m_InternalValue: 100
   maxHealth: 200
+  rb: {fileID: 0}
   equipmentDatas: []
   totalStats:
     totalexperience: 0
@@ -364,6 +365,7 @@ MonoBehaviour:
     spellresistance: 0
     mana: 0
     manaRegen: 0
+    healthRegen: 0
     health: 0
   baseStats:
     totalexperience: 0
@@ -377,10 +379,13 @@ MonoBehaviour:
     spellresistance: 0
     mana: 0
     manaRegen: 0
+    healthRegen: 0
     health: 0
   statsUI: {fileID: 0}
   playerLevel: 1
   playerXP: 0
+  mana:
+    m_InternalValue: 100
   playerName: 
 --- !u!114 &131929589387796209
 MonoBehaviour:
@@ -411,6 +416,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Inventory
   ShowTopMostFoldoutHeaderGroup: 1
   itemDatabase:
+  - {fileID: 11400000, guid: f8aaa39cb6d2150488078682ee295479, type: 2}
   - {fileID: 11400000, guid: 2833195fba3e49c4eb1e6b8a6c316470, type: 2}
   - {fileID: 11400000, guid: f347961940402734db8da73e55f84d6e, type: 2}
   - {fileID: 11400000, guid: febc673f71f3ea249bd0bcef34d78966, type: 2}
@@ -1028,6 +1034,8 @@ MonoBehaviour:
   rb: {fileID: 0}
   customGravity: 35
   maxFallSpeed: 25
+  facingDirectionX:
+    m_InternalValue: 1
   dashtimer: 0.2
   isGrounded: 0
   isWallJumpPossible: 0
