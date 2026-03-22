@@ -18,6 +18,12 @@ public class PlayerMovement : NetworkBehaviour
     [SerializeField] private float customGravity; 
     [SerializeField] private float maxFallSpeed;
 
+
+    public NetworkVariable<float> facingDirectionX = new NetworkVariable<float>(
+        1f, 
+        NetworkVariableReadPermission.Everyone, 
+        NetworkVariableWritePermission.Owner
+    );
     public void Reset()
     {
         customGravity = 35f; 
@@ -67,6 +73,8 @@ public class PlayerMovement : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        facingDirectionX.OnValueChanged += OnFacingDirectionChanged;
+        ApplyScale(facingDirectionX.Value);
         if (!IsOwner) return;
         while (Camera.main == null || Camera.main.GetComponent<CameraFollow>() == null)
         {
@@ -144,7 +152,11 @@ public class PlayerMovement : NetworkBehaviour
         
         if (Mathf.Abs(moveInput) > 0.15f)
         {
-            transform.localScale = new Vector3(moveInput < 0 ? -1 : 1, 1, 1);
+            float targetScale = moveInput < 0 ? -1f : 1f;
+            if (facingDirectionX.Value != targetScale)
+            {
+                facingDirectionX.Value = targetScale;
+            }
         }
         
         float accelRate = isGrounded ? 
@@ -282,9 +294,7 @@ public class PlayerMovement : NetworkBehaviour
 
     private void Flip()
     {
-        Vector3 localScale = transform.localScale;
-        localScale.x *= -1f;
-        transform.localScale = localScale;
+        facingDirectionX.Value *= -1f;
     }
 
     public void pauseGravity()
@@ -292,6 +302,15 @@ public class PlayerMovement : NetworkBehaviour
         rb.linearVelocity = new Vector2(0f, 0f);
     }
 
+    private void OnFacingDirectionChanged(float previousValue, float newValue)
+    {
+        ApplyScale(newValue);
+    }
+
+    private void ApplyScale(float scaleX)
+    {
+        transform.localScale = new Vector3(scaleX, transform.localScale.y, transform.localScale.z);
+    }
 
     private void OnDrawGizmos()
     {
