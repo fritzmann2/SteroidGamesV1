@@ -23,8 +23,11 @@ public class Bow : Weapon
         type = EquipmentType.Bow;
         base.Awake();
         mainCamera = Camera.main; 
+        
         mobFilter = new ContactFilter2D();
-        mobFilter.useTriggers = true; 
+        mobFilter.useTriggers = false; 
+        mobFilter.useLayerMask = true;
+        mobFilter.SetLayerMask(LayerMask.GetMask("Mob")); 
     }
 
     override public void Attack1()

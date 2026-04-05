@@ -103,6 +103,11 @@ public class Inventory : NetworkBehaviour
         return true;
     }
 
+    public void sortInventory()
+    {
+        itemInventory.SortInventory();
+    }
+
 
     [ServerRpc]
     public void tryAddItemServerRPC(NetworkObjectReference itemObjectRef)

@@ -15,9 +15,10 @@ GameObject:
   - component: {fileID: 9030585604184931906}
   - component: {fileID: 665160826377802839}
   - component: {fileID: -6830443312780737250}
-  - component: {fileID: 7972193725599456090}
+  - component: {fileID: 7642244960503226584}
+  - component: {fileID: 7891058269623658175}
   m_Layer: 6
-  m_Name: Zomby
+  m_Name: TankZomby
   m_TagString: Mob
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -134,7 +135,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 3347592680771994056, guid: 751e9271df7e8014084733f2e3da7813, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.9685534, g: 0, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -183,7 +184,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 4266392628
+  GlobalObjectIdHash: 2481814421
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -228,7 +229,7 @@ MonoBehaviour:
   SyncPositionZ: 0
   SyncRotAngleX: 1
   SyncRotAngleY: 1
-  SyncRotAngleZ: 0
+  SyncRotAngleZ: 1
   SyncScaleX: 1
   SyncScaleY: 1
   SyncScaleZ: 0
@@ -259,7 +260,7 @@ MonoBehaviour:
   UseRigidBodyForMotion: 0
   AutoUpdateKinematicState: 1
   AutoSetKinematicOnDespawn: 1
---- !u!114 &7972193725599456090
+--- !u!114 &7642244960503226584
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -268,9 +269,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 410988861812181967}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e90330ca47bb6cc4f9f44a55b77c8cec, type: 3}
+  m_Script: {fileID: 11500000, guid: 7b42674bef20d284ca0dbdbb2bf98061, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ZombyScript
+  m_EditorClassIdentifier: Assembly-CSharp::TankZomby
   ShowTopMostFoldoutHeaderGroup: 1
   health:
     m_InternalValue: 100
@@ -282,7 +283,7 @@ MonoBehaviour:
   targetPlayer: {fileID: 0}
   worldgen: {fileID: 0}
   parentChunk: {fileID: 0}
-  id: Zomby
+  id: TankZomby
   canSpawnItem: 1
   activationDistance: 20
   customGravity: 35
@@ -294,7 +295,7 @@ MonoBehaviour:
   voidCheckOffsetx: 0.6
   voidCheckStartY: -0.4
   voidCheckDistance: 1.5
-  movementSpeed: 4
+  movementSpeed: 2
   jumpforce: 10
   canJump: 1
   isGrounded: 0
@@ -304,10 +305,33 @@ MonoBehaviour:
   attackDistance: 1
   maxdistance: 20
   attackCooldown: 2
-  damage: 30
+  damage: 10
   baseXpReward: 50
   sharedXpRadius: 15
   sharedXpPercentage: 0.5
+  frontalDamageMultiplier: 0.3
+--- !u!95 &7891058269623658175
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 410988861812181967}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 1aa901faab05bbf4ea286e56d619517a, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1309554739070459425
 GameObject:
   m_ObjectHideFlags: 0

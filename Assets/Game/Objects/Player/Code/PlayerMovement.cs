@@ -143,21 +143,20 @@ public class PlayerMovement : NetworkBehaviour
     private void move()
     {
         Vector2 inputVector = controls.Gameplay.Move.ReadValue<Vector2>();
-        float moveInput = inputVector.x;
-        if (moveInput < 0) moveInput = -1;
-        else if (moveInput > 0) moveInput = 1;
+        float rawInputX = inputVector.x;
+        float moveInput = 0f;
+
+        if (Mathf.Abs(rawInputX) > 0.15f)
+        {
+            moveInput = rawInputX > 0 ? 1f : -1f;
+            if (facingDirectionX.Value != moveInput)
+            {
+                facingDirectionX.Value = moveInput;
+            }
+        }
 
         float targetSpeed = moveInput * movementSpeed;
         float speedDif = targetSpeed - rb.linearVelocity.x;
-        
-        if (Mathf.Abs(moveInput) > 0.15f)
-        {
-            float targetScale = moveInput < 0 ? -1f : 1f;
-            if (facingDirectionX.Value != targetScale)
-            {
-                facingDirectionX.Value = targetScale;
-            }
-        }
         
         float accelRate = isGrounded ? 
             (Mathf.Abs(targetSpeed) > 0.01f ? groundAcceleration : groundDeceleration) : 

@@ -29,6 +29,7 @@ public class ControlsUI : MonoBehaviour
     private List<RebindUIItem> generatedUIItems = new List<RebindUIItem>();
     
     private string currentScheme; 
+    private int columns = 2;
 
     private void Start()
     {
@@ -194,12 +195,7 @@ public class ControlsUI : MonoBehaviour
 
             if (i > 0) nav.selectOnLeft = topButtons[i - 1];
             if (i < topButtons.Length - 1) nav.selectOnRight = topButtons[i + 1];
-            
-            if (deviceDropdown != null)
-                nav.selectOnDown = deviceDropdown;
-            else
-                nav.selectOnDown = generatedUIItems[0].rebindButton1;
-                
+            nav.selectOnDown = (deviceDropdown != null) ? deviceDropdown : generatedUIItems[0].rebindButton1;
             topButtons[i].navigation = nav;
         }
 
@@ -208,12 +204,7 @@ public class ControlsUI : MonoBehaviour
             Navigation dropNav = deviceDropdown.navigation;
             dropNav.mode = Navigation.Mode.Explicit; 
             dropNav.selectOnDown = generatedUIItems[0].rebindButton1;
-            
-            if (topButtons.Length > 0 && topButtons[0] != null)
-            {
-                dropNav.selectOnUp = topButtons[0];
-            }
-            
+            if (topButtons.Length > 0 && topButtons[0] != null) dropNav.selectOnUp = topButtons[0];
             deviceDropdown.navigation = dropNav;
         }
 
@@ -221,57 +212,77 @@ public class ControlsUI : MonoBehaviour
         {
             Button btn1 = generatedUIItems[i].rebindButton1;
             Button btn2 = generatedUIItems[i].rebindButton2;
+            bool hasBtn2 = btn2.gameObject.activeSelf;
 
             Navigation nav1 = btn1.navigation;
             Navigation nav2 = btn2.navigation;
-
             nav1.mode = Navigation.Mode.Explicit;
             nav2.mode = Navigation.Mode.Explicit;
 
-            if (i == 0)
+            if (i >= columns) 
+            {
+                nav1.selectOnUp = generatedUIItems[i - columns].rebindButton1;
+                nav2.selectOnUp = generatedUIItems[i - columns].rebindButton2.gameObject.activeSelf ? generatedUIItems[i - columns].rebindButton2 : generatedUIItems[i - columns].rebindButton1;
+            }
+            else
             {
                 nav1.selectOnUp = deviceDropdown;
                 nav2.selectOnUp = deviceDropdown;
             }
-            else
-            {
-                nav1.selectOnUp = generatedUIItems[i - 1].rebindButton1;
-                if (generatedUIItems[i - 1].rebindButton2.gameObject.activeSelf)
-                    nav2.selectOnUp = generatedUIItems[i - 1].rebindButton2;
-                else
-                    nav2.selectOnUp = generatedUIItems[i - 1].rebindButton1; 
-            }
 
-            if (i < generatedUIItems.Count - 1)
+            if (i + columns < generatedUIItems.Count) 
             {
-                nav1.selectOnDown = generatedUIItems[i + 1].rebindButton1;
-                if (generatedUIItems[i + 1].rebindButton2.gameObject.activeSelf)
-                    nav2.selectOnDown = generatedUIItems[i + 1].rebindButton2;
-                else
-                    nav2.selectOnDown = generatedUIItems[i + 1].rebindButton1;
+                nav1.selectOnDown = generatedUIItems[i + columns].rebindButton1;
+                nav2.selectOnDown = generatedUIItems[i + columns].rebindButton2.gameObject.activeSelf ? generatedUIItems[i + columns].rebindButton2 : generatedUIItems[i + columns].rebindButton1;
             }
-            else
+            else 
             {
                 Selectable bottomTarget = (bottomButtons.Length > 0) ? bottomButtons[0] : null;
                 nav1.selectOnDown = bottomTarget;
                 nav2.selectOnDown = bottomTarget;
             }
 
-            if (btn2.gameObject.activeSelf)
+            bool isLeftCol = (i % columns == 0);
+
+            if (hasBtn2)
             {
                 nav1.selectOnRight = btn2;
                 nav2.selectOnLeft = btn1;
             }
+
+            if (isLeftCol) 
+            {
+                nav1.selectOnLeft = null;
+                
+                if (i + 1 < generatedUIItems.Count) 
+                {
+                    if (hasBtn2) nav2.selectOnRight = generatedUIItems[i + 1].rebindButton1;
+                    else nav1.selectOnRight = generatedUIItems[i + 1].rebindButton1;
+                }
+                else
+                {
+                    if (hasBtn2) nav2.selectOnRight = null;
+                    else nav1.selectOnRight = null;
+                }
+            }
             else
             {
-                nav1.selectOnRight = null;
+                if (hasBtn2) nav2.selectOnRight = null; 
+                else nav1.selectOnRight = null;
+
+                var prevItem = generatedUIItems[i - 1];
+                nav1.selectOnLeft = prevItem.rebindButton2.gameObject.activeSelf ? prevItem.rebindButton2 : prevItem.rebindButton1;
             }
 
             btn1.navigation = nav1;
             btn2.navigation = nav2;
         }
 
-        Button lastItemBtn = generatedUIItems[generatedUIItems.Count - 1].rebindButton1;
+        Button lastLeftBtn = generatedUIItems[generatedUIItems.Count - 1].rebindButton1;
+        if (generatedUIItems.Count > 1 && (generatedUIItems.Count % 2 == 0)) 
+        {
+            lastLeftBtn = generatedUIItems[generatedUIItems.Count - 2].rebindButton1;
+        }
 
         for (int i = 0; i < bottomButtons.Length; i++)
         {
@@ -281,7 +292,7 @@ public class ControlsUI : MonoBehaviour
 
             if (i > 0) nav.selectOnLeft = bottomButtons[i - 1];
             if (i < bottomButtons.Length - 1) nav.selectOnRight = bottomButtons[i + 1];
-            nav.selectOnUp = lastItemBtn; 
+            nav.selectOnUp = lastLeftBtn; 
             bottomButtons[i].navigation = nav;
         }
     }

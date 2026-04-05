@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: -1910519168772419617}
   - component: {fileID: -9184955974766294214}
   - component: {fileID: 2852125869350799951}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: MageBoss
   m_TagString: Mob
   m_Icon: {fileID: 0}
@@ -274,6 +274,7 @@ MonoBehaviour:
     m_InternalValue: 1000
   maxHealth: 1000
   rb: {fileID: 0}
+  anim: {fileID: 0}
   levelManager: {fileID: 0}
   hpbarfiller: {fileID: 0}
   targetPlayer: {fileID: 0}
@@ -291,6 +292,7 @@ MonoBehaviour:
   voidCheckOffsetx: 0.6
   voidCheckStartY: -0.4
   voidCheckDistance: 1.5
+  movementSpeed: 6
   jumpforce: 10
   canJump: 1
   isGrounded: 0

@@ -152,8 +152,12 @@ public class InventoryUI : MonoBehaviour
         {
             updateSlot(i, true);
         }
-        
-//        Debug.Log("UI Refreshed via OnEnable");
+    }
+
+    public void sortInventory()
+    {
+        playerinventory.sortInventory();
+        RefreshAllSlots();
     }
 
     

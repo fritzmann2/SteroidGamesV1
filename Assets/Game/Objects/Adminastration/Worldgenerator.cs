@@ -263,6 +263,7 @@ public class WorldGenerator : NetworkBehaviour
         if (chunkData == null) return; 
 
         MobSpawnPoint[] spawners = chunkData.GetSpawnPoints();
+        Debug.Log($"[WorldGen] Chunk {chunk.name} hat {spawners.Length} Spawnpunkte gefunden!");
         Transform mobContainer = chunk.transform.Find("MobContainer");
 
         foreach (MobSpawnPoint spawner in spawners)
@@ -323,6 +324,7 @@ public class WorldGenerator : NetworkBehaviour
 
     public void SpawnVisualForClient(GameObject networkChunk, Vector2Int coord)
     {
+        if (IsServer) return;
         if (chunkPrefabDictionary.TryGetValue(coord, out GameObject chunkVisualPrefab))
         {
             networkChunk.name = $"Chunk_{coord.x}_{coord.y}"; 

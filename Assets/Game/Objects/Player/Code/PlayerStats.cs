@@ -90,11 +90,15 @@ public class PlayerStats : BaseMobClass
         calculateLevel(baseStats);
         calculateBaseStats();
         RecalculateTotalStats();
+        if (health.Value > maxHealth)
+        {
+            health.Value = maxHealth;
+        }
 
         statsUI.UpdateHealthUI((int)health.Value, maxHealth);
         statsUI.UpdateXPUI(playerXP, GetRequiredXP(), playerLevel);
     }
-
+    
     private void Initbase()
     {
         equipmentDatas = new List<EquipmentInstance>();
@@ -102,10 +106,13 @@ public class PlayerStats : BaseMobClass
         for (int i = 0; i < itemInventory.equipmentSlots.Count; i++)
         {
             EquipmentSlot slot = itemInventory.getEquipmentSlot(i);
-            
             equipmentDatas.Add(slot.EquipInstance);
         }
-        
+        RecalculateTotalStats(); 
+        if (statsUI != null)
+        {
+            statsUI.UpdateHealthUI((int)health.Value, maxHealth);
+        }
     }
 
 

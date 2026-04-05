@@ -10,7 +10,7 @@ abstract public class BaseEnemy : BaseEntety
     public Transform targetPlayer;
     public WorldGenerator worldgen;
     public ChunkData parentChunk;
-    private List<Transform> activePlayers = new List<Transform>();
+    protected List<Transform> activePlayers = new List<Transform>();
     public string id = "Testsubject";
     public bool canSpawnItem = true;
 
@@ -37,12 +37,12 @@ abstract public class BaseEnemy : BaseEntety
     private LayerMask wallLayer;
 
     [Header("Movement")]
-    protected float movementSpeed = 6f;
+    public float movementSpeed = 6f;
     public float jumpforce = 10f;
-    [SerializeField] private bool canJump = true;
-    [SerializeField] private bool isGrounded;
-    [SerializeField] private bool isWallAhed;
-    [SerializeField] private bool isVoidAhed;
+    [SerializeField] protected bool canJump = true;
+    [SerializeField] protected bool isGrounded;
+    [SerializeField] protected bool isWallAhed;
+    [SerializeField] protected bool isVoidAhed;
     [SerializeField] protected float mindistance = 1f;
     [SerializeField] protected float attackDistance = 8f;
     [SerializeField] protected float maxdistance = 20f;
@@ -76,6 +76,7 @@ abstract public class BaseEnemy : BaseEntety
     override public void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+        anim = GetComponent<Animator>();
         if (!IsServer) return;
         worldgen = FindAnyObjectByType<WorldGenerator>();
         levelManager = FindAnyObjectByType<LevelManager>();
@@ -211,7 +212,7 @@ abstract public class BaseEnemy : BaseEntety
 
     
 
-    private void move()
+    protected virtual void move()
     {
         if (activePlayers.Count > 0 && targetPlayer != null)
         {
@@ -260,7 +261,7 @@ abstract public class BaseEnemy : BaseEntety
     }
 
 
-    private void stop() { rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y); }
+    protected void stop() { rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y); }
 
     public void checkAttack()
     {

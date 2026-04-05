@@ -156,4 +156,56 @@ public class ItemInventory
             slot1.UpdateInventorySlot(slot2.InventoryItemInstance, slot2.StackSize);
             slot2.UpdateInventorySlot(temp, stacksize);
     }
+
+    public void SortInventory()
+    {
+        List<(InventoryItemInstance item, int amount)> itemsToSort = new List<(InventoryItemInstance, int)>();
+
+        foreach (var slot in inventorySlots)
+        {
+            if (!slot.IsEmpty && slot.InventoryItemInstance != null && slot.InventoryItemInstance.itemData != null)
+            {
+                itemsToSort.Add((slot.InventoryItemInstance, slot.StackSize));
+            }
+        }
+        itemsToSort.Sort((a, b) =>
+        {
+            var itemA = a.item;
+            var itemB = b.item;
+
+            bool isAEquip = itemA is EquipmentInstance;
+            bool isBEquip = itemB is EquipmentInstance;
+
+            if (isAEquip && !isBEquip) return -1; 
+            if (!isAEquip && isBEquip) return 1;  
+
+            int nameComparison = string.Compare(itemA.itemData.ID, itemB.itemData.ID, StringComparison.OrdinalIgnoreCase);
+            if (nameComparison != 0) return nameComparison;
+
+            if (isAEquip && isBEquip)
+            {
+                EquipmentStats statsA = ((EquipmentInstance)itemA).GetEquipmentStats();
+                EquipmentStats statsB = ((EquipmentInstance)itemB).GetEquipmentStats();
+
+                int valA = statsA != null ? statsA.compleatValue : 0;
+                int valB = statsB != null ? statsB.compleatValue : 0;
+
+                return valB.CompareTo(valA);
+            }
+
+            return b.amount.CompareTo(a.amount);
+        });
+
+        for (int i = 0; i < inventorySlots.Count; i++)
+        {
+            if (i < itemsToSort.Count)
+            {
+                inventorySlots[i].UpdateInventorySlot(itemsToSort[i].item, itemsToSort[i].amount);
+            }
+            else
+            {
+                inventorySlots[i].UpdateInventorySlot(null, 0);
+            }
+        }
+    }
 }

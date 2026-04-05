@@ -11,6 +11,8 @@ abstract public class BaseEntety : NetworkBehaviour
 
     public int maxHealth;
     public Rigidbody2D rb;
+    public Animator anim;
+
 
     override public void OnNetworkSpawn()
     {
