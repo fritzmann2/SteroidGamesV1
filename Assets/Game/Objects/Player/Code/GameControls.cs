@@ -208,6 +208,15 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""DropItem"",
+                    ""type"": ""Button"",
+                    ""id"": ""dc069a66-d4b6-427d-9725-c55fdbb2b222"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -584,6 +593,28 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
                     ""action"": ""WallSlide"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""36c4da1f-fe71-4d48-8367-96ac170b3519"",
+                    ""path"": ""<Gamepad>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""DropItem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6cbfd5cf-eb87-4139-ae8b-6cb7fe9dece0"",
+                    ""path"": ""<Keyboard>/o"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";KeyboardMouse"",
+                    ""action"": ""DropItem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -633,6 +664,7 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
         m_Gameplay_Teleport = m_Gameplay.FindAction("Teleport", throwIfNotFound: true);
         m_Gameplay_pickupitem = m_Gameplay.FindAction("pickupitem", throwIfNotFound: true);
         m_Gameplay_WallSlide = m_Gameplay.FindAction("WallSlide", throwIfNotFound: true);
+        m_Gameplay_DropItem = m_Gameplay.FindAction("DropItem", throwIfNotFound: true);
     }
 
     ~@GameControls()
@@ -726,6 +758,7 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Gameplay_Teleport;
     private readonly InputAction m_Gameplay_pickupitem;
     private readonly InputAction m_Gameplay_WallSlide;
+    private readonly InputAction m_Gameplay_DropItem;
     /// <summary>
     /// Provides access to input actions defined in input action map "Gameplay".
     /// </summary>
@@ -789,6 +822,10 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Gameplay/WallSlide".
         /// </summary>
         public InputAction @WallSlide => m_Wrapper.m_Gameplay_WallSlide;
+        /// <summary>
+        /// Provides access to the underlying input action "Gameplay/DropItem".
+        /// </summary>
+        public InputAction @DropItem => m_Wrapper.m_Gameplay_DropItem;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -854,6 +891,9 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
             @WallSlide.started += instance.OnWallSlide;
             @WallSlide.performed += instance.OnWallSlide;
             @WallSlide.canceled += instance.OnWallSlide;
+            @DropItem.started += instance.OnDropItem;
+            @DropItem.performed += instance.OnDropItem;
+            @DropItem.canceled += instance.OnDropItem;
         }
 
         /// <summary>
@@ -904,6 +944,9 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
             @WallSlide.started -= instance.OnWallSlide;
             @WallSlide.performed -= instance.OnWallSlide;
             @WallSlide.canceled -= instance.OnWallSlide;
+            @DropItem.started -= instance.OnDropItem;
+            @DropItem.performed -= instance.OnDropItem;
+            @DropItem.canceled -= instance.OnDropItem;
         }
 
         /// <summary>
@@ -1061,5 +1104,12 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnWallSlide(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "DropItem" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnDropItem(InputAction.CallbackContext context);
     }
 }

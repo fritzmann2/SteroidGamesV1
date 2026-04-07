@@ -39,7 +39,6 @@ public class InventorySlot
     }
     public void initInventoryUI(InventoryUI _inventoryUI, int _slotnum)
     {
-    //    Debug.Log("Intialize inventoryUI");
         inventoryUI = _inventoryUI;
         slotnum = _slotnum;
     }

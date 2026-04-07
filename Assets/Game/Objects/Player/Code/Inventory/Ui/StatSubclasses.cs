@@ -20,7 +20,7 @@ public class Playerstats
 
     public void calculateBaseStats(int level)
     {
-        attackSpeed = level/100f + 1;
+        attackSpeed = level/300f + 1;
         critChance = level/100f;
         critDamage = level * 2f;
         strength = level;

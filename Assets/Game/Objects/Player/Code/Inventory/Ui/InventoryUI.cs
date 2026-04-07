@@ -40,6 +40,10 @@ public class InventoryUI : MonoBehaviour
         {
             ShowItemStats();
         }
+        if (controls.Gameplay.DropItem.triggered) 
+        {
+            DropItem();
+        }
     }
     
     private void OnEnable()
@@ -262,6 +266,35 @@ public class InventoryUI : MonoBehaviour
 
     public void DropItem()
     {
-        playerinventory.dropItem();
+        if (playerinventory.mouseItemData != null && playerinventory.mouseItemData.hasitem)
+        {
+            playerinventory.dropItem();
+            return; 
+        }
+        GameObject selected = EventSystem.current.currentSelectedGameObject;
+        if (selected == null) return;
+        InventorySlot_UI slotUI = selected.GetComponent<InventorySlot_UI>();
+        if (slotUI != null)
+        {
+            if (slotDictionary.TryGetValue(slotUI, out InventorySlot dataSlot))
+            {
+                if (!dataSlot.IsEmpty) 
+                {
+                    playerinventory.dropItemFromSlot(dataSlot.slotnum, false);
+                }
+            }
+            return; 
+        }
+        EquipmentSlot_UI eqSlotUI = selected.GetComponent<EquipmentSlot_UI>();
+        if (eqSlotUI != null)
+        {
+            if (slotDictionary.TryGetValue(eqSlotUI, out InventorySlot dataSlot))
+            {
+                if (!dataSlot.IsEmpty)
+                {
+                    playerinventory.dropItemFromSlot(dataSlot.slotnum, true);
+                }
+            }
+        }
     }
 }

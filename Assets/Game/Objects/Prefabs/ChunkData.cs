@@ -16,6 +16,9 @@ public class ChunkData : NetworkBehaviour
     public List<NetworkObject> myPortals = new List<NetworkObject>();
     public List<Vector2Int> linkedChunks = new List<Vector2Int>();
 
+    [Header("Boss Arena Settings")]
+    public bool isBossArena = false;
+
     public override void OnNetworkSpawn()
     {
         if (IsClient && !IsServer) 
@@ -55,11 +58,16 @@ public class ChunkData : NetworkBehaviour
     public void BossDead()
     {
         DespawnAllMobs();
-        SpawnPortal();
+        if (IsServer) SpawnPortal();
     }
 
     private void SpawnPortal()
     {
+        WorldGenerator wg = FindAnyObjectByType<WorldGenerator>();
+        if (wg != null)
+        {
+            wg.SpawnPortalsInChunk(gameObject, true); 
+        }
     }
 
     public void DespawnAllPortals()

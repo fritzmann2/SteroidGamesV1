@@ -249,7 +249,21 @@ public class Inventory : NetworkBehaviour
         }
     }
 
-
+    public void dropItemFromSlot(int index, bool isEquipment)
+    {
+        InventorySlot targetSlot = isEquipment ? itemInventory.equipmentSlots[index] : itemInventory.inventorySlots[index];
+        if (targetSlot.IsEmpty || targetSlot.InventoryItemInstance == null) return;
+        InventoryItemInstance itemToDrop = targetSlot.InventoryItemInstance;
+        int amountToDrop = targetSlot.StackSize;
+        targetSlot.clearSlot();
+        targetSlot.inventoryUI.updateSlot(index, isEquipment);
+        if (isEquipment)
+        {
+            itemInventory.TriggerEquipmentChanged();
+        }
+        Vector3 spawnOffset = new Vector3(transform.localScale.x * 1.5f, 0f, 0f); 
+        ItemManager.Instance.dropItem(itemToDrop, transform.position + spawnOffset, amountToDrop);
+    }
 
 
 

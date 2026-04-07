@@ -1,11 +1,13 @@
 using Unity.Netcode;
 using UnityEngine;
-using Unity.Collections; 
+using Unity.Collections;
+using System.Collections; // WICHTIG: Wird für die Coroutine benötigt!
 
 [RequireComponent(typeof(BoxCollider2D))]
 [RequireComponent(typeof(SpriteRenderer))]
 public class ItemPickUp : NetworkBehaviour
 {
+    [Header("Item Settings")]
     public int itemRarity = 0;
     public int amount = 1;
     public string id;
@@ -13,6 +15,10 @@ public class ItemPickUp : NetworkBehaviour
     
     public string serializedStats = "";
     public bool isEquipment = false;
+
+    [Header("Despawn Settings")]
+    [Tooltip("Zeit in Sekunden, bis das Item automatisch despawnt")]
+    public float autoDespawnTime = 20f;
 
     private BoxCollider2D bx;
     private SpriteRenderer sr; 
@@ -41,6 +47,19 @@ public class ItemPickUp : NetworkBehaviour
         {
             UpdateSpriteForClient(newVal.ToString());
         };
+        if (IsServer)
+        {
+            StartCoroutine(AutoDespawnRoutine());
+        }
+    }
+
+    private IEnumerator AutoDespawnRoutine()
+    {
+        yield return new WaitForSeconds(autoDespawnTime);
+        if (IsSpawned && NetworkObject != null)
+        {
+            NetworkObject.Despawn(true); 
+        }
     }
 
     private void UpdateSpriteForClient(string itemID)

@@ -144,7 +144,7 @@ public class AccessoryStats : EquipmentStats, INetworkSerializable
         healthRegen = (calcRandomNum() * 0.1f + 0.5f) * rarity;
         manaRegen = (calcRandomNum() * 0.1f + 0.5f) * rarity;
         movementSpeed = (calcRandomNum() * 0.1f + 0.5f) * rarity;
-        attackSpeed = (calcRandomNum() * 0.1f + 0.5f) * rarity;
+        attackSpeed = (calcRandomNum() * 0.01f + 0.05f) * rarity;
         critChance = calcRandomNum() * rarity;
         critDamage = calcRandomNum() * 5 * rarity;
         strength = (calcRandomNum() + 5) * rarity;

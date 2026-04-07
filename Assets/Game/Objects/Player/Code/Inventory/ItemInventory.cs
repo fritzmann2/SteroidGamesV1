@@ -208,4 +208,8 @@ public class ItemInventory
             }
         }
     }
+    public void TriggerEquipmentChanged()
+    {
+        OnEquipmentChanged?.Invoke();
+    }
 }

@@ -23,10 +23,16 @@ public class WorldGenerator : NetworkBehaviour
     private float loadDistance = 60f; 
     private float despawnDelay = 10f;   
 
+    [Header("Teleport Settings")]
+    [Tooltip("Wie viele Sekunden ein Spieler warten muss, bevor er wieder teleportiert werden kann.")]
+    public float teleportCooldown = 3f; 
+    private Dictionary<ulong, float> lastTeleportTimes = new Dictionary<ulong, float>();
+
     private Dictionary<string, GameObject> mobDictionary = new Dictionary<string, GameObject>();
     private Dictionary<Vector2Int, GameObject> chunkPrefabDictionary = new Dictionary<Vector2Int, GameObject>();
     private Dictionary<Vector2Int, GameObject> activeChunks = new Dictionary<Vector2Int, GameObject>();
     private Dictionary<Vector2Int, float> chunkLastSeenTimes = new Dictionary<Vector2Int, float>();
+    private Dictionary<Vector2Int, Vector3> arenaReturnPoints = new Dictionary<Vector2Int, Vector3>();
 
     public void Awake()
     {
@@ -199,9 +205,21 @@ public class WorldGenerator : NetworkBehaviour
             networkChunk.name = $"Chunk_{coord.x}_{coord.y}";
             
             ChunkData chunkDataScript = networkChunk.GetComponent<ChunkData>();
+            
+            bool isArena = false;
+            foreach (GameObject arenaPrefab in allBossArenaPrefabs)
+            {
+                if (arenaPrefab == chunkVisualPrefab)
+                {
+                    isArena = true;
+                    break;
+                }
+            }
+
             if (chunkDataScript != null)
             {
                 chunkDataScript.gridCoordinate.Value = coord;
+                chunkDataScript.isBossArena = isArena; 
             }
 
             GameObject visualContainer = new GameObject("VisualContainer");
@@ -220,37 +238,49 @@ public class WorldGenerator : NetworkBehaviour
             activeChunks.Add(coord, networkChunk);
             
             SpawnMobsInChunk(networkChunk);
-            SpawnPortalsInChunk(networkChunk);
+            
+            SpawnPortalsInChunk(networkChunk, false); 
         }
     }
 
-    private void SpawnPortalsInChunk(GameObject chunk)
+public void SpawnPortalsInChunk(GameObject chunk, bool forceSpawn)
     {
         ChunkData chunkData = chunk.GetComponentInChildren<ChunkData>();
         if (chunkData == null) return;
-
+        if (chunkData.isBossArena && !forceSpawn) 
+        {
+            Debug.Log($"[WorldGen] Portal-Spawn in Arena {chunk.name} unterdrückt (Boss lebt noch).");
+            return;
+        }
         PortalSpawner[] spawners = chunk.GetComponentsInChildren<PortalSpawner>();
-
         foreach (PortalSpawner spawner in spawners)
         {
             spawner.Reset();
-
             if (bossPortalPrefab != null)
             {
                 GameObject portalObj = Instantiate(bossPortalPrefab, spawner.transform.position, Quaternion.identity);
                 NetworkObject portalNetObj = portalObj.GetComponent<NetworkObject>();
                 portalNetObj.Spawn();
                 portalNetObj.TrySetParent(chunk.transform);
-
                 BossPortals bossPortalScript = portalObj.GetComponent<BossPortals>();
                 if (bossPortalScript != null)
                 {
-                    bossPortalScript.destinationCoordinate = spawner.teleportDestination;
+                    if (chunkData.isBossArena && arenaReturnPoints.TryGetValue(chunkData.gridCoordinate.Value, out Vector3 returnPos))
+                    {
+                        bossPortalScript.destinationCoordinate = returnPos;
+                        arenaReturnPoints.Remove(chunkData.gridCoordinate.Value);
+                    }
+                    else
+                    {
+                        bossPortalScript.destinationCoordinate = spawner.teleportDestination;
+                    }
                 }
-                int targetX = Mathf.RoundToInt(spawner.teleportDestination.x / chunkSize);
-                int targetY = Mathf.RoundToInt(spawner.teleportDestination.y / chunkSize);
-                
-                chunkData.linkedChunks.Add(new Vector2Int(targetX, targetY));
+                int targetX = Mathf.RoundToInt(bossPortalScript.destinationCoordinate.x / chunkSize);
+                int targetY = Mathf.RoundToInt(bossPortalScript.destinationCoordinate.y / chunkSize);
+                if (!chunkData.linkedChunks.Contains(new Vector2Int(targetX, targetY)))
+                {
+                    chunkData.linkedChunks.Add(new Vector2Int(targetX, targetY));
+                }
                 chunkData.RegisterPortal(portalNetObj);
             }
         }
@@ -332,23 +362,42 @@ public class WorldGenerator : NetworkBehaviour
             visualContainer.transform.SetParent(networkChunk.transform);
             visualContainer.transform.localPosition = Vector3.zero; 
             visualContainer.transform.localScale = new Vector3(6.25f, 6.25f, 1f); 
-
             Instantiate(chunkVisualPrefab, visualContainer.transform);
         }
     }
+    
     public void TeleportToBoss(Vector2 destinationCoordinate, Transform player)
     {
         if (!IsServer) return;
-
+        NetworkObject playerNetObj = player.GetComponent<NetworkObject>();
+        if (playerNetObj != null)
+        {
+            ulong playerId = playerNetObj.NetworkObjectId;
+            if (lastTeleportTimes.TryGetValue(playerId, out float lastTime))
+            {
+                if (Time.time < lastTime + teleportCooldown)
+                {
+                    Debug.Log($"[WorldGen] Teleport blockiert: Spieler ist noch im Cooldown.");
+                    return; 
+                }
+            }
+            lastTeleportTimes[playerId] = Time.time;
+        }
+        int targetX = Mathf.RoundToInt(destinationCoordinate.x / chunkSize);
+        int targetY = Mathf.RoundToInt(destinationCoordinate.y / chunkSize);
+        Vector2Int arenaCoord = new Vector2Int(targetX, targetY);
+        if (!arenaReturnPoints.ContainsKey(arenaCoord))
+        {
+            arenaReturnPoints[arenaCoord] = player.position;
+        }
         player.position = new Vector3(destinationCoordinate.x, destinationCoordinate.y, 0);
-
         Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
         if (rb != null)
         {
             rb.linearVelocity = Vector2.zero;
         }
         
-        Debug.Log($"[WorldGen] Spieler zu Boss-Arena {destinationCoordinate} teleportiert!");
+        Debug.Log($"[WorldGen] Spieler zu Boss-Arena {destinationCoordinate} teleportiert! Rückkehrpunkt gespeichert.");
     }
 
     #if UNITY_EDITOR

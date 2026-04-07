@@ -24,22 +24,28 @@ public class Scythe : Weapon
 
     override public void Attack1()
     {
+        if (isThrown || isAttacking) return; 
         attackmulti = 1f;
         performattack(AttackTypeScythe.Slash.ToString());
     }
+    
     override public void Attack2()
     {
+        if (isThrown || isAttacking) return;
         attackmulti = 0.9f;
         performattack(AttackTypeScythe.Round.ToString());
     }
+    
     override public void Attack3()
     {
+        if (isThrown || isAttacking) return;
         attackmulti = 1.5f;
         performattack(AttackTypeScythe.Charge.ToString());
     }
+    
     override public void Attack4()
     {
-        if (isThrown) return;
+        if (isThrown || isAttacking) return; 
         attackmulti = 0.7f;
         Vector3 direction = GetAimDirection().normalized;
         float currentSpeed = 1f;
@@ -197,6 +203,7 @@ public class Scythe : Weapon
     void Catch()
     {
         isThrown = false;
+        isAttacking = false;
         isReturning = false;
         throwTime = 0f;   
         addParent();

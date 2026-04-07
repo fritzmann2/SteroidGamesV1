@@ -285,10 +285,15 @@ abstract public class BaseEnemy : BaseEntety
         {
             if (canSpawnItem)
             {
-                int randomnum = Random.Range(0, 2);
-                if (randomnum == 0)
+                bool inBossArena = parentChunk != null && parentChunk.isBossArena;
+                bool isBoss = this is BaseBoss; 
+                if (!inBossArena || isBoss)
                 {
-                    ItemManager.Instance.SpawnPickUpItem(id, transform.position);
+                    int randomnum = Random.Range(0, 2);
+                    if (randomnum == 0)
+                    {
+                        ItemManager.Instance.SpawnPickUpItem(id, transform.position);
+                    }
                 }
             }
             if (parentChunk != null)
