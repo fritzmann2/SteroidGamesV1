@@ -4927,7 +4927,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -572, y: 0.0009858964}
+  m_AnchoredPosition: {x: -572, y: 0.000012887246}
   m_SizeDelta: {x: 1144, y: 1200}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &938738330
@@ -10311,6 +10311,7 @@ MonoBehaviour:
   bossPortalPrefab: {fileID: 7223908082352180176, guid: 6d0f98f22165b4946bb1f73e754b723e, type: 3}
   allMobPrefabs:
   - {fileID: 4603273018276043992, guid: b57cd3bfcf3a5a344912ace5240d7b3a, type: 3}
+  - {fileID: 410988861812181967, guid: b8f046b55737bfc45830767be3d14221, type: 3}
   - {fileID: 410988861812181967, guid: dfd151cedf845014a93860909678d0be, type: 3}
   - {fileID: 4431091490125630633, guid: e4386f937de2f3143a23318caa7263cb, type: 3}
   - {fileID: 410988861812181967, guid: a00d3834792150446b1ec1667c21aaf0, type: 3}

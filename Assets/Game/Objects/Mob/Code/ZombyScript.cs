@@ -3,7 +3,7 @@ public class ZombyScript : BaseEnemy
     public override void Reset()
     {
         id = "Zomby";
-        maxHealth = 300;
+        maxHealth = 200;
         damage = 30f;
         movementSpeed = 4f;
         attackDistance = 1f;

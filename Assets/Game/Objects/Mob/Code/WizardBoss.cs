@@ -22,7 +22,7 @@ public class WizardBoss : BaseBoss
 
     [Header("Wizard Settings")]
     public GameObject projectilePrefab;
-    protected float fireballHightf = 4f;
+    protected float fireballHightf = 3.5f;
 
 
     public override void Reset()
@@ -33,13 +33,13 @@ public class WizardBoss : BaseBoss
         maxHealth = 1000;
         
         maxdistance = 60f;     
-        attackDistance = 20f; 
-        idealDistanceMax = 10f;
+        attackDistance = 17f; 
+        idealDistanceMax = 7f;
         mindistance = 7f;  
         
         attackCooldown = 2f;
         damage = 40f;
-        movementSpeed = 1f; 
+        movementSpeed = 2f; 
         fireballHightf = 0;
         teleportRadius = 8f;        
         minTeleportDistanceToPlayer = 6f; 

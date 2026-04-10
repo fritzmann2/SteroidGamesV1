@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using Unity.Netcode;
+using System;
 
 abstract public class BaseEnemy : BaseEntety
 {
@@ -82,7 +83,7 @@ abstract public class BaseEnemy : BaseEntety
         levelManager = FindAnyObjectByType<LevelManager>();
         levelManager.onPlayerRegistered += updatePlayerList;
         updatePlayerList();
-        attackDistance = attackDistance + Random.Range(10, 0)*0.05f;
+        attackDistance = attackDistance + UnityEngine.Random.Range(10, 0)*0.05f;
         
         wallLayer = LayerMask.GetMask("Wall", "Ground");
         groundLayer = LayerMask.GetMask("Ground");
@@ -222,8 +223,8 @@ abstract public class BaseEnemy : BaseEntety
             
             if (distanceX > 0.1f) 
             {
-                float facingDirection = direction.x > 0 ? 1f : -1f;
-                transform.localScale = new Vector3(facingDirection, 1f, 1f);
+                float facingDirection = direction.x > 0 ? Math.Abs(transform.localScale.x) : -Math.Abs(transform.localScale.x);
+                transform.localScale = new Vector3(facingDirection, transform.localScale.y, transform.localScale.z);
                 
                 if (!isWallAhed && !isVoidAhed)
                 {
@@ -274,7 +275,7 @@ abstract public class BaseEnemy : BaseEntety
             if (Vector3.Distance(targetPlayer.position, transform.position) < attackDistance + attackDistance / 10 && attackCooldownTimer <= 0f)
             {
                 Attack();
-                attackCooldownTimer = attackCooldown * (1 + Random.Range(0f, 0.2f));
+                attackCooldownTimer = attackCooldown * (1 + UnityEngine.Random.Range(0f, 0.2f));
             }
         }
         
@@ -289,7 +290,7 @@ abstract public class BaseEnemy : BaseEntety
                 bool isBoss = this is BaseBoss; 
                 if (!inBossArena || isBoss)
                 {
-                    int randomnum = Random.Range(0, 2);
+                    int randomnum = UnityEngine.Random.Range(0, 2);
                     if (randomnum == 0)
                     {
                         ItemManager.Instance.SpawnPickUpItem(id, transform.position);

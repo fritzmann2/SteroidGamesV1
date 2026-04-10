@@ -292,14 +292,14 @@ MonoBehaviour:
   voidCheckOffsetx: 0.6
   voidCheckStartY: -0.4
   voidCheckDistance: 1.5
-  movementSpeed: 6
+  movementSpeed: 2
   jumpforce: 10
   canJump: 1
   isGrounded: 0
   isWallAhed: 0
   isVoidAhed: 0
   mindistance: 7
-  attackDistance: 20
+  attackDistance: 17
   maxdistance: 60
   attackCooldown: 2
   damage: 40
@@ -316,5 +316,5 @@ MonoBehaviour:
   teleportTimer: 15
   obstacleCheckRadius: 1.5
   obstacleCheckDistance: 1.5
-  idealDistanceMax: 10
+  idealDistanceMax: 6
   projectilePrefab: {fileID: 7554478117150871380, guid: 8406425a5eb305c48af0cfa9c65e7783, type: 3}
