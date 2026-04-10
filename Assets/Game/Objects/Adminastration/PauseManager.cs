@@ -12,6 +12,7 @@ public class PauseManager : MonoBehaviour
     private GameControls controls;
     public GameObject WhilePlayingObj;
     public GameObject InventoryObj;
+    public GameObject shopUI;
     private PlayerSaveHandler playerSaveHandler;
     private bool escapepressed = false;
 
@@ -19,10 +20,13 @@ public class PauseManager : MonoBehaviour
     private GameObject firstSelectedSlot;
     public Button firstButton;
 
+    public static PauseManager Instance { get; private set; }
+
 
     
     void Awake()
     {
+        Instance = this;
         controls = new GameControls();
         controls.Enable();
         ResetAllUI();     
@@ -128,6 +132,12 @@ public class PauseManager : MonoBehaviour
         pauseMenuUI.SetActive(false);
         WhilePlayingObj.SetActive(false);
         settingsUI.SetActive(true);
+    }
+
+    public void OpenShopUI()
+    {
+        shopUI.SetActive(true);
+        WhilePlayingObj.SetActive(false);
     }
 
     public void RegisterPlayerSaveHandler(PlayerSaveHandler _playerSaveHandler)

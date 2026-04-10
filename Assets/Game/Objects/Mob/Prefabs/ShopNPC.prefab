@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8041322021550096078}
   - component: {fileID: 8566891228642467547}
   - component: {fileID: 7005646914324955049}
+  - component: {fileID: 3359568375042377318}
   m_Layer: 0
   m_Name: ShopNPC
   m_TagString: Untagged
@@ -137,3 +138,15 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 7, y: 8}
   m_EdgeRadius: 0
+--- !u!114 &3359568375042377318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4057505330006251469}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06565c3703e4743489d576567f38cda5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
