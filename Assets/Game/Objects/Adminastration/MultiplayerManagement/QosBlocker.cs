@@ -32,7 +32,7 @@ public class QosBlocker : MonoBehaviour
         public void LogFormat(LogType logType, Object context, string format, params object[] args)
         {
             string message = (args != null && args.Length > 0) ? string.Format(format, args) : format;
-            if (message.Contains("QosJob") || message.Contains("QoS"))
+            if (message.Contains("QosJob") || message.Contains("QoS") || message.Contains("GameView reduced"))
             {
                 return; 
             }

@@ -15,12 +15,14 @@ public class PlayerSaveHandler : NetworkBehaviour
     private Inventory inventory;
     private ItemInventory itemInventory;
     private PlayerStats playerStats;
+    private SkillTreeManager skillTreeManager;
     public event UnityAction dataLoaded;
 
     public override void OnNetworkSpawn()
     {
         inventory = GetComponent<Inventory>();
         playerStats = GetComponent<PlayerStats>();
+        skillTreeManager = GetComponent<SkillTreeManager>();
         
         if (inventory != null)
         {
@@ -158,6 +160,11 @@ public class PlayerSaveHandler : NetworkBehaviour
         {
             data.statsData = playerStats.GetSaveData();
         }
+        
+        if (skillTreeManager != null)
+        {
+            data.skillTreeData = skillTreeManager.GetSaveData();
+        }
 
         data.inventoryData = GenerateInventorySaveData();
         
@@ -208,6 +215,11 @@ public class PlayerSaveHandler : NetworkBehaviour
         if (playerStats != null && data.statsData != null)
         {
             playerStats.LoadSaveData(data.statsData);
+        }
+
+        if (skillTreeManager != null && data.skillTreeData != null)
+        {
+            skillTreeManager.LoadSaveData(data.skillTreeData);
         }
 
         if (itemInventory != null && data.inventoryData != null)
@@ -288,6 +300,13 @@ public class PlayerSaveHandler : NetworkBehaviour
         if (playerStats != null)
         {
             playerStats.ResetToDefault();
+        }
+
+        if (skillTreeManager != null)
+        {
+            SkillTreeSaveData emptyData = new SkillTreeSaveData();
+            emptyData.availableSkillPoints = 5;
+            skillTreeManager.LoadSaveData(emptyData);
         }
 
         dataLoaded?.Invoke();

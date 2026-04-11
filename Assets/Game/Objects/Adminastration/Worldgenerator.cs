@@ -218,7 +218,6 @@ public class WorldGenerator : NetworkBehaviour
 
             if (chunkDataScript != null)
             {
-                chunkDataScript.gridCoordinate.Value = coord;
                 chunkDataScript.isBossArena = isArena; 
             }
 
@@ -235,6 +234,11 @@ public class WorldGenerator : NetworkBehaviour
 
             networkChunk.GetComponent<NetworkObject>().Spawn();
 
+            if (chunkDataScript != null)
+            {
+                chunkDataScript.gridCoordinate.Value = coord; 
+            }
+
             activeChunks.Add(coord, networkChunk);
             
             SpawnMobsInChunk(networkChunk);
@@ -249,7 +253,7 @@ public void SpawnPortalsInChunk(GameObject chunk, bool forceSpawn)
         if (chunkData == null) return;
         if (chunkData.isBossArena && !forceSpawn) 
         {
-            Debug.Log($"[WorldGen] Portal-Spawn in Arena {chunk.name} unterdrückt (Boss lebt noch).");
+    //        Debug.Log($"[WorldGen] Portal-Spawn in Arena {chunk.name} unterdrückt (Boss lebt noch).");
             return;
         }
         PortalSpawner[] spawners = chunk.GetComponentsInChildren<PortalSpawner>();
@@ -293,7 +297,7 @@ public void SpawnPortalsInChunk(GameObject chunk, bool forceSpawn)
         if (chunkData == null) return; 
 
         MobSpawnPoint[] spawners = chunkData.GetSpawnPoints();
-        Debug.Log($"[WorldGen] Chunk {chunk.name} hat {spawners.Length} Spawnpunkte gefunden!");
+//        Debug.Log($"[WorldGen] Chunk {chunk.name} hat {spawners.Length} Spawnpunkte gefunden!");
         Transform mobContainer = chunk.transform.Find("MobContainer");
 
         foreach (MobSpawnPoint spawner in spawners)

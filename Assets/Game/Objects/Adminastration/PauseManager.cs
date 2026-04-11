@@ -3,7 +3,6 @@ using Unity.Netcode;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-
 public class PauseManager : MonoBehaviour
 {
     [Header("UI Referenz")]
@@ -13,17 +12,15 @@ public class PauseManager : MonoBehaviour
     public GameObject WhilePlayingObj;
     public GameObject InventoryObj;
     public GameObject shopUI;
+    public GameObject skillTree;
     private PlayerSaveHandler playerSaveHandler;
     private bool escapepressed = false;
 
-    private bool isMenuOpen = false;
     private GameObject firstSelectedSlot;
     public Button firstButton;
 
     public static PauseManager Instance { get; private set; }
 
-
-    
     void Awake()
     {
         Instance = this;
@@ -47,16 +44,17 @@ public class PauseManager : MonoBehaviour
         {
             if (InventoryObj.activeSelf)
             {
-                InventoryObj.SetActive(false);
-                WhilePlayingObj.SetActive(true);
+                ResetAllUI(); 
             }
             else
             {
+                CloseAllOverlays();
                 InventoryObj.SetActive(true); 
                 WhilePlayingObj.SetActive(false);
             }
         }
     }
+
     void OnEnable()
     {
         SetFirstSelectedSlot();
@@ -84,59 +82,71 @@ public class PauseManager : MonoBehaviour
         }
     }
 
-    private void ToggleMenu()
-    {
-        Debug.Log("Toggle Pause Menu");
-        if (isMenuOpen)
-        {
-            CloseMenu();
-        }
-        else
-        {
-            if (WhilePlayingObj.activeInHierarchy)
-            {
-                OpenMenu();
-            }
-            else
-            {
-                ResetAllUI();
-            }
-        }
-    }
-
-    private void ResetAllUI()
+    private void CloseAllOverlays()
     {
         pauseMenuUI.SetActive(false);
         settingsUI.SetActive(false);
         InventoryObj.SetActive(false);
-        WhilePlayingObj.SetActive(true);   
+        shopUI.SetActive(false);
+        skillTree.SetActive(false);
+    }
+
+    private void ResetAllUI()
+    {
+        CloseAllOverlays();
+        WhilePlayingObj.SetActive(true); 
+    }
+
+    private void ToggleMenu()
+    {
+        if (!WhilePlayingObj.activeInHierarchy)
+        {
+            ResetAllUI();
+        }
+        else
+        {
+            OpenMenu();
+        }
     }
 
     public void OpenMenu()
     {
-        settingsUI.SetActive(false);
-        WhilePlayingObj.SetActive(false);
+        CloseAllOverlays();
         pauseMenuUI.SetActive(true);
-        isMenuOpen = true;
+        WhilePlayingObj.SetActive(false);
         SetFirstSelectedSlot();
     }
+
     public void CloseMenu()
     {
-        isMenuOpen = false;
-        settingsUI.SetActive(false);
-        pauseMenuUI.SetActive(false);
-        WhilePlayingObj.SetActive(true);
+        ResetAllUI();
     }
+
     public void OpenSettings()
     {
-        pauseMenuUI.SetActive(false);
-        WhilePlayingObj.SetActive(false);
+        CloseAllOverlays();
         settingsUI.SetActive(true);
+        WhilePlayingObj.SetActive(false);
     }
 
     public void OpenShopUI()
     {
+        CloseAllOverlays();
         shopUI.SetActive(true);
+        WhilePlayingObj.SetActive(false);
+    }
+
+    public void OpenSkillTree()
+    {
+        CloseAllOverlays();
+        skillTree.SetActive(true);
+        WhilePlayingObj.SetActive(false);
+    }
+
+    public void OpenInventoryUI()
+    {
+        CloseAllOverlays();
+        InventoryObj.SetActive(true);
         WhilePlayingObj.SetActive(false);
     }
 
@@ -144,6 +154,7 @@ public class PauseManager : MonoBehaviour
     {
         playerSaveHandler = _playerSaveHandler;
     }
+
     public void QuitGame()
     {
         playerSaveHandler.RequestLogoutAndSave();

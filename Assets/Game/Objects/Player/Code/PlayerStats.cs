@@ -215,7 +215,7 @@ public class PlayerStats : BaseMobClass
 
         float currentDefense = (totalStats != null) ? totalStats.defense : 0f;
         int damage = (int)(_damage / (1 + currentDefense / 100f));
-        Debug.Log($"[Damage] Original: {_damage}, Nach Rüstung ({currentDefense}): {damage}");
+//        Debug.Log($"[Damage] Original: {_damage}, Nach Rüstung ({currentDefense}): {damage}");
 
         if (IsServer)
         {
@@ -230,7 +230,7 @@ public class PlayerStats : BaseMobClass
     public void DealotherDamage(BaseEntety mob, float attackmulti)
     {
         int damage = calculateDamage(attackmulti);
-        Debug.Log("Damage: " + damage);
+//        Debug.Log("Damage: " + damage);
         if (damage <= 0)
         { 
             damage = 40; 

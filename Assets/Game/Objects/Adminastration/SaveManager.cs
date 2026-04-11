@@ -1,6 +1,7 @@
 using UnityEngine;
 using Unity.Netcode;
 using System.IO;
+using System.Collections.Generic;
 
 public class SaveManager : NetworkBehaviour
 {
@@ -32,7 +33,6 @@ public class SaveManager : NetworkBehaviour
         return null;
     }
 
-    // Diese Methode bleibt, damit PlayerSaveHandler sie aufrufen kann
     public void SaveGameData(GameSaveData data)
     {
         string safeName = string.Join("_", data.playerName.Split(Path.GetInvalidFileNameChars()));
@@ -58,4 +58,13 @@ public class GameSaveData
     public string playerName;
     public InventorySaveData inventoryData;
     public PlayerStatsSaveData statsData; 
+    public SkillTreeSaveData skillTreeData;
+}
+
+[System.Serializable]
+public class SkillTreeSaveData
+{
+    public int availableSkillPoints;
+    public List<string> unlockedSkillIDs = new List<string>();
+    public List<int> unlockedSkillLevels = new List<int>();
 }
