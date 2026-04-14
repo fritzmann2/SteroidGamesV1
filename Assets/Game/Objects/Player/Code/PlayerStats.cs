@@ -95,7 +95,6 @@ public class PlayerStats : BaseMobClass
         calculateBaseStats();
         RecalculateTotalStats();
         health.Value = maxHealth;
-        mana.Value = maxMana;
 
         statsUI.UpdateHealthUI((int)health.Value, maxHealth);
         statsUI.UpdateXPUI(playerXP, GetRequiredXP(), playerLevel);

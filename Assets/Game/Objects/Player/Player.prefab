@@ -106,7 +106,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 1561542812
+  GlobalObjectIdHash: 951506825
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -346,11 +346,11 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a1d3ca9794f9ce84c9ef3665110628c5, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: '::'
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
   ShowTopMostFoldoutHeaderGroup: 1
   health:
     m_InternalValue: 100
-  maxHealth: 200
+  maxHealth: 0
   rb: {fileID: 0}
   anim: {fileID: 0}
   equipmentDatas: []
