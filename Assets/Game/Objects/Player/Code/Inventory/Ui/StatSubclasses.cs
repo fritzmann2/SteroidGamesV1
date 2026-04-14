@@ -26,7 +26,6 @@ public class Playerstats
         strength = level;
         defense = level;
         spellresistance = level/100f; 
-        mana = level;
         manaRegen = level/100f + 2f;   
         healthRegen = level/200f + 1f;
     }

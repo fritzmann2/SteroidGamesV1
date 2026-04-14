@@ -22,20 +22,22 @@ public enum Itemtype
     Weapon,
     Accessory,
     None
-
 }
+
 [System.Serializable]
 public class EquipmentStats
 {
     public int count = 1;
     public int compleatValue;
-    protected int bonuspoint = 0;
+    public int bonuspoint = 0;
+    public float rarity = 0;
     public virtual void generateStats(float rarity)
     {
         if (rarity == 3.5f)
         {
             bonuspoint = 1;
         }
+        this.rarity = rarity;
     }
     protected int calcRandomNum()
     {
@@ -43,7 +45,6 @@ public class EquipmentStats
         compleatValue += randomnum;
         return randomnum;
     }
-    
 }
 
 
@@ -104,6 +105,7 @@ public class ArmorStats : EquipmentStats, INetworkSerializable
         return (ArmorStats)this.MemberwiseClone();
     }
 }
+
 [System.Serializable]
 public class AccessoryStats : EquipmentStats, INetworkSerializable
 {

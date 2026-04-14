@@ -95,6 +95,7 @@ public class InventoryUI : MonoBehaviour
 
         if (stats is WeaponStats w)
         {
+            displayString += $"WeaponPower: {w.rarity * w.bonuspoint:F0}\n";
             displayString += $"Angriff: {w.weapondamage:F0}\n";
             displayString += $"Stärke: {w.strength:F0}\n";
             displayString += $"Crit Chance: {w.critChance:F1}%\n";
@@ -103,11 +104,13 @@ public class InventoryUI : MonoBehaviour
         }
         else if (stats is ArmorStats a)
         {
+            displayString += $"ArmorPower: {a.rarity * a.bonuspoint:F0}\n";
             displayString += $"Verteidigung: {a.defense:F0}\n";
             displayString += $"Magieresistenz: {a.spellresistance:F0}";
         }
         else if (stats is AccessoryStats acc)
         {
+            displayString += $"ArmorPower: {acc.rarity * acc.bonuspoint:F0}\n";
             displayString += $"Leben: {acc.health:F0} | Mana: {acc.mana:F0}\n";
             displayString += $"Regeneration: L:{acc.healthRegen:F1} M:{acc.manaRegen:F1}\n";
             displayString += $"Bewegung: {acc.movementSpeed:F1}\n";

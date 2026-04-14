@@ -28,6 +28,7 @@ public class PlayerStats : BaseMobClass
     );
     protected float maxMana = 0;
     private float regenInterval = 1f;
+
     [Header("Spieler Info")]
     public string playerName;
 
@@ -37,7 +38,9 @@ public class PlayerStats : BaseMobClass
     {
         base.OnNetworkSpawn(); 
         if (!IsOwner) return;
-        StartCoroutine(HealthRegenerationRoutine());
+        baseStats.health = health.Value;
+        maxMana = baseStats.mana;
+        baseStats.mana = mana.Value;
         playerSaveHandler = transform.GetComponent<PlayerSaveHandler>(); 
         itemInventory = transform.GetComponentInParent<Inventory>().itemInventory;
         statsUI = FindAnyObjectByType<PlayerStatsUI>();
@@ -90,19 +93,19 @@ public class PlayerStats : BaseMobClass
 
     private void Init()
     {
-        Initbase();
         calculateLevel(baseStats);
         calculateBaseStats();
-        RecalculateTotalStats();
+        Initbase();
+        StartCoroutine(HealthRegenerationRoutine());
         health.Value = maxHealth;
-
+        mana.Value = maxMana;
         statsUI.UpdateHealthUI((int)health.Value, maxHealth);
         statsUI.UpdateXPUI(playerXP, GetRequiredXP(), playerLevel);
         statsUI.UpdateManaUI((int)mana.Value, (int)maxMana);
     }
     
     private void Initbase()
-    {
+    {   
         equipmentDatas = new List<EquipmentInstance>();
 
         for (int i = 0; i < itemInventory.equipmentSlots.Count; i++)
@@ -332,10 +335,8 @@ public class PlayerStats : BaseMobClass
 
     private void calculateBaseStats()
     {
-        baseStats.health = health.Value;
+        Debug.Log("Base Health: " + baseStats.health + " Base Mana: " + baseStats.mana);
         baseStats.calculateBaseStats(playerLevel);
-        maxMana = baseStats.mana;
-        mana.Value = maxMana;
     }
 
     public void ResetSkillBonuses()
