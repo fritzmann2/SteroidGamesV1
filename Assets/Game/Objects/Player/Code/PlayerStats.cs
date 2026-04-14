@@ -10,10 +10,13 @@ public class PlayerStats : BaseMobClass
 
     [Header("Debugging")]
     [SerializeField] private List<EquipmentInstance> equipmentDatas = new List<EquipmentInstance>();
+
+    [Header("Stats")]
     [SerializeField] protected Playerstats totalStats;
-    
     [SerializeField] protected Playerstats baseStats; 
+    [SerializeField] protected Playerstats skillTreeBonus = new Playerstats();
     [SerializeField] protected PlayerStatsUI statsUI;
+
     private ItemInventory itemInventory;
     private bool isCrit;
     [SerializeField] public int playerLevel = 1;
@@ -115,7 +118,6 @@ public class PlayerStats : BaseMobClass
         }
     }
 
-
     public void LoadSaveData(PlayerStatsSaveData savedData)
     {
         if (savedData != null && savedData.baseStats != null)
@@ -123,7 +125,6 @@ public class PlayerStats : BaseMobClass
             this.baseStats = savedData.baseStats;
         }
     }
-
 
     public void UpdateStatsFromEquipment(int slotIndex)
     {
@@ -137,18 +138,18 @@ public class PlayerStats : BaseMobClass
     {
         totalStats = new Playerstats
         {
-            strength = baseStats.strength,
-            critChance = baseStats.critChance,
-            critDamage = baseStats.critDamage,
-            attackSpeed = baseStats.attackSpeed,
-            weapondamage = baseStats.weapondamage,
-            defense = baseStats.defense,
-            spellresistance = baseStats.spellresistance,
-            movementSpeed = baseStats.movementSpeed,
-            mana = baseStats.mana,
-            manaRegen = baseStats.manaRegen,
-            health = baseStats.health,
-            healthRegen = baseStats.healthRegen
+            strength = baseStats.strength + skillTreeBonus.strength,
+            critChance = baseStats.critChance + skillTreeBonus.critChance,
+            critDamage = baseStats.critDamage + skillTreeBonus.critDamage,
+            attackSpeed = baseStats.attackSpeed + skillTreeBonus.attackSpeed,
+            weapondamage = baseStats.weapondamage + skillTreeBonus.weapondamage,
+            defense = baseStats.defense + skillTreeBonus.defense,
+            spellresistance = baseStats.spellresistance + skillTreeBonus.spellresistance,
+            movementSpeed = baseStats.movementSpeed + skillTreeBonus.movementSpeed,
+            mana = baseStats.mana + skillTreeBonus.mana,
+            manaRegen = baseStats.manaRegen + skillTreeBonus.manaRegen,
+            health = baseStats.health + skillTreeBonus.health,
+            healthRegen = baseStats.healthRegen + skillTreeBonus.healthRegen
         };
         foreach (var data in equipmentDatas)
         {
@@ -327,6 +328,29 @@ public class PlayerStats : BaseMobClass
         baseStats.calculateBaseStats(playerLevel);
         maxMana = baseStats.mana;
         mana.Value = maxMana;
+    }
+
+    public void ResetSkillBonuses()
+    {
+        skillTreeBonus = new Playerstats();
+        RecalculateTotalStats();
+    }
+
+    public void AddSkillBonus(StatType statType, float amount)
+    {
+        switch (statType)
+        {
+            case StatType.Health: skillTreeBonus.health += amount; break;
+            case StatType.Mana: skillTreeBonus.mana += amount; break;
+            case StatType.Strength: skillTreeBonus.strength += amount; break;
+            case StatType.Defense: skillTreeBonus.defense += amount; break;
+            case StatType.MovementSpeed: skillTreeBonus.movementSpeed += amount; break;
+            case StatType.AttackSpeed: skillTreeBonus.attackSpeed += amount; break;
+            case StatType.CritChance: skillTreeBonus.critChance += amount; break;
+            case StatType.CritDamage: skillTreeBonus.critDamage += amount; break;
+        }
+        
+        RecalculateTotalStats();
     }
 
     private int GetRequiredXP()

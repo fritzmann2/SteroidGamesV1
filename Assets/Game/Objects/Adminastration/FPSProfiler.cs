@@ -20,6 +20,24 @@ public class FPSProfiler : MonoBehaviour
     private Queue<float> frameTimes = new Queue<float>();
     private float[] frameTimeArray;
 
+    private GameControls controls;
+    private bool showStats = false; 
+
+    private void Awake()
+    {
+        controls = new GameControls();
+    }
+
+    private void OnEnable()
+    {
+        controls.Enable();
+    }
+
+    private void OnDisable()
+    {
+        controls.Disable();
+    }
+
     void Start()
     {
         frameTimeArray = new float[frameBufferLength];
@@ -28,6 +46,11 @@ public class FPSProfiler : MonoBehaviour
 
     void Update()
     {
+        if (controls.Gameplay.ShowFPS.triggered) 
+        {
+            showStats = !showStats; 
+        }
+
         float dt = Time.unscaledDeltaTime;
         frameTimes.Enqueue(dt);
         if (frameTimes.Count > frameBufferLength)
@@ -71,6 +94,8 @@ public class FPSProfiler : MonoBehaviour
 
     void OnGUI()
     {
+        if (!showStats) return;
+
         GUIStyle style = new GUIStyle();
         int w = Screen.width, h = Screen.height;
         Rect rect = new Rect(20, 20, w, h * 2 / 100);

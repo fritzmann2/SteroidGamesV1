@@ -30,6 +30,20 @@ public class Playerstats
         manaRegen = level/100f + 2f;   
         healthRegen = level/200f + 1f;
     }
+
+    public override string ToString()
+    {
+        return $"Leben: {health:F0} (+{healthRegen:F1}/s)\n" +
+               $"Mana: {mana:F0} (+{manaRegen:F1}/s)\n" +
+               $"Bewegungsspeed: {movementSpeed:F1}\n" +
+               $"Waffenschaden: {weapondamage:F0}\n" +
+               $"Angriffsspeed: {attackSpeed:F2}\n" +
+               $"Crit Chance: {critChance:F1}%\n" +
+               $"Crit Schaden: {critDamage:F0}%\n" +
+               $"Stärke: {strength:F0}\n" +
+               $"Verteidigung: {defense:F0}\n" +
+               $"Magieresistenz: {spellresistance:F1}";
+    }
 }
 
 [System.Serializable]

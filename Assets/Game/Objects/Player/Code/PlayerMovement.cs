@@ -40,7 +40,7 @@ public class PlayerMovement : NetworkBehaviour
     [Header("Jump Settings")]
     [SerializeField] private const float jumpForce = 11f;
     [SerializeField] private const float wallJumpMultiplier = 0.5f;
-    private int possiblejumps = 2;
+    private int possiblejumps = 1;
     private int jumpcounter = 0;
 
     private float coyoteTime = 0.2f;
@@ -51,6 +51,7 @@ public class PlayerMovement : NetworkBehaviour
     [SerializeField] private const float dashCooldown = 0.4f;
     [SerializeField] private const float dashDuration = 0.2f;
     public float dashtimer = dashDuration;
+    public bool isDashUnlocked = false;
 
     [Header("Collider Settings")]
 
@@ -226,7 +227,7 @@ public class PlayerMovement : NetworkBehaviour
 
     private void checkDash()
     {
-        if (canDash && !isDashing)
+        if (isDashUnlocked && canDash && !isDashing)
         {
             if (controls.Gameplay.dash.IsPressed())
             {
@@ -309,6 +310,21 @@ public class PlayerMovement : NetworkBehaviour
     private void ApplyScale(float scaleX)
     {
         transform.localScale = new Vector3(scaleX, transform.localScale.y, transform.localScale.z);
+    }
+    public void UnlockDash()
+    {
+        isDashUnlocked = true;
+    }
+
+    public void SetMaxJumps(int amount)
+    {
+        possiblejumps = amount;
+    }
+
+    public void ResetAbilities()
+    {
+        isDashUnlocked = false;
+        possiblejumps = 1;
     }
 
     private void OnDrawGizmos()

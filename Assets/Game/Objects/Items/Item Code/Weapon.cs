@@ -60,7 +60,7 @@ abstract public class Weapon : InventoryItem
     public void initWeaponScript(PlayerStats _playerStats)
     {
         playerStats = _playerStats;
-        Debug.Log("PlayerStats set");
+//        Debug.Log("PlayerStats set");
     }
 
     

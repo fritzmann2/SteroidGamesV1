@@ -3929,7 +3929,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36be1a537f9778a40a720be7419f311b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  ShowTopMostFoldoutHeaderGroup: 1
   availableSkillPoints: 5
+  playerStatsUI: {fileID: 1508215967}
 --- !u!1 &437000019
 GameObject:
   m_ObjectHideFlags: 0

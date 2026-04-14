@@ -217,6 +217,15 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ShowFPS"",
+                    ""type"": ""Button"",
+                    ""id"": ""a78bc6a3-a1c9-47f2-b3d2-5c14ef4da528"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -615,6 +624,28 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
                     ""action"": ""DropItem"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c285fb84-b94c-49f4-b30c-3b7d28bef3f5"",
+                    ""path"": ""<Keyboard>/m"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";KeyboardMouse"",
+                    ""action"": ""ShowFPS"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8045ac4f-ddc0-4884-9456-0e1ca4153810"",
+                    ""path"": ""<Gamepad>/rightStickPress"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""ShowFPS"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -665,6 +696,7 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
         m_Gameplay_pickupitem = m_Gameplay.FindAction("pickupitem", throwIfNotFound: true);
         m_Gameplay_WallSlide = m_Gameplay.FindAction("WallSlide", throwIfNotFound: true);
         m_Gameplay_DropItem = m_Gameplay.FindAction("DropItem", throwIfNotFound: true);
+        m_Gameplay_ShowFPS = m_Gameplay.FindAction("ShowFPS", throwIfNotFound: true);
     }
 
     ~@GameControls()
@@ -759,6 +791,7 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Gameplay_pickupitem;
     private readonly InputAction m_Gameplay_WallSlide;
     private readonly InputAction m_Gameplay_DropItem;
+    private readonly InputAction m_Gameplay_ShowFPS;
     /// <summary>
     /// Provides access to input actions defined in input action map "Gameplay".
     /// </summary>
@@ -827,6 +860,10 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @DropItem => m_Wrapper.m_Gameplay_DropItem;
         /// <summary>
+        /// Provides access to the underlying input action "Gameplay/ShowFPS".
+        /// </summary>
+        public InputAction @ShowFPS => m_Wrapper.m_Gameplay_ShowFPS;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
@@ -894,6 +931,9 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
             @DropItem.started += instance.OnDropItem;
             @DropItem.performed += instance.OnDropItem;
             @DropItem.canceled += instance.OnDropItem;
+            @ShowFPS.started += instance.OnShowFPS;
+            @ShowFPS.performed += instance.OnShowFPS;
+            @ShowFPS.canceled += instance.OnShowFPS;
         }
 
         /// <summary>
@@ -947,6 +987,9 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
             @DropItem.started -= instance.OnDropItem;
             @DropItem.performed -= instance.OnDropItem;
             @DropItem.canceled -= instance.OnDropItem;
+            @ShowFPS.started -= instance.OnShowFPS;
+            @ShowFPS.performed -= instance.OnShowFPS;
+            @ShowFPS.canceled -= instance.OnShowFPS;
         }
 
         /// <summary>
@@ -1111,5 +1154,12 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnDropItem(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ShowFPS" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnShowFPS(InputAction.CallbackContext context);
     }
 }

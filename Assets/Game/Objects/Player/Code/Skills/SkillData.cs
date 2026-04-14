@@ -1,5 +1,10 @@
 using UnityEngine;
 
+public enum StatType
+{
+    None, Health, Mana, Strength, Defense, MovementSpeed, AttackSpeed, CritChance, CritDamage
+}
+
 [CreateAssetMenu(fileName = "NewSkill", menuName = "Skill Tree/Skill Data")]
 public class SkillData : ScriptableObject
 {
@@ -11,4 +16,8 @@ public class SkillData : ScriptableObject
     
     [Header("Abhängigkeiten")]
     public SkillData[] prerequisites; 
+
+    [Header("Stat Boost pro Level")]
+    public StatType targetStat = StatType.None; 
+    public float valuePerLevel = 0f; 
 }

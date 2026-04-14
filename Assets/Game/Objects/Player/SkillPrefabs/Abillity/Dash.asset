@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a659945e18b3a8458fb4486dfb953c1, type: 3}
   m_Name: Dash
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
-  skillID: Skill_Dash
+  skillID: skill_dash
   skillName: Dash
-  description: 
+  description: you can dash forward
   skillIcon: {fileID: 0}
   maxLevel: 1
   prerequisites: []
+  targetStat: 0
+  valuePerLevel: 0

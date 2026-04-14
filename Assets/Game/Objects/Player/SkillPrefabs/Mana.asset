@@ -18,3 +18,5 @@ MonoBehaviour:
   skillIcon: {fileID: 0}
   maxLevel: 10
   prerequisites: []
+  targetStat: 2
+  valuePerLevel: 10

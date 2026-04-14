@@ -53,7 +53,7 @@ public class WorldGenerator : NetworkBehaviour
         {
             if (mob != null) mobDictionary[mob.name] = mob;
         }
-        Debug.Log($"[WorldGen] {mobDictionary.Count} Mobs initialisiert.");
+//        Debug.Log($"[WorldGen] {mobDictionary.Count} Mobs initialisiert.");
 
         foreach (GameObject chunk in allChunkPrefabs)
         {
@@ -88,7 +88,7 @@ public class WorldGenerator : NetworkBehaviour
                 int worldY = 1000;
                 int yCoord = Mathf.RoundToInt(worldY / chunkSize);
                 chunkPrefabDictionary[new Vector2Int(xCoord, yCoord)] = arena;
-                Debug.Log($"[WorldGen] {arena.name} erfolgreich auf Chunk-Koordinate {xCoord}_{yCoord} (Welt: {worldX}|{worldY}) registriert!");
+//                Debug.Log($"[WorldGen] {arena.name} erfolgreich auf Chunk-Koordinate {xCoord}_{yCoord} (Welt: {worldX}|{worldY}) registriert!");
             }
             else
             {
@@ -96,7 +96,7 @@ public class WorldGenerator : NetworkBehaviour
             }
         }
         
-        Debug.Log($"[WorldGen] {chunkPrefabDictionary.Count} Chunks (inklusive Arenen) initialisiert.");
+//        Debug.Log($"[WorldGen] {chunkPrefabDictionary.Count} Chunks (inklusive Arenen) initialisiert.");
     }
  
     private IEnumerator ChunkUpdateLoop()

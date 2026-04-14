@@ -50,7 +50,7 @@ public class LevelManager : NetworkBehaviour
     {
         if (sceneEvent.SceneEventType == SceneEventType.LoadComplete)
         {
-            Debug.Log($">>> Client {sceneEvent.ClientId} hat die Szene geladen. Starte Verzögerung... <<<");
+//            Debug.Log($">>> Client {sceneEvent.ClientId} hat die Szene geladen. Starte Verzögerung... <<<");
             StartCoroutine(SpawnPlayerWithDelay(sceneEvent.ClientId));
         }
     }
