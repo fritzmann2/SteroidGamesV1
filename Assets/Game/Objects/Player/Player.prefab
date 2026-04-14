@@ -382,6 +382,20 @@ MonoBehaviour:
     manaRegen: 0
     healthRegen: 0
     health: 0
+  skillTreeBonus:
+    totalexperience: 0
+    movementSpeed: 0
+    weapondamage: 0
+    attackSpeed: 0
+    critChance: 0
+    critDamage: 0
+    strength: 0
+    defense: 0
+    spellresistance: 0
+    mana: 0
+    manaRegen: 0
+    healthRegen: 0
+    health: 0
   statsUI: {fileID: 0}
   playerLevel: 1
   playerXP: 0
@@ -1038,6 +1052,7 @@ MonoBehaviour:
   facingDirectionX:
     m_InternalValue: 1
   dashtimer: 0.2
+  isDashUnlocked: 0
   isGrounded: 0
   isWallJumpPossible: 0
   isDashing: 0

@@ -87,14 +87,12 @@ public class PlayerMovement : NetworkBehaviour
         wall = LayerMask.GetMask("Wall", "Ground");
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0f;
-        controls = new GameControls();
-        controls.Enable();
+        controls = InputManager.Instance.Controls;
     }
 
     public override void OnNetworkDespawn()
     {
         if (!IsOwner) return;
-        controls.Disable();
     }
 
     void FixedUpdate()

@@ -36,7 +36,7 @@ abstract public class Weapon : InventoryItem
         bx = GetComponent<Collider2D>();
         bx.enabled = false;
         anim = GetComponent<Animator>();
-        controls = new GameControls();
+        controls = InputManager.Instance.Controls;
         playerStats = GetComponentInParent<PlayerStats>();
         movement = GetComponentInParent<PlayerMovement>();
         rotation = transform.localRotation;
@@ -60,19 +60,8 @@ abstract public class Weapon : InventoryItem
     public void initWeaponScript(PlayerStats _playerStats)
     {
         playerStats = _playerStats;
-//        Debug.Log("PlayerStats set");
     }
 
-    
-    void OnEnable()
-    {
-        controls.Enable();
-    }
-
-    void OnDisable()
-    {
-        controls.Disable();
-    }
 
     public void performattack(string _attacktype)
     {        

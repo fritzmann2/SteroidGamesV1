@@ -23,23 +23,9 @@ public class FPSProfiler : MonoBehaviour
     private GameControls controls;
     private bool showStats = false; 
 
-    private void Awake()
-    {
-        controls = new GameControls();
-    }
-
-    private void OnEnable()
-    {
-        controls.Enable();
-    }
-
-    private void OnDisable()
-    {
-        controls.Disable();
-    }
-
     void Start()
     {
+        controls = InputManager.Instance.Controls;
         frameTimeArray = new float[frameBufferLength];
         Application.targetFrameRate = 200;
     }

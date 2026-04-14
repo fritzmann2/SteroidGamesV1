@@ -17,15 +17,28 @@ public class SkillTreeManager : MonoBehaviour
 
     private void Start()
     {
-        allNodes = GetComponentsInChildren<SkillNode>();
-        playerStats = NetworkManager.Singleton.LocalClient.PlayerObject.gameObject.GetComponent<PlayerStats>();
-        playerMovement = NetworkManager.Singleton.LocalClient.PlayerObject.gameObject.GetComponent<PlayerMovement>();
-
-        foreach (SkillNode node in allNodes)
-        {
-            node.Initialize(this);
-        }
+        InitializeManager();
         RefreshAllNodes();
+    }
+
+    private void InitializeManager()
+    {
+        if (allNodes == null || allNodes.Length == 0)
+        {
+            allNodes = GetComponentsInChildren<SkillNode>(true); 
+            foreach (SkillNode node in allNodes)
+            {
+                node.Initialize(this);
+            }
+        }
+        if (playerStats == null || playerMovement == null)
+        {
+            if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsConnectedClient && NetworkManager.Singleton.LocalClient.PlayerObject != null)
+            {
+                playerStats = NetworkManager.Singleton.LocalClient.PlayerObject.GetComponent<PlayerStats>();
+                playerMovement = NetworkManager.Singleton.LocalClient.PlayerObject.GetComponent<PlayerMovement>();
+            }
+        }
     }
 
     public int GetSkillLevel(string skillID)
@@ -68,9 +81,9 @@ public class SkillTreeManager : MonoBehaviour
             unlockedSkills[id] = currentLevel + 1;
             skillPointsUsed++;
             Debug.Log($"Skill {node.skillData.skillName} gelevelt auf {currentLevel + 1}");
-            if (id.StartsWith("skill_"))
+            if (id.StartsWith("stat_"))
             {
-                ApplyAbility(id);
+                ApplyAllSkillsToStats();
             }
             RefreshAllNodes(); 
         }
@@ -131,13 +144,23 @@ public class SkillTreeManager : MonoBehaviour
 
     private void showStats()
     {
-        playerStatsUI.GetComponentInChildren<TextMeshProUGUI>().text = playerStats.getTotalStats().ToString();
+        if (playerStats == null) 
+        {
+            return; 
+        }
+        if (playerStatsUI == null) 
+        {
+            return;
+        }
+
+        playerStatsUI.GetComponentInChildren<TextMeshProUGUI>(includeInactive: true).text = playerStats.getTotalStats().ToString();
     }
 
     public SkillTreeSaveData GetSaveData()
     {
         SkillTreeSaveData data = new SkillTreeSaveData();
         data.availableSkillPoints = this.availableSkillPoints;
+        data.skillPointsUsed = this.skillPointsUsed; 
 
         foreach (KeyValuePair<string, int> kvp in unlockedSkills)
         {
@@ -147,24 +170,44 @@ public class SkillTreeManager : MonoBehaviour
         return data;
     }
 
-    public void LoadSaveData(SkillTreeSaveData data)
+    public void LoadSaveData(SkillTreeSaveData data, PlayerStats stats)
     {
-        if (data == null) return;
-
+        if (data == null) 
+        {
+            Debug.LogWarning("Gespeicherte Skill-Daten sind ungültig!");
+            return;
+        }
+        if (stats != null)
+        {
+            playerStats = stats;
+            if (playerMovement == null)
+            {
+                playerMovement = stats.GetComponent<PlayerMovement>();
+            }
+        }
+        InitializeManager();
         this.availableSkillPoints = data.availableSkillPoints;
+        this.skillPointsUsed = data.skillPointsUsed; 
+        
         unlockedSkills.Clear();
         for (int i = 0; i < data.unlockedSkillIDs.Count; i++)
         {
             unlockedSkills[data.unlockedSkillIDs[i]] = data.unlockedSkillLevels[i];
         }
 
+        ApplyAllSkillsToStats(); 
         RefreshAllNodes();
     }
 
     public void ResetSkillTree()
     {
-        availableSkillPoints = playerStats.playerLevel; 
+        if (playerStats != null)
+        {
+            availableSkillPoints = playerStats.playerLevel; 
+        }
+        skillPointsUsed = 0; 
         unlockedSkills.Clear();
+        ApplyAllSkillsToStats(); 
         RefreshAllNodes();
     }
 }

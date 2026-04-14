@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a659945e18b3a8458fb4486dfb953c1, type: 3}
   m_Name: Streangth
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
-  skillID: stat_Streangth
-  skillName: Streangth
-  description: Increase your streangth by 5%.
+  skillID: stat_Strength
+  skillName: Strength
+  description: Increase your strength by 5%.
   skillIcon: {fileID: 0}
   maxLevel: 20
   prerequisites: []
   targetStat: 3
-  valuePerLevel: 0.05
+  valuePerLevel: 5

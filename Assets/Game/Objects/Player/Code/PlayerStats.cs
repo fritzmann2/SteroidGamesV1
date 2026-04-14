@@ -85,6 +85,7 @@ public class PlayerStats : BaseMobClass
     {
         health.Value = newHealth;
         mana.Value = newMana;
+        statsUI.UpdateManaUI((int)mana.Value, (int)maxMana);
     }
 
     private void Init()
@@ -93,13 +94,12 @@ public class PlayerStats : BaseMobClass
         calculateLevel(baseStats);
         calculateBaseStats();
         RecalculateTotalStats();
-        if (health.Value > maxHealth)
-        {
-            health.Value = maxHealth;
-        }
+        health.Value = maxHealth;
+        mana.Value = maxMana;
 
         statsUI.UpdateHealthUI((int)health.Value, maxHealth);
         statsUI.UpdateXPUI(playerXP, GetRequiredXP(), playerLevel);
+        statsUI.UpdateManaUI((int)mana.Value, (int)maxMana);
     }
     
     private void Initbase()
@@ -187,6 +187,15 @@ public class PlayerStats : BaseMobClass
         }
         maxHealth = (int)totalStats.health;
         maxMana = totalStats.mana;
+
+        if (maxHealth < health.Value)
+        {
+            health.Value = maxHealth;
+        }
+        if (maxMana < mana.Value)        
+        {
+            mana.Value = maxMana;
+        }
 
         if (IsOwner && !IsServer)
         {

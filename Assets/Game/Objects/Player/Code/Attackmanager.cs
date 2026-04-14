@@ -24,7 +24,7 @@ public class Attackmanager : NetworkBehaviour
 
     void Awake()
     {
-        controls = new GameControls();
+        controls = InputManager.Instance.Controls;
     }
 
     private void OnDisable()
@@ -36,7 +36,6 @@ public class Attackmanager : NetworkBehaviour
     {
         if (IsOwner) 
         {
-            controls.Enable();
             statsUI = FindAnyObjectByType<PlayerStatsUI>();
         }
         if (IsOwner || IsServer)
@@ -62,7 +61,6 @@ public class Attackmanager : NetworkBehaviour
     {
         if (IsOwner) 
         {
-            controls.Disable();
             if (currentWeaponObject != null)
             {
                 Destroy(currentWeaponObject);

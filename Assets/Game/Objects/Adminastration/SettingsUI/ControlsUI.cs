@@ -31,6 +31,8 @@ public class ControlsUI : MonoBehaviour
     private string currentScheme; 
     private int columns = 2;
 
+    public static event System.Action OnControlsChanged;
+
     private void Start()
     {
         string savedRebinds = PlayerPrefs.GetString("CustomControls", string.Empty);
@@ -152,15 +154,22 @@ public class ControlsUI : MonoBehaviour
         rebindingOperation.Start();
     }
 
-    private void RebindComplete(int bindingIndex)
+    private void RebindComplete(int bindingIndex) 
     {
         rebindingOperation.Dispose();
         rebindingOperation = null;
         currentRebindAction.Enable();
+        
         string rebinds = currentRebindAction.actionMap.SaveBindingOverridesAsJson();
         PlayerPrefs.SetString("CustomControls", rebinds);
         PlayerPrefs.Save();
+        
         currentRebindText.text = currentRebindAction.GetBindingDisplayString(bindingIndex);
+        if (InputManager.Instance != null)
+        {
+            InputManager.Instance.LoadSavedControls();
+        }
+        OnControlsChanged?.Invoke();
     }
 
     public void ResetToDefault()
@@ -172,13 +181,16 @@ public class ControlsUI : MonoBehaviour
             rebindingOperation = null;
             if (currentRebindAction != null) currentRebindAction.Enable();
         }
-
-        if (actionsToRebind.Length > 0 && actionsToRebind[0] != null)
+        foreach (var map in actionsToRebind[0].action.actionMap.asset.actionMaps)
         {
-            actionsToRebind[0].action.actionMap.RemoveAllBindingOverrides();
+            map.RemoveAllBindingOverrides();
         }
         PlayerPrefs.DeleteKey("CustomControls");
         PlayerPrefs.Save();
+        if (InputManager.Instance != null)
+        {
+            InputManager.Instance.LoadSavedControls(); 
+        }
 
         UpdateUI();
     }

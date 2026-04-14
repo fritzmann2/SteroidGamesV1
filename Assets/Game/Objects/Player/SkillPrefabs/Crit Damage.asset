@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a659945e18b3a8458fb4486dfb953c1, type: 3}
   m_Name: Crit Damage
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
-  skillID: stat_Crit_Damage
+  skillID: stat_CritDamage
   skillName: Crit Damage
   description: Increase your crit Damage by 10%
   skillIcon: {fileID: 0}
   maxLevel: 20
   prerequisites: []
   targetStat: 8
-  valuePerLevel: 0.1
+  valuePerLevel: 10

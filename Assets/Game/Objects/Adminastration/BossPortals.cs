@@ -12,14 +12,9 @@ public class BossPortals : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        controls = new GameControls();
-        controls.Enable();
+        controls = InputManager.Instance.Controls;
     }
 
-    public override void OnNetworkDespawn()
-    {
-        controls.Disable();
-    }
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))

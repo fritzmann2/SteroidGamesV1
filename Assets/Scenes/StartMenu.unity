@@ -1023,6 +1023,7 @@ GameObject:
   - component: {fileID: 265655473}
   - component: {fileID: 265655476}
   - component: {fileID: 265655477}
+  - component: {fileID: 265655478}
   m_Layer: 0
   m_Name: SaveManager
   m_TagString: Untagged
@@ -1109,6 +1110,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FPSProfiler
   updateInterval: 0.5
   frameBufferLength: 1000
+--- !u!114 &265655478
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 265655472}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58504dc07a3d53d8c9ed660fe1a1b0e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InputManager
 --- !u!1 &266384544
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,6 +11,7 @@ public class RelayManager : MonoBehaviour
 {
     public static RelayManager Instance { get; private set; }
     public string CurrentJoinCode { get; private set; }
+
     private void Awake()
     {
         if (Instance == null)
@@ -24,13 +25,17 @@ public class RelayManager : MonoBehaviour
         }
     }
 
-    private async void Start()
+    private async Task EnsureAuthenticated()
     {
-        await UnityServices.InitializeAsync();
+        if (UnityServices.State == ServicesInitializationState.Uninitialized)
+        {
+            await UnityServices.InitializeAsync();
+        }
 
         if (!AuthenticationService.Instance.IsSignedIn)
         {
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
+//            Debug.Log($"[UGS] Erfolgreich eingeloggt. PlayerID: {AuthenticationService.Instance.PlayerId}");
         }
     }
 
@@ -38,6 +43,8 @@ public class RelayManager : MonoBehaviour
     {
         try
         {
+            await EnsureAuthenticated();
+
             Allocation allocation = await RelayService.Instance.CreateAllocationAsync(3);
 
             string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
@@ -65,6 +72,8 @@ public class RelayManager : MonoBehaviour
     {
         try
         {
+            await EnsureAuthenticated();
+
             JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
             CurrentJoinCode = joinCode;
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetClientRelayData(

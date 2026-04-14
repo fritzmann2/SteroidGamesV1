@@ -24,8 +24,7 @@ public class PauseManager : MonoBehaviour
     void Awake()
     {
         Instance = this;
-        controls = new GameControls();
-        controls.Enable();
+        controls = InputManager.Instance.Controls;
         ResetAllUI();     
     }
 
@@ -58,11 +57,6 @@ public class PauseManager : MonoBehaviour
     void OnEnable()
     {
         SetFirstSelectedSlot();
-    }
-
-    void OnDisable()
-    {
-        controls.Disable();
     }
 
     private void SetFirstSelectedSlot()

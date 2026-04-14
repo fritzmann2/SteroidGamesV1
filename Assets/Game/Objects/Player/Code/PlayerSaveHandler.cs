@@ -22,7 +22,7 @@ public class PlayerSaveHandler : NetworkBehaviour
     {
         inventory = GetComponent<Inventory>();
         playerStats = GetComponent<PlayerStats>();
-        skillTreeManager = GetComponent<SkillTreeManager>();
+        skillTreeManager = FindAnyObjectByType<SkillTreeManager>(FindObjectsInactive.Include);
         
         if (inventory != null)
         {
@@ -211,17 +211,17 @@ public class PlayerSaveHandler : NetworkBehaviour
 
     private void ApplyFullSaveData(GameSaveData data)
     {       
-
         if (playerStats != null && data.statsData != null)
         {
             playerStats.LoadSaveData(data.statsData);
         }
-
-        if (skillTreeManager != null && data.skillTreeData != null)
+        if (IsOwner) 
         {
-            skillTreeManager.LoadSaveData(data.skillTreeData);
+            if (skillTreeManager != null && data.skillTreeData != null)
+            {
+                skillTreeManager.LoadSaveData(data.skillTreeData, playerStats);
+            }
         }
-
         if (itemInventory != null && data.inventoryData != null)
         {
             foreach (var slot in itemInventory.inventorySlots) slot.clearSlot();
@@ -306,7 +306,7 @@ public class PlayerSaveHandler : NetworkBehaviour
         {
             SkillTreeSaveData emptyData = new SkillTreeSaveData();
             emptyData.availableSkillPoints = 5;
-            skillTreeManager.LoadSaveData(emptyData);
+            skillTreeManager.LoadSaveData(emptyData, playerStats);
         }
 
         dataLoaded?.Invoke();

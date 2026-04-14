@@ -40,8 +40,7 @@ public class Inventory : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         if (!IsOwner) return;
-        controls = new GameControls();
-        controls.Enable();
+        controls = InputManager.Instance.Controls;
         if(!IsOwner) Debug.LogWarning("safety fail");
         InventoryUI inventoryUI = FindAnyObjectByType<InventoryUI>(FindObjectsInactive.Include);
         if (inventoryUI != null)
@@ -67,7 +66,6 @@ public class Inventory : NetworkBehaviour
         {
             mouseItemData.ItemChange -= trySwitchItem;
         }
-        controls.Disable();
     }
     
     public override void OnDestroy()

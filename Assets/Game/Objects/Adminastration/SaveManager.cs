@@ -65,6 +65,7 @@ public class GameSaveData
 public class SkillTreeSaveData
 {
     public int availableSkillPoints;
+    public int skillPointsUsed; 
     public List<string> unlockedSkillIDs = new List<string>();
     public List<int> unlockedSkillLevels = new List<int>();
 }

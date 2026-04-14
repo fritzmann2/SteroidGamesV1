@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a659945e18b3a8458fb4486dfb953c1, type: 3}
   m_Name: CritChance
   m_EditorClassIdentifier: Assembly-CSharp::SkillData
-  skillID: stat_Crit_Chance
+  skillID: stat_CritChance
   skillName: Crit Chance
   description: Increase your crit Chance by 1%
   skillIcon: {fileID: 0}
   maxLevel: 20
   prerequisites: []
   targetStat: 7
-  valuePerLevel: 0.01
+  valuePerLevel: 1

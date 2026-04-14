@@ -20,7 +20,6 @@ public class PlayerStatsUI : MonoBehaviour
         HPText.color = Color.black;
         manaText.color = Color.black;
         xpText.color = Color.black;
-
     }
     public void UpdateHealthUI(int health, int maxHealth)
     {

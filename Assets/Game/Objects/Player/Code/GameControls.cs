@@ -226,6 +226,15 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ShowItemStats"",
+                    ""type"": ""Button"",
+                    ""id"": ""fe1f953d-46d5-4963-aa56-590be21a303f"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -562,7 +571,7 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""6a73c95b-ae79-4050-bae1-cd41d81dd8e5"",
-                    ""path"": ""<Mouse>/leftButton"",
+                    ""path"": ""<Keyboard>/r"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";KeyboardMouse"",
@@ -646,6 +655,28 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
                     ""action"": ""ShowFPS"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9b1c6c1f-2361-4f2b-b499-467865f2db8f"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";KeyboardMouse"",
+                    ""action"": ""ShowItemStats"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""de7d1787-d642-444f-8af9-c2aab64ddcc4"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""ShowItemStats"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -697,6 +728,7 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
         m_Gameplay_WallSlide = m_Gameplay.FindAction("WallSlide", throwIfNotFound: true);
         m_Gameplay_DropItem = m_Gameplay.FindAction("DropItem", throwIfNotFound: true);
         m_Gameplay_ShowFPS = m_Gameplay.FindAction("ShowFPS", throwIfNotFound: true);
+        m_Gameplay_ShowItemStats = m_Gameplay.FindAction("ShowItemStats", throwIfNotFound: true);
     }
 
     ~@GameControls()
@@ -792,6 +824,7 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Gameplay_WallSlide;
     private readonly InputAction m_Gameplay_DropItem;
     private readonly InputAction m_Gameplay_ShowFPS;
+    private readonly InputAction m_Gameplay_ShowItemStats;
     /// <summary>
     /// Provides access to input actions defined in input action map "Gameplay".
     /// </summary>
@@ -864,6 +897,10 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @ShowFPS => m_Wrapper.m_Gameplay_ShowFPS;
         /// <summary>
+        /// Provides access to the underlying input action "Gameplay/ShowItemStats".
+        /// </summary>
+        public InputAction @ShowItemStats => m_Wrapper.m_Gameplay_ShowItemStats;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
@@ -934,6 +971,9 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
             @ShowFPS.started += instance.OnShowFPS;
             @ShowFPS.performed += instance.OnShowFPS;
             @ShowFPS.canceled += instance.OnShowFPS;
+            @ShowItemStats.started += instance.OnShowItemStats;
+            @ShowItemStats.performed += instance.OnShowItemStats;
+            @ShowItemStats.canceled += instance.OnShowItemStats;
         }
 
         /// <summary>
@@ -990,6 +1030,9 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
             @ShowFPS.started -= instance.OnShowFPS;
             @ShowFPS.performed -= instance.OnShowFPS;
             @ShowFPS.canceled -= instance.OnShowFPS;
+            @ShowItemStats.started -= instance.OnShowItemStats;
+            @ShowItemStats.performed -= instance.OnShowItemStats;
+            @ShowItemStats.canceled -= instance.OnShowItemStats;
         }
 
         /// <summary>
@@ -1161,5 +1204,12 @@ public partial class @GameControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnShowFPS(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ShowItemStats" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnShowItemStats(InputAction.CallbackContext context);
     }
 }

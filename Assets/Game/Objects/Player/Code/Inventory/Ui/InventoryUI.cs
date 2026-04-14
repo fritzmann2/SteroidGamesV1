@@ -25,7 +25,7 @@ public class InventoryUI : MonoBehaviour
     
     void Update()
     {
-        if (controls.Gameplay.Teleport.triggered) 
+        if (controls.Gameplay.ShowItemStats.triggered) 
         {
             if (!statsPanel.activeSelf)
             {
@@ -48,14 +48,20 @@ public class InventoryUI : MonoBehaviour
     
     private void OnEnable()
     {
-        controls = new GameControls();
-        controls.Enable();
+        controls = InputManager.Instance.Controls;
         StartCoroutine(DelayedRefresh());
         SetFirstSelectedSlot();
     }
+
     private void OnDisable()
     {
-        controls.Disable();
+        if (playerinventory != null && playerinventory.mouseItemData != null)
+        {
+            if (playerinventory.mouseItemData.hasitem)
+            {
+                playerinventory.mouseItemData.ClearSlot();
+            }
+        }
     }
 
     private void ShowItemStats()
